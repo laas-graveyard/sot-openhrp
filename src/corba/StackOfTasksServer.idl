@@ -1,0 +1,12 @@
+#include "common.idl"
+
+interface StackOfTasksServer: Plugin
+{
+  void SendGenericData( in string data );
+  void Send1( in string cmdLine,in double x );
+  void Send2( in string cmdLine,in double x1,in double x2 );
+ 
+};
+
+
+

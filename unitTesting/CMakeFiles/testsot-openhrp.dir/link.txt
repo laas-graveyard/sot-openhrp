@@ -1,0 +1,1 @@
+/usr/bin/c++   -g   CMakeFiles/testsot-openhrp.dir/main.cc.o CMakeFiles/testsot-openhrp.dir/sot-openhrp-test.cc.o  -o testsot-openhrp -rdynamic -L/home/blue/sot-lib/lib -L/usr/local/lib ../src/libsot-openhrp.so.1.0 -lsot-core -ldynamic-graph -Wl,-rpath,/home/blue/sot-devel/sot-openhrp/src:/home/blue/sot-lib/lib:/usr/local/lib 

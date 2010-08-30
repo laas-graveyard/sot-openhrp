@@ -1,0 +1,2 @@
+/usr/bin/ar cr StackOfTasks.so  CMakeFiles/StackOfTasks.dir/StackOfTasks.cpp.o CMakeFiles/StackOfTasks.dir/__/stubs/SequencePlayerSK.cc.o CMakeFiles/StackOfTasks.dir/__/stubs/OpenHRPCommonSK.cc.o CMakeFiles/StackOfTasks.dir/__/stubs/HRPcontrollerSK.cc.o CMakeFiles/StackOfTasks.dir/__/stubs/ViewSimulatorSK.cc.o CMakeFiles/StackOfTasks.dir/__/stubs/DynamicsSimulatorSK.cc.o CMakeFiles/StackOfTasks.dir/__/stubs/ModelLoaderSK.cc.o CMakeFiles/StackOfTasks.dir/__/stubs/CollisionDetectorSK.cc.o
+/usr/bin/ranlib StackOfTasks.so
