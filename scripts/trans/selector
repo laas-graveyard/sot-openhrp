@@ -1,0 +1,59 @@
+new Selector mainContact
+
+# Two signals: position and jacobian. Two entries: left and right.
+mainContact.reset 3 2
+
+mainContact.create matrix jacobian
+plug dyn.Jlleg mainContact.jacobian0
+plug dyn.Jrleg mainContact.jacobian1
+
+mainContact.create matrixHomo zeroPosition
+plug dyn2.lleg mainContact.zeroPosition0
+plug dyn2.rleg mainContact.zeroPosition1
+
+mainContact.create matrixHomo footPosition
+plug dyn.lleg mainContact.footPosition0
+plug dyn.rleg mainContact.footPosition1
+
+# --- FLEX 
+plug mainContact.zeroPosition flex.contactEmbeddedPosition
+
+# --- SOT 
+legs.clear
+legs.add mainContact.jacobian
+
+# --- FLYING FOOT TASK
+
+new FeaturePoint6d flyingFootFeature
+new FeaturePoint6d flyingFootFeatureDes
+
+new Compose<R+T> flyingFootPosDes
+new VectorConstant flyingFootDes
+flyingFootDes.resize 3
+flyingFootDes.[] 0 0.0
+flyingFootDes.[] 1 -0.5
+flyingFootDes.[] 2 .0
+plug flyingFootDes.out flyingFootPosDes.in2
+set flyingFootPosDes.in1 [3,3	]((1,0,0),(0,1,0),(0,0,1))
+
+plug flyingFootPosDes.out flyingFootFeatureDes.position
+set flyingFootFeature.sdes flyingFootFeatureDes
+
+new Task flyingFootTask
+flyingFootTask.add flyingFootFeature
+set flyingFootTask.controlGain .5
+
+plug mainContact.footPosition flyingFootFeature.position
+plug mainContact.jacobian flyingFootFeature.Jq
+
+
+# --- WHICH FOOT?
+new WhichFootUpper wfu
+plug attitudeSensor.out wfu.worldRsensor
+plug dyn2.chest wfu.waistMsensor
+plug dyn2.lleg wfu.waistMlfoot
+plug dyn2.rleg wfu.waistMrfoot
+
+
+# --- DEBUG
+set mainContact.selec 1

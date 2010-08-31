@@ -1,0 +1,45 @@
+set forceCompRH.precompensation [6](0,0,0,0,0,0)
+set forceCompRH.handRsensor [3,3]((0,-1,0),(1,0,0),(0,0,1))
+set forceCompRH.sensorCom [3](0,0,-0.05)
+set forceCompRH.gravity [6](0.000000,0.000000,-11.2345,0.000000,0.000000,0.000000)
+set forceCompRH.gain [6,6]((1,0,0,0,0,0),(0,1,0,0,0,0),(0,0,1,0,0,0),(0,0,0,1,0,0),(0,0,0,0,1,0),(0,0,0,0,0,1))
+
+
+# Position COM [-0.0041   -0.0012    0.1071]
+# Position Sensor [ 0.005 0   -0.05925 ]
+# Sensor->com -0.0009    0.0012   -0.0479
+set forceCompRH.sensorCom [3](-0.0009,0.0012,-0.0479)
+# After "calibration" 
+set forceCompRH.sensorCom [3](-0.0009,0.000,-0.03428)
+
+
+set forceCompRH.gravity [6](0.000000,0.000000,0,0.000000,0.000000,0.000000)
+
+
+# --- Simu of forces
+
+# new Inverse<matrixhomo> fridgeMw
+# plug featureT1des.position fridgeMw.in
+# 
+# new Multiply<matrixhomo> springrefM4
+# plug fridgeMw.out springrefM4.in1
+# set springrefM4.in2 [4,4]((-0.066716,-0.674705,-0.735066,0.365623),(-0.132683,0.736163,-0.663671,-0.305074),(0.988911,0.053253,-0.138636,0.952690),(0.000000,0.000000,0.000000,1.000000))
+# new MatrixHomoToPoseUTheta springref
+# plug springrefM4.out springref.in
+# 
+# new Multiply<matrixhomo> springposM4
+# plug fridgeMw.out springposM4.in1
+# plug rh.position springposM4.in2
+# new MatrixHomoToPoseUTheta springpos
+# plug springposM4.out springpos.in
+# 
+# new VirtualSpring fridgeDoor
+# plug springpos.out fridgeDoor.in1
+# plug springref.out fridgeDoor.in2
+# 
+# fridgeDoor.spring 13
+# 
+# # plug fridgeDoor.out p5.errorIN
+# 
+
+

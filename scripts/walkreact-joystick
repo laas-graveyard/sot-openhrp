@@ -1,0 +1,27 @@
+loadPlugin sotStepChecker.so
+loadPlugin sotStepObserver.so
+loadPlugin sotStepQueue.so
+loadPlugin sotStepComputerForce.so
+loadPlugin sotStepComputerJoystick.so
+loadPlugin sotPGManager.so
+loadPlugin sotStepTimeLine.so
+
+new StepQueue stepqueue
+new StepComputerJoystick stepcomp
+new PGManager steppg
+new TimeLine stepper
+
+stepper.setComputer stepcomp
+stepper.setPGManager steppg
+stepper.setQueue stepqueue
+
+plug pg.SupportFoot stepcomp.contactfoot
+
+# Emergency box: in case of bug, break the commentary and check.
+# stepper.position
+# signalTime stepper.position
+
+steppg.initPg pg
+
+OpenHRP.periodicCall addSignal stepper.trigger
+OpenHRP.periodicCall addSignal stepcomp.laststep

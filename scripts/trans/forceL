@@ -1,0 +1,173 @@
+# --- COMPENSATOR --------------------------------------
+OpenHRP.withForces 3 1
+# flex.fromSensor true
+
+dyn.createOpPoint lh 29
+
+new ForceCompensation forceCompLH
+new HomoToRotation dynL0
+plug dyn.lh dynL0.in
+plug dynL0.out forceCompLH.worldRhand
+
+set forceCompLH.handRsensor [3,3]((0,-1,0),(1,0,0),(0,0,1))
+set forceCompLH.sensorCom [3](-0.0014,-0.0002,-0.0492)
+set forceCompLH.gravity [6](0,0,8.123,0,0,0)
+set forceCompLH.precompensation [6](0,0,-8.123,0,0,0)
+set forceCompLH.gain [6,6]((1,0,0,0,0,0),(0,1,0,0,0,0),(0,0,1,0,0,0),(0,0,0,1,0,0),(0,0,0,0,1,0),(0,0,0,0,0,1))
+plug OpenHRP.forceLARM forceCompLH.torsorIN
+
+set forceCompLH.handRsensor [3,3]((-0.006974,0.999941,-0.008314),(-0.999971,-0.006999,-0.003035),(-0.003093,0.008292,0.999961))
+set forceCompLH.sensorCom [3](-0.007344,0.002032,-0.056875)
+set forceCompLH.gravity [6](0.000000,0.000000,-7.549534,0.000000,0.000000,0.000000)
+set forceCompLH.precompensation [6](0.051527,0.014499,-7.765811,-0.026816,-0.012762,0.009432)
+set forceCompLH.gain [6,6]((0.967215,0.029859,-0.005151,0.007785,-0.022751,-0.007732),(0.060399,0.931184,-0.006023,-0.001417,-0.012057,-0.014547),(0.014836,0.007710,0.920917,-0.002170,0.027226,0.021693),(0.002632,-0.001722,-0.010401,1.005000,-0.054465,0.004423),(0.002477,0.001405,0.000243,0.027431,1.057776,-0.018932),(0.009730,-0.001903,-0.000062,0.044522,-0.020750,0.997853))
+
+set forceCompLH.deadZoneLimit [6](.8,.8,.8,.04,.04,.04)
+
+
+
+# --- INTEGRATOR --------------------------------------
+
+new IntegratorForceExact forceIntLH
+new MassApparent massLH
+
+new Selec<matrix> JLHact
+JLHact.jselec 6 36
+JLHact.iselec 0 6
+plug dyn.Jlh JLHact.in
+plug JLHact.out massLH.jacobian 
+plug Ainv.out massLH.inertiaInverse
+# plug Aact.out massLH.inertia
+plug massLH.massInverse forceIntLH.massInverse
+
+plug friction.out forceIntLH.friction
+plug forceCompLH.torsorNullified forceIntLH.force
+
+# --- TASK FORCE --------------------------------------
+new FeatureGeneric p3LH
+plug dyn.Jlh p3LH.jacobianIN
+
+new Task taskForceLH
+taskForceLH.add p3LH
+set p3LH.selec ...1
+set p3LH.sdes 
+plug forceIntLH.velocity p3LH.errorIN
+p3LH.dimDefault 6
+
+set taskForceLH.controlGain -1
+
+# --- Weighted STACK ----------------------------------
+wsot.push taskForceLH
+
+# --- Modify the jacobian of the contact point: 8cm further
+new OpPointModifior forceContactPointLH
+compute contactPoint.out
+forceContactPointLH.transfoSignal contactPoint.out
+squeeze p3LH.jacobianIN forceContactPointLH.jacobianIN forceContactPointLH.jacobian
+
+plug p3.jacobian JLHact.in
+
+# --- VIRTUAL SPRING -------------
+
+new MatrixDiagonal spr_KwaistL
+spr_KwaistL.resize 6 6
+set spr_KwaistL.in [6] (0,0,200,0,0,0)
+
+new HomoToRotation spr_waistRL
+plug dyn2.lh spr_waistRL.in
+new Compose<R+T> spr_waistHL
+plug spr_waistRL.out spr_waistHL.in1
+set spr_waistHL.in2 [3](0,0,0)
+new HomoToTwist spr_waistVhandL
+plug spr_waistHL.out spr_waistVhandL.in
+
+new Inverse<matrixrotation> spr_LRwaist
+plug spr_waistRL.out spr_LRwaist.in
+new Compose<R+T> spr_LHwaist
+plug spr_LRwaist.out spr_LHwaist.in1
+set spr_LHwaist.in2 [3](0,0,0)
+new HomoToTwist spr_handVwaistL
+plug spr_LHwaist.out spr_handVwaistL.in
+
+new Multiply<matrix> spr_tmpL
+plug spr_KwaistL.out spr_tmpL.in1
+plug spr_waistVhandL.out spr_tmpL.in2
+
+new Multiply<matrix> spr_KL
+plug spr_handVwaistL.out spr_KL.in1
+plug spr_tmpL.out spr_KL.in2
+
+new Inverse<matrixhomo> spr_invpos0L
+
+proc zerohandswaistL
+-> plug dyn2.lh spr_invpos0L.in
+-> compute spr_invpos0L.out
+-> freeze spr_invpos0L.in
+endproc
+
+zerohandswaistL
+
+new Multiply<matrixhomo> spr_0handL
+plug spr_invpos0L.out spr_0handL.in1
+plug dyn2.lh spr_0handL.in2
+
+new MatrixHomoToPoseRollPitchYaw spr_mhL
+plug spr_0handL.out spr_mhL.in
+
+new Multiply<vector,matrix> spr_invforceL
+plug spr_mhL.out spr_invforceL.in1
+plug spr_KL.out spr_invforceL.in2
+
+new Substract<vector> spr_forceL
+plug forceCompLH.torsorNullified spr_forceL.in1
+plug spr_invforceL.out spr_forceL.in2
+
+# --- DEBUG -------------------------------------------
+# tr.add dyn.lh
+# tr.add forceCompLH.torsorIN torsorINLH
+# tr.add forceCompLH.torsor torsorLH
+# tr.add forceCompLH.torsorNullified torsorNullifiedLH
+# tr.add forceIntLH.velocity velocityLH
+# OpenHRP.periodicCallAfter addSignal taskForceLH.task
+
+
+
+
+
+# --- TASKL -------------------------------------------
+# --- TASKL -------------------------------------------
+# --- TASKL -------------------------------------------
+
+
+new FeaturePoint6d p6lh
+new FeaturePoint6d p6dlh
+
+new Compose<R+T> complh
+new MatrixConstant eye3lh
+eye3lh.resize 3 3
+eye3lh.eye
+plug eye3lh.out complh.in1
+new VectorConstant tlh
+tlh.resize 3
+tlh.[] 0 0.25
+tlh.[] 1 -0.5
+tlh.[] 2 .85
+plug tlh.out complh.in2
+
+plug complh.out p6dlh.position
+plug dyn.Jlh p6lh.Jq
+plug dyn.lh p6lh.position
+set p6lh.sdes p6dlh
+
+new Task tasklh
+tasklh.add p6lh
+set tasklh.controlGain .2
+
+eye3lh.[] 0 0 0
+eye3lh.[] 2 2 0
+eye3lh.[] 0 2 -1
+eye3lh.[] 2 0 1
+
+
+# set p6lh.selec 1
+# set forceCompLH.torsor [6](0,0,0,0,0,0)

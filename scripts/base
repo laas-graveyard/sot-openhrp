@@ -1,0 +1,2 @@
+loadPlugin shell-functions.so /usr/local/lib/plugin
+loadPlugins /usr/local/script/plugin.txt

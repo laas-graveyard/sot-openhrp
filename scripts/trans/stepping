@@ -1,0 +1,6 @@
+stepcomp.thisIsZero record
+# stepper.stepmodificationmode change
+pg.parsecmd :onlinechangestepframe relative
+
+# INSIMU set forceCompLH.torsor [6](0,0,0,0,0,0)
+# set forceCompRH.torsor [6](0,0,0,0,0,0)

@@ -1,0 +1,2 @@
+dyn2.setFiles /home/blue/sot-lib//share/hrp2_14/ HRP2JRLmain.wrl /home/blue/sot-lib//share/hrp2_14/HRP2Specificities.xml /home/blue/sot-lib//share/hrp2_14/HRP2LinkJointRank.xml 
+dyn.setFiles /home/blue/sot-lib//share/hrp2_14/ HRP2JRLmain.wrl /home/blue/sot-lib//share/hrp2_14/HRP2Specificities.xml /home/blue/sot-lib//share/hrp2_14/HRP2LinkJointRank.xml 

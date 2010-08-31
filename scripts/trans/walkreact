@@ -1,0 +1,76 @@
+loadPlugin next-step.so
+loadPlugin next-step-pg-sot.so
+
+
+# --- Configure stepper --------------------------
+
+new NextStepPgSot stepper
+
+dyn2.createOpPoint 0 22
+
+# stepper.verbose
+plug pg.SupportFoot stepper.contactfoot
+plug dyn.lh stepper.positionLeft
+plug dyn.0 stepper.positionRight
+plug dyn.lleg stepper.leftfoot
+plug dyn.rleg stepper.rightfoot
+
+OpenHRP.periodicCall addSignal stepper.position2handLeft
+OpenHRP.periodicCall addSignal stepper.position2handRight
+compute stepper.posrefleft
+compute stepper.posrefright
+# Emergency box: in case of bug, break the commentary and check.
+# stepper.position
+# signalTime stepper.position
+stepper.thisIsZero record
+stepper.initPg pg
+
+
+# --- Configure constraints ----------------------
+
+# new Selector footselec
+# footselec.reset 2 1
+# footselec.create matrix Jcontact 0
+# plug dyn2.Jrleg footselec.Jcontact0
+# plug dyn2.Jlleg footselec.Jcontact1
+# plug pg.SupportFoot footselec.selec
+
+# legs.clear
+# legs.add footselec.Jcontact
+
+# sot.clear
+# sot.push taskLegs
+# sot.addConstraint legs
+
+
+# --- Go init walking ----------------------------
+
+# new Inverse<matrixhomo> waHho
+# plug dyn2.0 waHho.in
+# compute waHho.out
+# freeze waHho.in
+
+# dyn.createOpPoint wa 0
+# compute dyn.wa
+
+# new Multiply<matrixhomo> lfHho
+# plug dyn.wa lfHho.in1
+# plug waHho.out lfHho.in2
+
+# new Add<vector> addp6
+# plug task.task addp6.in1
+# plug lfHho.out p6d.position
+# set p6.selec 111111
+# p6.frame current
+# gain.set .1 .1 1
+
+# proc goinit(start,rh)
+# -> squeeze p3.errorIN addp6.in2 addp6.out
+# endproc
+# proc goinit(stop,rh)
+# -> plug forceInt.velocity p3.errorIN 
+# endproc
+
+
+# --- Add stepper to periodic callbacks ----------
+OpenHRP.periodicCall addSignal stepper.trigger

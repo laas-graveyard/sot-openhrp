@@ -1,0 +1,3 @@
+dyn2.setFiles sh: ARGS: not found/ HRP2JRLmainSmall.wrl sh: ARGS: not found/HRP2SpecificitiesSmall.xml sh: ARGS: not found/HRP2LinkJointRankSmall.xml
+dyn.setFiles sh: ARGS: not found/ HRP2JRLmainSmall.wrl sh: ARGS: not found/HRP2SpecificitiesSmall.xml sh: ARGS: not found/HRP2LinkJointRankSmall.xml
+
