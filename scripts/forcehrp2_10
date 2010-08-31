@@ -1,0 +1,264 @@
+# --- COMPENSATOR --------------------------------------
+OpenHRP.withForces 2 1
+# flex.fromSensor true
+
+new ForceCompensation forceCompRH
+new HomoToRotation dynR0
+plug dyn.0 dynR0.in
+plug dynR0.out forceCompRH.worldRhand
+set forceCompRH.handRsensor [3,3]((0,-1,0),(1,0,0),(0,0,1))
+set forceCompRH.sensorCom [3](-0.0014,-0.0002,-0.0492)
+set forceCompRH.gravity [6](0,0,8.123,0,0,0)
+set forceCompRH.precompensation [6](0,0,-8.123,0,0,0)
+set forceCompRH.gain [6,6]((1,0,0,0,0,0),(0,1,0,0,0,0),(0,0,1,0,0,0),(0,0,0,1,0,0),(0,0,0,0,1,0),(0,0,0,0,0,1))
+plug OpenHRP.forceRARM forceCompRH.torsorIN
+
+# Calibration matlab
+set forceCompRH.handRsensor [3,3]((-0.049539,-0.998663,0.014791),(0.998706,-0.049361,0.012208),(-0.011461,0.015376,0.999816))
+set forceCompRH.sensorCom [3](0.001661,0.000764,-0.061603)
+set forceCompRH.gravity [6](0.000000,0.000000,-7.549534,0.000000,0.000000,0.000000)
+set forceCompRH.precompensation [6](0.097471,-0.134576,-8.386698,0.054987,-0.005738,0.010460)
+set forceCompRH.gain [6,6]((0.972644,0.069590,-0.032887,0.003226,-0.003002,0.002842),(0.097777,1.001259,-0.010644,0.018129,0.025128,-0.015012),(0.019827,-0.027520,0.912513,0.000943,-0.007948,0.008085),(-0.003299,0.002122,0.004176,1.000073,0.000072,-0.000360),(-0.007839,-0.000010,-0.000616,0.003436,0.999820,0.000105),(0.000795,0.004552,-0.000276,-0.000568,-0.000016,1.000111))
+
+# --- HRP2010
+set forceCompRH.handRsensor [3,3]((-0.049539,-0.998663,0.014791),(0.998706,-0.049361,0.012208),(-0.011461,0.015376,0.999816))
+set forceCompRH.sensorCom [3](-0.008103,0.003139,-0.061603)
+set forceCompRH.gravity [6](0.000000,0.000000,-7.549534,0.000000,0.000000,0.000000)
+set forceCompRH.precompensation [6](0.207405,-0.308784,-8.223781,0.037480,-0.006194,0.007400)
+set forceCompRH.gain [6,6]((0.972756,0.059342,-0.029091,-0.120700,-0.318432,-0.063118),(0.075200,1.005227,-0.032487,0.003207,0.000092,0.004246),(0.051881,-0.057023,0.921242,0.048130,0.113601,0.012842),(-0.003277,0.005392,0.011158,0.994276,-0.005440,-0.000610),(-0.007390,-0.000380,-0.002616,0.000702,0.999456,0.000408),(-0.009958,0.005155,0.000373,0.000159,-0.000634,0.998751))
+
+# --- HRP2014
+set forceCompRH.handRsensor [3,3]((0.000000,-1.000000,-0.000000),(1.000000,0.000000,0.000000),(0.000000,-0.000000,1.000000))
+set forceCompRH.sensorCom [3](0.007308,0.005201,-0.061763)
+set forceCompRH.gravity [6](0.000000,0.000000,-8.283830,0.000000,0.000000,0.000000)
+set forceCompRH.precompensation [6](0.305863,0.107739,-8.379049,0.062465,0.065519,0.017288)
+set forceCompRH.gain [6,6]((1.000000,0.000000,0.000000,0.000000,0.000000,0.000000),(0.000000,1.000000,0.000000,0.000000,0.000000,0.000000),(0.000000,0.000000,1.000000,0.000000,0.000000,0.000000),(0.000000,0.000000,0.000000,1.000000,0.000000,0.000000),(0.000000,0.000000,0.000000,0.000000,1.000000,0.000000),(0.000000,0.000000,0.000000,0.000000,0.000000,1.000000))
+
+
+# new Add<vector> forcePlusMass
+# set forcePlusMass.in2 [6](0,0,-8,0,0,0)
+# squeeze forceCompRH.torsorIN forcePlusMass.in1 forcePlusMass.out
+# tr.add forceCompRH.torsor
+
+# set forceCompRH.deadZoneLimit [6](.8,.8,.8,.04,.04,.04)
+set forceCompRH.deadZoneLimit [6](.8,.8,.8,.1,.1,.1)
+
+# --- INERTIA INVERSE: WARNING - EXPENSIVE THING ------
+
+new Selec<matrix> Aact
+Aact.jselec 6 48
+Aact.iselec 6 48
+plug dyn.inertia Aact.in
+
+new Inverse<matrix> Ainv
+plug Aact.out Ainv.in
+
+
+# --- INTEGRATOR --------------------------------------
+new IntegratorForceExact forceInt
+
+new MassApparent massRH
+
+new Selec<matrix> JRHact
+JRHact.jselec 6 38
+JRHact.iselec 0 6
+plug dyn.J0 JRHact.in
+plug JRHact.out massRH.jacobian 
+
+# plug Aact.out massRH.inertia
+plug Ainv.out massRH.inertiaInverse
+plug massRH.massInverse forceInt.massInverse
+# plug massRH.mass forceInt.mass
+
+new MatrixDiagonal friction
+friction.resize 6 6
+# for i=0:6 friction.[] i i 150
+set friction.in [6](150,150,150,150,150,150)
+set friction.in [6](150,150,150,20,20,20)
+plug friction.out forceInt.friction
+
+plug forceCompRH.torsorNullified forceInt.force
+
+# --- TASK FORCE --------------------------------------
+new FeatureGeneric p3
+plug dyn.J0 p3.jacobianIN
+
+new Task taskForce
+taskForce.add p3
+set p3.selec ...1
+set p3.sdes 
+plug forceInt.velocity p3.errorIN
+set taskForce.controlGain -.4
+p3.dimDefault 6
+
+set taskForce.controlGain -1
+set friction.in [6](150,150,150,.7,.7,.7)
+
+# taskForce.selec 16:21
+
+# plug dyn.inertia massRH.inertia
+# plug dyn.J0 massRH.jacobian
+Aact.jselec 6 38
+Aact.iselec 6 38
+JRHact.jselec 6 38
+JRHact.iselec 0 6
+
+# --- Weighted STACK ----------------------------------
+new WSOT wsot
+set wsot.damping .01
+# wsot.addConstraint legs
+
+sot.clearConstraint
+sot.clear
+sot.push task
+
+plug dyn.inertia wsot.weight
+# plug wsot.control OpenHRP.control
+set task.controlGain .1
+
+set p6.selec 111
+# task.unselec :
+# task.selec 16:21
+# task.selec 12:13
+
+# taskForce.unselec :
+# taskForce.selec 18:21
+
+wsot.nbJoints 38
+# wsot.push task
+wsot.push taskForce
+
+# --- Modify the jacobian of the contact point: 8cm further
+new OpPointModifior forceContactPoint
+new Compose<R+T> contactPoint
+new MatrixConstant contactPointRotation
+contactPointRotation.resize 3 3
+contactPointRotation.eye
+plug contactPointRotation.out contactPoint.in1
+new VectorConstant contactPointPosition
+contactPointPosition.resize 3
+contactPointPosition.[] 2 -0.2
+plug contactPointPosition.out contactPoint.in2
+compute contactPoint.out
+forceContactPoint.transfoSignal contactPoint.out
+squeeze p3.jacobianIN forceContactPoint.jacobianIN forceContactPoint.jacobian
+
+# --- MODIFY the inertia to account for the rotors
+plug dyn.inertiaReal Aact.in
+
+# ---- REDUCED Force to 3dim
+plug p3.jacobian JRHact.in
+# JRHact.iselec 0 3
+# p3.dimDefault 6
+# new Selec<vector> forceact
+# squeeze forceInt.force forceact.in forceact.out
+# forceact.selec 0 3
+# friction.resize 3 3
+# # set friction.in [3](50,50,50)
+# # set taskForce.controlGain -.4
+# set friction.in [3](20,20,20)
+# set taskForce.controlGain -.2
+# 
+dyn.debugInertia grip
+
+
+# --- VIRTUAL SPRING -------------
+
+new MatrixDiagonal spr_Kwaist
+spr_Kwaist.resize 6 6
+set spr_Kwaist.in [6](0,0,200,0,0,0)
+
+new HomoToRotation spr_waistR0
+plug dyn2.0 spr_waistR0.in
+new Compose<R+T> spr_waistH0
+plug spr_waistR0.out spr_waistH0.in1
+set spr_waistH0.in2 [3](0,0,0)
+new HomoToTwist spr_waistVhand
+plug spr_waistH0.out spr_waistVhand.in
+
+new Inverse<matrixrotation> spr_0Rwaist
+plug spr_waistR0.out spr_0Rwaist.in
+new Compose<R+T> spr_0Hwaist
+plug spr_0Rwaist.out spr_0Hwaist.in1
+set spr_0Hwaist.in2 [3](0,0,0)
+new HomoToTwist spr_handVwaist
+plug spr_0Hwaist.out spr_handVwaist.in
+
+new Multiply<matrix> spr_tmp
+plug spr_Kwaist.out spr_tmp.in1
+plug spr_waistVhand.out spr_tmp.in2
+
+new Multiply<matrix> spr_K
+plug spr_handVwaist.out spr_K.in1
+plug spr_tmp.out spr_K.in2
+
+new Inverse<matrixhomo> spr_invpos0
+
+proc zerohandswaist
+-> plug dyn2.0 spr_invpos0.in
+-> compute spr_invpos0.out
+-> freeze spr_invpos0.in
+endproc
+
+zerohandswaist
+
+new Multiply<matrixhomo> spr_0hand
+plug spr_invpos0.out spr_0hand.in1
+plug dyn2.0 spr_0hand.in2
+
+new MatrixHomoToPoseRollPitchYaw spr_mh
+plug spr_0hand.out spr_mh.in
+
+new Multiply<vector,matrix> spr_invforce
+plug spr_mh.out spr_invforce.in1
+plug spr_K.out spr_invforce.in2
+
+new Substract<vector> spr_force
+plug forceCompRH.torsorNullified spr_force.in1
+plug spr_invforce.out spr_force.in2
+
+# --- DEBUG -------------------------------------------
+# compute force.mass
+# freeze force.mass
+
+# flex.fromSensor true
+# plug zeroCom.out OpenHRP.control
+# tr.clear
+# tr.add dyn.position
+# tr.add dyn.0
+# tr.add forceCompRH.torsorIN
+# tr.add forceCompRH.torsor
+# tr.add forceCompRH.torsorNullified
+# tr.add forceInt.velocity
+# tr.add forceInt.velocityDerivative
+# tr.add wsot.control
+# OpenHRP.periodicCallBefore addSignal taskForce.task
+
+t.[] 2 .65
+
+# set p6.selec 111000
+# wsot.push task
+
+
+# --- FORCE comp in simu
+
+# set forceCompRH.gain [6,6]((1,0,0,0,0,0),(0,1,0,0,0,0),(0,0,1,0,0,0),(0,0,0,1,0,0),(0,0,0,0,1,0),(0,0,0,0,0,1))
+# set forceCompRH.precompensation [6](0,0,0,0,0,0)
+# set forceCompRH.handRsensor [3,3]((1,0,0),(0,1,0),(0,0,1))
+# set forceCompRH.handRsensor [3,3]((0,-1,0),(1,0,0),(0,0,1))
+
+# Position COM [-0.0041   -0.0012    0.1071]
+# Position Sensor [ 0.005 0   -0.05925 ]
+# Sensor->com -0.0009    0.0012   -0.0479
+# set forceCompRH.sensorCom [3](-0.0009,0.0012,-0.0479)
+# After "calibration" 
+# set forceCompRH.sensorCom [3](-0.0007,-0.0002,-0.0341)
+# set forceCompRH.gravity [6](0.000000,0.000000,-11.2417,0.000000,0.000000,0.000000)
+
+# set forceCompRH.deadZoneLimit [6](2,2,2,.1,.1,.1)
+# In case of emergency set forceCompRH.torsor [6](0,0,0,0,0,0)
+
+# --- Zero force vector
+new VectorConstant zeroForce
+zeroForce.resize 6
+zeroForce.fill 0

@@ -1,0 +1,136 @@
+run /home/nmansard/src/StackOfTasks/script/dynsmall
+run /home/nmansard/src/StackOfTasks/script/tracesDebug
+
+plug sot.control OpenHRP.control
+plug OpenHRP.state dyn.position
+plug OpenHRP.state dyn2.position
+plug OpenHRP.attitude posKF.attitudeIN
+plug OpenHRP.attitude flex.sensorWorldRotation
+
+run /home/nmansard/src/StackOfTasks/script/small
+
+# --- TASK UNILATERAL ---
+loadPlugin sotTaskUnilateral.so
+new TaskUnilateral taskuJl
+
+new Selec<vector> jl
+jl.selec 6 36
+plug dyn.position jl.in
+new Selec<vector> jlinf
+jlinf.selec 6 36
+plug dyn.lowerJl jlinf.in
+new Selec<vector> jlsup
+jlsup.selec 6 36
+plug dyn.upperJl jlsup.in
+
+plug jl.out taskuJl.position
+plug jlinf.out taskuJl.referenceInf
+plug jlsup.out taskuJl.referenceSup
+
+set taskuJl.dt 0.005
+set taskuJl.jacobian [30,36]((0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1))
+
+new Selec<vector> j
+plug featureJl.joint j.in
+j.selec 18 20
+new Selec<vector> jlr
+plug featureJl.lowerJl jlr.in
+jlr.selec 18 20
+new Selec<vector> jur
+plug featureJl.upperJl jur.in
+jur.selec 18 20
+new Selec<vector> jn
+plug featureJl.error jn.in
+jn.selec 12 14
+
+OpenHRP.periodicCall addSignal j.out
+OpenHRP.periodicCall addSignal jlr.out
+OpenHRP.periodicCall addSignal jur.out
+OpenHRP.periodicCall addSignal jn.out
+
+proc show
+-> j.out
+-> jlr.out
+-> jur.out
+-> jn.out
+endproc
+
+# --- Stack of tasks --- 
+# --- Stack of tasks --- 
+# --- Stack of tasks --- 
+loadPlugin sotSOTH.so
+new SOTH soth
+soth.nbJoints 36
+
+# --- ICRA SETING
+# set featureComDes.errorIN [3](0.0041283,-0.0922963,0.67465)
+# set task.controlGain 2
+# t.[] 0 .7
+# t.[] 2 1
+# set soth.damping .01
+proc icraNext
+-> t.[] 0 -.3
+-> t.[] 2 1.2
+-> set soth.damping 1e-15
+-> set task.controlGain 2
+-> set taskCom.controlGain 2
+endproc
+# ! --- ICRA SETING
+
+# --- TRACES
+tr.add dyn.position
+tr.add soth.control
+tr.add task.task taskHand
+tr.add taskCom.task taskCom
+OpenHRP.periodicCall addSignal featureJl.error
+tr.add featureJl.error jointN
+tr.add taskuJl.task taskJl
+
+# t.[] 2 .8
+# t.[] 0 1
+# t.[] 0 0.03234
+t.[] 1 -.426
+# t.[] 2 .6
+t.[] 0 -.3
+t.[] 2 1.2
+set taskCom.controlGain 2
+set task.controlGain 2
+set featureComDes.errorIN [3](0.0041283,-0.0922963,0.67465)
+set soth.damping 1e-1
+
+soth.fillMemorySignal 1
+soth.clear
+soth.clearConstraint
+soth.addConstraint legs
+soth.push taskuJl
+soth.push task
+soth.push taskCom
+soth.push taskTwofeet
+
+sot.clear
+sot.clearConstraint
+sot.addConstraint legs
+sot.push task
+sot.push taskCom
+sot.push taskTwofeet
+
+# plug sot.control controlsmall.in1
+# plug zeroCom.out controlsmall.in1
+plug soth.control controlsmall.in1
+
+proc start
+-> compute soth.control 1
+# -> tr.add task_memSOTH.JK J1
+# -> tr.add taskCom_memSOTH.JK J2
+# -> tr.add taskTwofeet_memSOTH.JK J3
+# -> tr.add task_memSOTH.diff diff1
+# -> tr.add taskCom_memSOTH.diff diff2
+# -> tr.add taskTwofeet_memSOTH.diff diff3
+-> tr.add featureJl.error
+-> tr.start
+-> OpenHRP.play
+endproc
+
+
+start
+

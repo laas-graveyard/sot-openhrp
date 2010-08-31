@@ -1,0 +1,65 @@
+OpenHRP.withForces 2 1
+OpenHRP.periodicCall addSignal dyn.0
+flex.fromSensor true
+
+
+# --- MOTION --- 
+new FeatureGeneric j
+new FeatureGeneric jdes
+plug dyn.position j.errorIN
+set j.sdes jdes
+new MatrixConstant eye36
+eye36.resize 36 36
+eye36.eye
+plug eye36.out j.jacobianIN 
+set j.selec 111000000000000000000000000
+new Task taskJ
+taskJ.add j
+taskJ.unselec :
+taskJ.selec 18:20
+set taskJ.controlGain 1
+sot.push taskJ
+
+new GainAdaptative jgain
+plug taskJ.error jgain.error
+plug jgain.gain taskJ.controlGain
+jgain.set 3 .5 10
+
+new VectorConstant jdesCst
+jdesCst.resize 36
+jdesCst.fill 0
+plug jdesCst.out jdes.errorIN
+
+sot.clear
+sot.clearConstraint
+sot.push taskJ
+
+
+# --- SCRIPTS ---
+proc show
+-> get dyn.0
+-> get OpenHRP.forceRARM
+-> get forceCompRH.torsorIN
+-> get forceCompRH.handRsensor
+endproc
+
+proc calibThenMov $axis $val
+-> OpenHRP.pause
+-> tr.start
+# -> forceCompRH.startCalibration wait 2
+-> sleep 1
+-> echo Calib data recorded!
+-> echo Move axis $axis to value $val
+-> jdesCst.[] $axis $val
+-> tr.stop
+-> OpenHRP.play
+endproc
+
+# --- TRACE ---
+tr.clear
+tr.add OpenHRP.forceRARM
+tr.add dyn.0
+tr.add jgain.gain
+
+# --- DEBUG ---
+jgain.set 8 .6 140

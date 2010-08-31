@@ -1,0 +1,90 @@
+echo C' est parti pour l' acceleration
+
+new PoseRollPitchYawToPoseUTheta ffposition
+plug flex.waistWorldPoseRPY ffposition.in
+
+# --------------------------------
+
+new Derivator<Vector> qdot
+plug dyn2.position qdot.in
+set qdot.dt 200
+
+new Derivator<Vector> qddot
+plug qdot.out qddot.in
+set qddot.dt 200
+
+new Derivator<Vector> ffdot
+plug ffposition.out ffdot.in
+set ffdot.dt 200
+
+new Derivator<Vector> ffddot
+plug ffdot.out ffddot.in
+set ffddot.dt 200
+
+plug qdot.out dyn.velocity
+plug qddot.out dyn.acceleration
+plug ffdot.out dyn.ffvelocity
+plug ffddot.out dyn.ffacceleration
+
+dyn.setProperty ComputeBackwardDynamics true
+dyn.createAcceleration acc0 22
+
+# --- KALMAN? --- 
+new Kalman kalmanFF
+plug ffposition.out kalmanFF.Ymes
+
+compute ffposition.out
+# kalmanFF.constantAcceleration 0.00001 20000
+# 1s delay kalmanFF.constantAcceleration 0.11 20
+kalmanFF.constantAcceleration 0.007 4000
+
+new Selec<vector> kalmanFFV
+plug kalmanFF.Xest kalmanFFV.in
+kalmanFFV.selec 6 12
+
+new Derivator<Vector> kffddot
+plug kalmanFFV.out kffddot.in
+set kffddot.dt 200
+
+# plug kalmanFFV.out dyn.ffvelocity
+# plug kffddot.out dyn.ffacceleration
+
+OpenHRP.periodicCall addSignal kffddot.out
+
+tr.add dyn.acc0
+tr.add ffddot.out  ffddot
+tr.add ffdot.out  ffdot
+tr.add qddot.out  qddot
+tr.add qdot.out  qdot
+tr.add ffposition.out ff
+tr.add OpenHRP.attitude
+tr.add flex.waistWorldPoseRPY flex
+tr.add kalmanFF.Xest
+tr.add kalmanFFV.out kffd
+tr.add kffddot.out kffdd
+
+OpenHRP.periodicCall addSignal dyn.acc0
+
+
+new Multiply<vector,matrix> v0
+plug dyn.J0 v0.in2
+new Stack<vector> qffdot
+plug dyn.ffvelocity qffdot.in1
+plug dyn.velocity qffdot.in2
+qffdot.selec1 0 6
+qffdot.selec2 6 38
+plug qffdot.out v0.in1
+tr.add v0.out v0
+OpenHRP.periodicCall addSignal v0.out
+
+plug v0.out forceCompRH.velocity
+plug dyn.acc0 forceCompRH.acceleration
+plug forceCompRH.momentum forceCompRH.momentumIN
+
+
+# --- INTERTIA 
+set forceCompRH.inertiaJoint [6,6]((1.146470,0.000000,0.000000,0.000000,-0.107137,-0.001231),(0.000000,1.146470,0.000000,0.107137,0.000000,0.004141),(0.000000,0.000000,1.146470,0.001231,-0.004141,-0.000000),(0.000000,0.107137,0.001231,0.013376,-0.000029,0.000544),(-0.107137,-0.000000,-0.004141,-0.000029,0.013432,0.000106),(-0.001231,0.004141,0.000000,0.000544,0.000106,0.000964))
+set forceCompRH.sensorJoint [3](-0.005,0,0.05925)
+
+
+

@@ -1,0 +1,81 @@
+new FeaturePoint6d o6_r
+new FeaturePoint6d o6d_r
+
+# get position of the hand
+new MatrixHomoToPoseQuaternion rhandposquat
+plug dyn.0 rhandposquat.in
+new Selec<vector> rhandpos
+plug rhandposquat.out rhandpos.in
+rhandpos.selec 0 3
+compute rhandpos.out
+
+new Compose<R+T> Hd_r
+plug eye3.out Hd_r.in1
+plug rhandpos.out Hd_r.in2
+
+plug Hd_r.out o6d_r.position
+plug dyn.J0 o6_r.Jq
+plug dyn.0 o6_r.position
+set o6_r.sdes o6d_r
+
+new Task taskRhand
+taskRhand.add o6_r
+new GainAdaptative gainRhand
+gainRhand.setConstant 0.7
+plug taskRhand.error gainRhand.error
+plug gainRhand.gain taskRhand.controlGain
+
+set o6_r.selec 110001
+o6_r.frame current
+
+# ---
+
+new FeaturePoint6d o6_l
+new FeaturePoint6d o6d_l
+
+# get position of the hand
+new MatrixHomoToPoseQuaternion lhandposquat
+plug dyn.lh lhandposquat.in
+new Selec<vector> lhandpos
+plug lhandposquat.out lhandpos.in
+lhandpos.selec 0 3
+compute lhandpos.out
+
+new Compose<R+T> Hd_l
+plug eye3.out Hd_l.in1
+plug lhandpos.out Hd_l.in2
+
+plug Hd_l.out o6d_l.position
+plug dyn.Jlh o6_l.Jq
+plug dyn.lh o6_l.position
+set o6_l.sdes o6d_l
+
+new Task taskLhand
+taskLhand.add o6_l
+new GainAdaptative gainLhand
+gainLhand.setConstant 0.7
+plug taskLhand.error gainLhand.error
+plug gainLhand.gain taskLhand.controlGain
+
+set o6_l.selec 110001
+o6_l.frame current
+
+
+# --- traces --- #
+
+# tr.clear
+# tr.add taskRhand.error rhand
+# tr.add taskLhand.error lhand
+# tr.add taskRhand.task taskrhand
+# tr.add taskLhand.task tasklhand
+# tr.add taskRhand.jacobian Jr
+# tr.add taskLhand.jacobian Jl
+# tr.add sot.control sotcontrol
+# tr.start
+
+proc zeroaltitude
+-> plug dyn.lh rhandposquat.in
+-> freeze rhandposquat.in
+-> plug dyn.lh lhandposquat.in
+-> freeze lhandposquat.in
+endproc

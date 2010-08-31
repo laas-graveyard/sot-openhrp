@@ -1,0 +1,17 @@
+new Stack<vector> possmall
+set possmall.in1 [6](0,0,0,0,0,0)
+possmall.selec1 0 6
+possmall.selec2 0 30
+plug OpenHRP.motorcontrol possmall.in2
+compute possmall.out
+
+new Stack<vector> controlsmall
+set controlsmall.in2 [10](0,0,0,0,0,0,0,0,0,0)
+controlsmall.selec1 0 30
+controlsmall.selec2 0 10
+
+plug possmall.out dyn.position
+plug possmall.out dyn2.position
+squeeze OpenHRP.control controlsmall.in1 controlsmall.out
+
+sot.nbJoints 38
