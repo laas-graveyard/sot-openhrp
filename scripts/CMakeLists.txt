@@ -144,13 +144,20 @@ ENDIF(GENERATE_DYNFILES)
 SOT_GENERATE_SCRIPT(${listofscripttocreate})
 
 # --- INSTALL ----------------------------------------
-SOT_INSTALL_SCRIPT(acc
+SOT_INSTALL_SCRIPT(
+			acc
+			acchrp2_10
 		   calib
+		   calibhrp2_10
 		   dynsmallpart2
+		   dynsmallpart2hrp2_10
 		   force
+		   forcehrp2_10
 		   forceL
+		   forceLhrp2_10
 		   forceSimu
 		   grip
+		   griphr2_10
 		   handsAltitude
 		   hwpginitframes
 		   jointlimit
