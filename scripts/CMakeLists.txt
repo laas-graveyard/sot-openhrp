@@ -164,12 +164,16 @@ SOT_INSTALL_SCRIPT(
 		   pgcom
 		   selector
 		   small
+		   smallhrp2_10
 		   smallmc
+		   smallmchrp2_10
 		   traj
 		   walkreact
 		   stepping
 		   taskPosture
+		   taskPosturehrp2_10
 		   clamp-workspace
+		   sothhrp2_10
 )
 
 # --- COLLISION --------
