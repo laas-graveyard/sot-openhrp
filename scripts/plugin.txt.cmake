@@ -1,5 +1,5 @@
 feature-visual-point${DYN_LIB_EXT}
-gain-adaptative${DYN_LIB_EXT}
+gain-adaptive${DYN_LIB_EXT}
 gain-hyperbolic${DYN_LIB_EXT}
 matrix-constant${DYN_LIB_EXT}
 vector-constant${DYN_LIB_EXT}
