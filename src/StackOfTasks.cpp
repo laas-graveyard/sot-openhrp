@@ -14,8 +14,8 @@
 /* --- INCLUDE -------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
-//#define VP_DEBUG 
-//#define VP_DEBUG_MODE 40
+#define VP_DEBUG 
+#define VP_DEBUG_MODE 40
 #define SOT_CHECK_TIME
 #include "StackOfTasks.h"              /* Header of the below-defined class. */
 
@@ -26,6 +26,8 @@
 
 #include <sot-core/debug.h>
 #include <sot-core/exception-abstract.h>
+
+#define SOT_DEBUG(x) std::cout
 
 using namespace dynamicgraph;
 using namespace std;
@@ -347,6 +349,8 @@ m_script( istringstream &strm )
   try {
     g_shell.cmd( cmdLine,strm, std::cout );
   } catch( const ExceptionAbstract& e ) { std::cout << "!! " << e <<endl; }
+	catch ( std::exception& e ) { std::cout << "!! " << e.what() << endl; }
+	catch ( ... ) { std::cout << "!! Caught unspecified error when trying to run script command" << std::endl; }
 
   sotDEBUGOUT(5);
 }
