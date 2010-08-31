@@ -1,0 +1,6 @@
+run /usr/local/script/base
+loadPlugin sotDynamicHrp2_10_old.so
+echo Creating the small dynamic for hrp-2 N10 small old
+new DynamicHrp2_10_old dyn
+new DynamicHrp2_10_old dyn2
+run /usr/local/script/dynfilessmallhrp2_10_old
