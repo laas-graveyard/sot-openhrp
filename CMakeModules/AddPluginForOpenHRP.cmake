@@ -80,7 +80,7 @@ ENDFOREACH(locidlfile)
 # --- C++ ------------------------------------------------------------------
 
 # --- C++ LIB GENERATION ---------------------------------------------------
-ADD_LIBRARY(${PluginBaseName} ${PLUGIN_SRCS})
+ADD_LIBRARY(${PluginBaseName} SHARED ${PLUGIN_SRCS})
 
 # --- TVMET DEPENDS ??? ---
 #FIND_PROGRAM(TVMET_CONFIG_EXECUTABLE NAMES tvmet-config PATHS /usr/local/)

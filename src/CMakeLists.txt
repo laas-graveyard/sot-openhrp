@@ -2,6 +2,9 @@
 #  Copyright 
 # 
 
+# Add MatrixAbstractLayer compilation flags and link to library libMatrixAbstractLayer.so
+ADD_DEFINITIONS(${MATRIXABSTRACTLAYER_CFLAGS})
+
 # -------------------------------------------------------------------
 # --- UTILS ---------------------------------------------------------
 # -------------------------------------------------------------------
@@ -32,7 +35,8 @@ ENDMACRO(LIST2STRING)
         SET(SOT_OPENHRP_PLUGIN_INSTALL_DIR "${OPENHRP_HOME}/Controller/IOserver/robot/${HRP_ROBOT_SPEC}/bin")
     ENDIF(INSTALL_IN_OPENHRP)
 
-file(MAKE_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/stubs)
+	# Create "stubs" directory before IDL generation
+	file(MAKE_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/stubs)
 
     # --- IDL GENERATION ---------------------------------------------------------------------
     INCLUDE(${CMAKE_MODULE_PATH}/AddPluginForOpenHRP.cmake)
@@ -46,10 +50,10 @@ file(MAKE_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/stubs)
     SET(PLUGINNAME_SRC ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGINBASENAME}.cpp)
     SET(PLUGINNAME_IDL "none")
     SET(PLUGINNAME_PATH ${${PROJECT_NAME}_BINARY_DIR}/stubs)
-    MESSAGE("link flags are ${${PROJECT_NAME}_LD_FLAGS}")
-    SET(PLUGINLINKS ${${PROJECT_NAME}_BINARY_DIR}/lib/libsot-core.so 
-    ${${PROJECT_NAME}_BINARY_DIR}/lib/libdynamic-graph.so
-    		    ${BOOST_THREAD_LIB_NAME} -pthread)
+ 	   SET(PLUGINLINKS 
+ 	    ${SOT_CORE_LDFLAGS}
+    	${MATRIXABSTRACTLAYER_LDFLAGS}
+    	${BOOST_THREAD_LIB_NAME} -pthread)
     SET(PLUGINDEPS ${OPENHRP_HOME}/Controller/IOserver/plugin/SequencePlayer/corba/SequencePlayer.idl)
     SET(PLUGINCOMPILE ${${PROJECT_NAME}_CXX_FLAGS}
     		      ${OPENHRP_CXX_FLAGS} 
@@ -61,9 +65,12 @@ file(MAKE_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/stubs)
     ADD_OPENHRP_PLUGIN(${PLUGINNAME} ${PLUGINNAME_SRC} ${PLUGINNAME_IDL} 
     				     ${PLUGINNAME_PATH} ${PLUGIN_CFLAGS} 
 				     ${PLUGIN_LDFLAGS} ${PLUGINDEPS})
+				     # This will create StackOfTasks.so in ${${PROJECT_NAME}_BINARY_DIR}/lib 
+				     
     INSTALL(FILES ${${PROJECT_NAME}_BINARY_DIR}/lib/${PLUGINBASENAME}.so
     		  DESTINATION ${SOT_OPENHRP_PLUGIN_INSTALL_DIR}
 		  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
+		
 
     # --- SCRIPT GENERATION AND INSTALL -----------------------------------------------------
     SET(SEQPLAYERTYPENAME "SequencePlayer")

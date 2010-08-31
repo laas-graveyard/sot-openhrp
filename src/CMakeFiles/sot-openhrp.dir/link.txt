@@ -1,1 +1,0 @@
-/usr/bin/c++  -fPIC -g  -shared -Wl,-soname,libsot-openhrp.so.1.0 -o libsot-openhrp.so.1.0 CMakeFiles/sot-openhrp.dir/sot-openhrp.cc.o -L/home/blue/sot-lib/lib -L/usr/local/lib -lsot-core -ldynamic-graph -Wl,-rpath,/home/blue/sot-lib/lib:/usr/local/lib: 

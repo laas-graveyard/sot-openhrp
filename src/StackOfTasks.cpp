@@ -24,9 +24,12 @@
 #include <dlfcn.h> 
 #include <sys/time.h>
 
-#include <sot/sotDebug.h>
+#include <sot-core/debug.h>
+#include <sot-core/exception-abstract.h>
 
+using namespace dynamicgraph;
 using namespace std;
+using namespace sot;
 
 plugin* create_plugin(istringstream &strm) 
 {
@@ -58,7 +61,7 @@ plugin* create_plugin(istringstream &strm)
 /* --- CLASS ---------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
-static bool admissibleState( StackOfTasks::sotPluginState state,char admis )
+static bool admissibleState( StackOfTasks::PluginState state,char admis )
 {
   return ( state&admis );
 }
@@ -71,7 +74,7 @@ const double StackOfTasks::TIMESTEP_DEFAULT = 0.005;
 /* --- GENERIC PLUGIN IMPLEMENTATION ---------------------------------------- */
 StackOfTasks::
 StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl)
-  :sotEntity(HRPname)//StackOfTasks::CLASS_NAME)
+  :Entity(HRPname)//StackOfTasks::CLASS_NAME)
    ,pluginState(sotJUST_BUILT)
 
    ,pluginLoader()
@@ -109,7 +112,7 @@ StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl)
 {
   m_ReferenceState = REFSTATE_RS;
 
-  if( sotDEBUG_ENABLE(1) ) { sotDebugTrace::openFile(); }
+  if( sotDEBUG_ENABLE(1) ) { DebugTrace::openFile(); }
   sotDEBUGIN(5);
 
   assigned_time = 0.005;
@@ -117,13 +120,13 @@ StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl)
   /* --- FORCES --- */
   for( int i=0;i<4;++i ){ withForceSignals[i] = false; }
   forcesSOUT[0] =
-    new sotSignal<ml::Vector, int>("OpenHRPplugin("+HRPname+")::output(vector6)::forceRLEG");
+    new Signal<ml::Vector, int>("OpenHRPplugin("+HRPname+")::output(vector6)::forceRLEG");
   forcesSOUT[1] =
-    new sotSignal<ml::Vector, int>("OpenHRPplugin("+HRPname+")::output(vector6)::forceLLEG");
+    new Signal<ml::Vector, int>("OpenHRPplugin("+HRPname+")::output(vector6)::forceLLEG");
   forcesSOUT[2] =
-    new sotSignal<ml::Vector, int>("OpenHRPplugin("+HRPname+")::output(vector6)::forceRARM");
+    new Signal<ml::Vector, int>("OpenHRPplugin("+HRPname+")::output(vector6)::forceRARM");
   forcesSOUT[3] =
-    new sotSignal<ml::Vector, int>("OpenHRPplugin("+HRPname+")::output(vector6)::forceLARM");
+    new Signal<ml::Vector, int>("OpenHRPplugin("+HRPname+")::output(vector6)::forceLARM");
 
   register_method(":init",(method)&StackOfTasks::m_init);
   register_method(":script",(method)&StackOfTasks::m_script);
@@ -156,14 +159,14 @@ StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl)
     if( NULL==dlib ) 
       {
 	sotDEBUG(5) << "Failure while loading: " <<dlerror() <<endl;
-	SOT_THROW sotExceptionFactory( sotExceptionFactory::DYNAMIC_LOADING,
+	SOT_THROW ExceptionFactory( ExceptionFactory::DYNAMIC_LOADING,
 				       "Error while dlopen. ",dlerror() );
       }
     void * dlib2 = dlopen( "StackOfTasks.so",RTLD_NOW|RTLD_GLOBAL);
     if( NULL==dlib2 ) 
       {
 	sotDEBUG(5) << "Failure while loading StackOfTasks.so: " <<dlerror() <<endl;
-	SOT_THROW sotExceptionFactory( sotExceptionFactory::DYNAMIC_LOADING,
+	SOT_THROW ExceptionFactory( ExceptionFactory::DYNAMIC_LOADING,
 				       "Error while dlopen. ",dlerror() );
       }
   }
@@ -330,7 +333,7 @@ cleanup( sotRobotState* rs, sotMotorCommand* mc )
 
 
 /* --- SPECIFIC PLUGIN IMPLEMENTATION --------------------------------------- */
-#include <sot/sotExceptionTask.h>
+#include <sot-core/exception-task.h>
 
 void StackOfTasks::
 m_script( istringstream &strm )
@@ -342,8 +345,8 @@ m_script( istringstream &strm )
   sotDEBUG(1) << "Cmd <" <<cmdLine<<">"<<endl;
 
   try {
-    sotShell.cmd( cmdLine,strm, std::cout );
-  } catch( const sotExceptionAbstract& e ) { std::cout << "!! " << e <<endl; }
+    g_shell.cmd( cmdLine,strm, std::cout );
+  } catch( const ExceptionAbstract& e ) { std::cout << "!! " << e <<endl; }
 
   sotDEBUGOUT(5);
 }
@@ -358,7 +361,7 @@ m_init(istringstream &strm)
     if( NULL==dlib ) 
       {
 	sotDEBUG(5) << "Failure while loading: " <<dlerror() <<endl;
-	SOT_THROW sotExceptionFactory( sotExceptionFactory::DYNAMIC_LOADING,
+	SOT_THROW ExceptionFactory( ExceptionFactory::DYNAMIC_LOADING,
 				       "Error while dlopen. ",dlerror() );
       }
   }
@@ -417,7 +420,7 @@ sotInit( void )
 {
   sotDEBUGIN(5);
 
-  sotShell.referencePluginLoader(&pluginLoader);
+  g_shell.referencePluginLoader(&pluginLoader);
 
   seqpluginPTR = sotSequencePlayer::_narrow(manager->find("seq",""));
   sotDEBUG(25) << "Seqplugin: " << seqpluginPTR <<endl;
@@ -559,7 +562,7 @@ sotControlLoop( sotRobotState* rs, sotMotorCommand* mc )
     sotDEBUG(15) << "force = "<< rs->force.length() << std::endl;
 
     /* --- KF --- */
-    sotMatrixRotation mlkf;  
+    MatrixRotation mlkf;  
     if( rs->attitude.length() )
       {
 	sotDEBUG( 25 ) << "Get KF " << rs->attitude[0].length() << endl;
@@ -691,15 +694,15 @@ sotControlLoop( sotRobotState* rs, sotMotorCommand* mc )
 	      }
 	  } else { motorCommandInit = false; }
       }
-    catch( const sotExceptionAbstract& e ) {sotDEBUG(1) << e;}
+    catch( const ExceptionAbstract& e ) {sotDEBUG(1) << e;}
     catch( ... ) { sotDEBUG(1) << "Unknown catched." <<endl; }
   
     /* --- WAIST POSITION --- */
     try {
       if (!suspend)
 	{
-	  const sotMatrixHomogeneous & positionmc = positionSIN(iter);
-	  sotMatrixRotation aRot; positionmc.extract(aRot);
+	  const MatrixHomogeneous & positionmc = positionSIN(iter);
+	  MatrixRotation aRot; positionmc.extract(aRot);
 	  if (iter==iterCurrent)
 	    {
 #ifdef OPENHRP_VERSION_3
@@ -738,7 +741,7 @@ sotControlLoop( sotRobotState* rs, sotMotorCommand* mc )
 
 #if 0    
 #ifdef OPENHRP_VERSION_3
-	      sotMatrixRotation rot;
+	      MatrixRotation rot;
 	      const double cr = cos(attitudemc(0)); // ROLL
 	      const double sr = sin(attitudemc(0));
 	      const double cp = cos(attitudemc(1)); // PITCH
@@ -883,7 +886,7 @@ commandLine( const std::string& cmdLine,std::istringstream& cmdArgs,std::ostream
        << " - periodicCall{Before|After}:\tAccess to the periodic caller. "
        << "\'Before\' and \'After\' refeere to the MC computation." <<endl
        << " - timestep [<value>]: get/set the timestep (=0.005)." << std::endl;
-    sotEntity::commandLine(cmdLine,cmdArgs,os);
+    Entity::commandLine(cmdLine,cmdArgs,os);
   }
   else if( cmdLine == "print" ) 
     {
@@ -992,7 +995,7 @@ commandLine( const std::string& cmdLine,std::istringstream& cmdArgs,std::ostream
 	}
     }
 
-  else sotEntity::commandLine(cmdLine,cmdArgs,os);
+  else Entity::commandLine(cmdLine,cmdArgs,os);
 
 }
 

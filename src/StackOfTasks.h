@@ -19,20 +19,6 @@
 
 /* --- HRP --- */
 
-#ifdef OPENHRP_VERSION_2
-#include "plugin.h"
-#include "dynamicsPlugin.h"
-#include "seqplugin.h"
-
-typedef robot_state sotRobotState;
-typedef motor_command sotMotorCommand;
-typedef seqplugin_ptr sotSequencePlayer_var;
-typedef seqplugin sotSequencePlayer;
-
-#define ROBOT_STATE_VAR_POS(x) x->waistPos
-#define ROBOT_STATE_VAR_ATT(x) x->waistRpy
-
-#endif
 
 #ifdef OPENHRP_VERSION_3
 #include <MatrixAbstractLayer/boost.h>
@@ -57,14 +43,16 @@ typedef SequencePlayer sotSequencePlayer;
 #include "bodyinfo.h"	    
 
 
-#include <sot/sotInterpretor.h>
-#include <sot/sotPluginLoader.h>
-#include <sot/sotEntity.h>
-#include <sot/sotSignal.h>
-#include <sot/sotSignalPtr.h>
-#include <sot/sotVectorRollPitchYaw.h>
+#include <dynamic-graph/interpreter.h>
+#include <dynamic-graph/plugin-loader.h>
+#include <dynamic-graph/entity.h>
+#include <dynamic-graph/signal.h>
+#include <dynamic-graph/signal-ptr.h>
+#include <sot-core/vector-roll-pitch-yaw.h>
+#include <sot-core/matrix-homogeneous.h>
+#include <sot-core/matrix-rotation.h>
 
-#include <sot/sotPeriodicCall.h>
+#include <sot-core/periodic-call.h>
 
 #include <MatrixAbstractLayer/boost.h>
 namespace ml = maal::boost;
@@ -77,19 +65,23 @@ namespace ml = maal::boost;
 #define SOT_CHECK_TIME 
 #define SOT_TIME_FILENAME "/tmp/dt.dat"
 
+
+namespace sot {
+namespace dg = dynamicgraph;
+
 /* -------------------------------------------------------------------------- */
 /* --- CLASS ---------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 enum robotType
   {
     hrp2_10_small,           //! Control new HRP-2 10 with new HRP-2 10 small model
-    hrp2_10_small_old,        //! Control new HRP-2 10 with old HRP-2 10 small model
+    hrp2_10_small_old,        //PluginLoader/! Control new HRP-2 10 with old HRP-2 10 small model
     hrp2_14_small            //! Control HRP-2 14 with its small model
   };
 
 class StackOfTasks
 :public plugin 
-  ,public sotEntity
+  ,public dg::Entity
 {
     
 public:  /* --- GENERIC PLUGIN IMPLEMENTATION --- */
@@ -109,7 +101,7 @@ public:  /* --- GENERIC PLUGIN IMPLEMENTATION --- */
 
 public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
 
-  enum sotPluginState
+  enum PluginState
     {
       sotNO_STATE    = 0x00
       ,sotJUST_BUILT = 0x01  //! Just build, waiting for init
@@ -122,7 +114,7 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
       ,sotCLEANED_UP = 0x80  //! Cleanup done, ready for destruction
     };
 
-  sotPluginState pluginState;
+  PluginState pluginState;
 
   /* ! Specify the reference state. */
   enum sotReferenceState
@@ -154,7 +146,7 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
 
 
  protected: /* --- MEMBERS --- */
-  sotPluginLoader pluginLoader;
+  dg::PluginLoader pluginLoader;
   /*! Reference to the sequence player plugin. */
   sotSequencePlayer_var seqpluginPTR;
 
@@ -239,41 +231,44 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
   };
   bool withForceSignals[4];
 
-  sotSignalPtr<ml::Vector,int> controlSIN;
-  sotSignalPtr<ml::Vector,int> attitudeSIN;
-  sotSignalPtr<sotMatrixHomogeneous,int> positionSIN;
-  sotSignalPtr<ml::Vector,int> zmpSIN;
+  dg::SignalPtr<ml::Vector,int> controlSIN;
+  dg::SignalPtr<ml::Vector,int> attitudeSIN;
+  dg::SignalPtr<MatrixHomogeneous,int> positionSIN;
+  dg::SignalPtr<ml::Vector,int> zmpSIN;
 
-  sotSignal<ml::Vector,int> stateSOUT;
-  sotSignal<ml::Vector,int>* forcesSOUT[4];
-  sotSignal<sotMatrixRotation,int> attitudeSOUT;
+  dg::Signal<ml::Vector,int> stateSOUT;
+  dg::Signal<ml::Vector,int>* forcesSOUT[4];
+  dg:: Signal<MatrixRotation,int> attitudeSOUT;
 
-  sotSignal<ml::Vector,int> pseudoTorqueSOUT;
+  dg::Signal<ml::Vector,int> pseudoTorqueSOUT;
   bool activatePseudoTorqueSignal;
-  //sotSignal<ml::Vector,int> velocitySOUT;
+  //Signal<ml::Vector,int> velocitySOUT;
   //bool activateVelocitySignal;
-  sotSignal<ml::Vector,int> previousStateSOUT;
-  sotSignal<ml::Vector,int> previousControlSOUT;
+  dg::Signal<ml::Vector,int> previousStateSOUT;
+  dg::Signal<ml::Vector,int> previousControlSOUT;
   /*! \brief The current state of the robot from the command viewpoint. */
-  sotSignal<ml::Vector,int> motorcontrolSOUT;
+  dg::Signal<ml::Vector,int> motorcontrolSOUT;
   /*! \brief The ZMP reference send by the previous controller. */
-  sotSignal<ml::Vector,int> ZMPPreviousControllerSOUT;
+  dg::Signal<ml::Vector,int> ZMPPreviousControllerSOUT;
   bool activatePreviousControlSignal;
 
   /*! Peridic call that is called /before/ the MC computation
    * (ie for precomputation needed by the main graph, like 
    * event FSM-based computations). */
-  sotPeriodicCall periodicCallBefore;
+  PeriodicCall periodicCallBefore;
 
   /*! Peridic call that is called /after/ the MC computation (eg
    * for tracing). */
-  sotPeriodicCall periodicCallAfter;
+  PeriodicCall periodicCallAfter;
 
   /*! Member storing the reference state.  */
   unsigned int m_ReferenceState;
     
 };
 
+
+
+} // namespace sot
 
 
 
