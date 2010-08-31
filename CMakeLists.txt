@@ -135,6 +135,43 @@ IF(NOT OPENHRP_FOUND)
 	MESSAGE(SEND_ERROR "Cannot continue without OpenHRP. Skipping generation.")
 ENDIF(NOT OPENHRP_FOUND)
 
+# --- Robots configuration files paths ------------------------
+
+SET(_hrp2_10_small_FOUND 0)
+SET(_hrp2_10_small_package "hrp2_10-small")
+PKG_CHECK_MODULES(_hrp2_10_small ${_hrp2_10_small_package})
+IF(NOT ${_hrp2_10_small_FOUND})
+  MESSAGE(STATUS "hrp2_10_small not found.")
+ELSE(NOT ${_hrp2_10_small_FOUND})
+  EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS hrp2_10-small --variable=datadir
+    OUTPUT_VARIABLE HRP2_10-SMALL_DIRECTORY )  
+  MESSAGE(STATUS "HRP2_10-SMALL_DIRECTORY: ${HRP2_10-SMALL_DIRECTORY}") 
+ENDIF(NOT ${_hrp2_10_small_FOUND})
+
+SET(_hrp2_10_small_old_FOUND 0)
+SET(_hrp2_10_small_old_package "hrp2_10-small-old")
+PKG_CHECK_MODULES(_hrp2_10_small_old ${_hrp2_10_small_old_package})
+IF(NOT ${_hrp2_10_small_old_FOUND})
+  MESSAGE(STATUS "hrp2_10_small_old not found.")
+ELSE(NOT ${_hrp2_10_small_old_FOUND})
+  EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS hrp2_10-small-old --variable=datadir
+    OUTPUT_VARIABLE HRP2_10-SMALL-OLD_DIRECTORY )  
+  MESSAGE(STATUS "HRP2_10-SMALL-OLD_DIRECTORY: ${HRP2_10-SMALL-OLD_DIRECTORY}") 
+ENDIF(NOT ${_hrp2_10_small_old_FOUND})
+
+
+SET(_hrp2_10_FOUND 0)
+SET(_hrp2_10_package "hrp2_10")
+PKG_CHECK_MODULES(_hrp2_10 ${_hrp2_10_package})
+IF(NOT ${_hrp2_10_FOUND})
+  MESSAGE(STATUS "hrp2_10 not found.")
+ELSE(NOT ${_hrp2_10_FOUND})
+  EXEC_PROGRAM(${PKGCONFIG_EXECUTABLE} ARGS hrp2_10 --variable=datadir
+    OUTPUT_VARIABLE HRP2_10_DIRECTORY )  
+  MESSAGE(STATUS "HRP2_10_DIRECTORY: ${HRP2_10_DIRECTORY}") 
+ENDIF(NOT ${_hrp2_10_FOUND})
+
+
 #
 # pkg-config file
 #

@@ -122,7 +122,7 @@ IF(GENERATE_DYNFILES)
     dynfilessmallhrp2_10_old.cmake
     simu.cmake simusmall.cmake)
 
-  # Dynfiles requires HRP2_MODEL_DIRECTORY and HRP2_CONFIG_DIRECTORY?
+  # Dynfiles requires HRP2_MODEL_DIRECTORY and HRP2_CONFIG_DIRECTORY
   IF(HRP2_MODEL_DIRECTORY)
     IF(HRP2_CONFIG_DIRECTORY)
 	SET (HRP2_FILES_FOUND 1)
