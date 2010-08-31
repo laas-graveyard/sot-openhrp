@@ -1,0 +1,287 @@
+run /home/evrard/devel/script/base
+new Dynamic dyn2
+new Dynamic dyn
+run /home/evrard/devel/script/dynfiles
+dyn2.parse
+new VectorConstant zero
+zero.resize 46
+plug zero.out dyn2.position
+plug zero.out dyn2.velocity
+plug zero.out dyn2.acceleration
+dyn2.createOpPoint lleg 12 
+
+# -- FF from leg
+new Inverse<matrixhomo> worldMwaist
+plug dyn2.lleg worldMwaist.in
+new MatrixHomoToPoseRollPitchYaw posFF
+plug worldMwaist.out posFF.in
+new ComposeVector<RPY+T> posKF
+plug posFF.out posKF.in2 
+
+# --- KF 
+dyn2.createOpPoint chest 14
+new Inverse<matrixhomo> chestMwaist
+plug dyn2.chest chestMwaist.in
+new HomoToRotation chestRwaist
+plug  chestMwaist.out chestRwaist.in
+new RPYToMatrix worldRchest
+# Dont forget to plug OpenHRP.attitude on worldRchest.in
+new Multiply<matrixrotation> worldRwaist
+plug worldRchest.out worldRwaist.in1
+plug chestRwaist.out worldRwaist.in2
+new MatrixToRPY worldrwaist
+plug worldRwaist.out worldrwaist.in
+plug worldrwaist.out posKF.in1 
+
+# --- DYN With true posFF	
+dyn.parse
+plug zero.out dyn.velocity
+plug zero.out dyn.acceleration
+plug posKF.out dyn.ffposition
+
+dyn.createOpPoint 0b 22
+dyn.createOpPoint 0 0
+dyn.createOpPoint rleg 6 
+dyn.createOpPoint lleg 12 
+
+new FeaturePoint6d p6
+new FeaturePoint6d p6d
+
+new Compose<R+T> comp
+new MatrixConstant eye3
+eye3.resize 3 3
+eye3.eye
+plug eye3.out comp.in1
+new VectorConstant t
+t.resize 3
+# HAND
+t.[] 0 0.25
+t.[] 1 -0.5
+t.[] 2 .35
+# WAIST
+t.[] 0 0
+t.[] 1 0.095
+t.[] 2 0.563816
+plug t.out comp.in2
+
+plug comp.out p6d.position
+plug dyn.J0 p6.Jq
+plug dyn.0 p6.position
+set p6.sdes p6d
+
+new Task task
+task.add p6
+new GainAdaptative gain
+gain.setConstant .5
+plug task.error gain.error
+plug gain.gain task.controlGain
+
+new Constraint legs
+legs.add dyn.Jlleg
+
+dispmat matlab
+
+
+eye3.[] 0 0 0
+eye3.[] 2 2 0
+eye3.[] 0 2 -1
+eye3.[] 2 0 1
+
+
+set p6.selec 000111
+
+# --- COM 
+dyn.setComputeCom 1
+
+new FeatureGeneric featureCom
+plug dyn.com featureCom.errorIN
+plug dyn.Jcom featureCom.jacobianIN 
+set featureCom.selec 11
+
+new FeatureGeneric featureComDes
+set featureComDes.errorIN [2](0,-0)
+set featureCom.sdes featureComDes
+
+new Task taskCom
+taskCom.add featureCom
+set taskCom.controlGain .1
+
+# --- CHEST
+new FeatureGeneric featureChest
+set featureChest.jacobianIN [2,46]((0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0))
+set featureChest.errorIN [2](0,0)
+new Task taskChest
+taskChest.add featureChest
+set taskChest.controlGain 1
+
+# --- LEGS
+new FeatureGeneric featureLegs
+new MatrixConstant jacobianLegs
+jacobianLegs.resize 12 46
+jacobianLegs.[] 0 6 1
+jacobianLegs.[] 1 7 1
+jacobianLegs.[] 2 8 1
+jacobianLegs.[] 3 9 1
+jacobianLegs.[] 4 10 1
+jacobianLegs.[] 5 11 1
+jacobianLegs.[] 6 12 1
+jacobianLegs.[] 7 13 1
+jacobianLegs.[] 8 14 1
+jacobianLegs.[] 9 15 1
+jacobianLegs.[] 10 16 1
+jacobianLegs.[] 11 17 1
+plug jacobianLegs.out featureLegs.jacobianIN 
+
+new VectorConstant vectorLegs
+vectorLegs.resize 12
+vectorLegs.fill 0
+plug vectorLegs.out featureLegs.errorIN
+# set featureLegs.errorIN [12](0,0,0,0,0,0,0,0,0,0,0,0)
+new Task taskLegs
+taskLegs.add featureLegs
+set taskLegs.controlGain 1
+
+# --- TWOFEET
+new Compose<R+T> semelle
+
+new MatrixConstant Rsemelle
+Rsemelle.resize 3 3
+Rsemelle.eye
+plug Rsemelle.out semelle.in1
+
+new VectorConstant Tsemelle
+Tsemelle.resize 3
+Tsemelle.[] 0 0.
+Tsemelle.[] 1 0.
+Tsemelle.[] 2 -.105
+plug Tsemelle.out semelle.in2
+
+new Multiply<matrixhomo> wMrf
+plug dyn.rleg wMrf.in1 
+plug semelle.out wMrf.in2
+
+new Multiply<matrixhomo> wMlf
+plug dyn.lleg wMlf.in1 
+plug semelle.out wMlf.in2
+
+new Inverse<matrixhomo> rMw
+plug wMrf.out rMw.in 
+
+new Multiply<matrixhomo> rMl
+plug rMw.out rMl.in1 
+plug wMlf.out rMl.in2
+
+new HomoToTwist rVl
+plug rMl.out rVl.in
+
+new Multiply<matrix> rJl
+plug rVl.out rJl.in1
+plug dyn.Jlleg rJl.in2
+
+new Substract<matrix> Jtwofeet
+plug rJl.out Jtwofeet.in1
+plug dyn.Jrleg Jtwofeet.in2
+
+new VectorConstant etwofeet
+etwofeet.resize 6
+etwofeet.fill 0
+
+new FeatureGeneric featureTwofeet
+
+plug etwofeet.out featureTwofeet.errorIN
+# set featureTwofeet.errorIN [6](0,0,0,0,0,0)
+plug Jtwofeet.out featureTwofeet.jacobianIN
+# plug rJl.out featureTwofeet.jacobianIN
+new Task taskTwofeet
+taskTwofeet.add featureTwofeet
+set taskTwofeet.controlGain -1
+
+# --- SEQPLAY
+new SeqPlay seqplay
+seqplay.load /home/nmansard/mouvsylvain/initial_DS_motion04_4int.pos
+# seqplay.load /home/nmansard/mouvsylvain/optimal_kicking_motion05_vel1,0_zmp_center_new_slow.pos
+# seqplay.load /home/nmansard/mouvsylvain/final_DS_motion04_4int.pos
+
+new FeatureGeneric featureSeqplay
+new FeatureGeneric featureSeqplayDes
+
+plug seqplay.position featureSeqplayDes.errorIN
+
+new Selec<vector> posart
+posart.selec 6 46
+plug dyn.position posart.in
+plug posart.out featureSeqplay.errorIN
+
+new MatrixConstant jacobianSeqplay
+jacobianSeqplay.resize 40 46
+jacobianSeqplay.[]  0  6 1
+jacobianSeqplay.[]  1  7 1
+jacobianSeqplay.[]  2  8 1
+jacobianSeqplay.[]  3  9 1
+jacobianSeqplay.[]  4 10 1
+jacobianSeqplay.[]  5 11 1
+jacobianSeqplay.[]  6 12 1
+jacobianSeqplay.[]  7 13 1
+jacobianSeqplay.[]  8 14 1
+jacobianSeqplay.[]  9 15 1
+jacobianSeqplay.[] 10 16 1
+jacobianSeqplay.[] 11 17 1
+jacobianSeqplay.[] 12 18 1
+jacobianSeqplay.[] 13 19 1
+jacobianSeqplay.[] 14 20 1
+jacobianSeqplay.[] 15 21 1
+jacobianSeqplay.[] 16 22 1
+jacobianSeqplay.[] 17 23 1
+jacobianSeqplay.[] 18 24 1
+jacobianSeqplay.[] 19 25 1
+jacobianSeqplay.[] 20 26 1
+jacobianSeqplay.[] 21 27 1
+jacobianSeqplay.[] 22 28 1
+jacobianSeqplay.[] 23 29 1
+jacobianSeqplay.[] 24 30 1
+jacobianSeqplay.[] 25 31 1
+jacobianSeqplay.[] 26 32 1
+jacobianSeqplay.[] 27 33 1
+jacobianSeqplay.[] 28 34 1
+jacobianSeqplay.[] 29 35 1
+jacobianSeqplay.[] 30 36 1
+jacobianSeqplay.[] 31 37 1
+jacobianSeqplay.[] 32 38 1
+jacobianSeqplay.[] 33 39 1
+jacobianSeqplay.[] 34 40 1
+jacobianSeqplay.[] 35 41 1
+jacobianSeqplay.[] 36 42 1
+jacobianSeqplay.[] 37 43 1
+jacobianSeqplay.[] 38 44 1
+jacobianSeqplay.[] 39 45 1
+plug jacobianSeqplay.out featureSeqplay.jacobianIN
+
+set featureSeqplay.sdes featureSeqplayDes
+new Task taskSeqplay
+taskSeqplay.add featureSeqplay
+set taskSeqplay.controlGain 20
+
+# --- SOT
+new SOT sot
+set sot.damping 1e-6
+sot.addConstraint legs
+
+sot.push taskTwofeet
+# sot.push taskLegs
+# sot.push task
+sot.push taskCom
+# sot.push taskChest
+sot.push taskSeqplay
+
+new DShell dshell
+dshell.open /tmp/nmansard/script.buffer
+dshell.latency 50
+dshell.start
+
+# compute sot.control 0
+# vectorLegs.[] 1 .1
+
+etwofeet.[] 2 0
+
+set featureComDes.errorIN [2](0,-0)
+
