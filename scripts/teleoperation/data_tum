@@ -1,0 +1,11 @@
+tr.stop
+tr.trace
+tr.clear
+tr.open /tmp/nmansard tum_ .dat
+
+tr.add coshell.forceRSOUT ref_force
+tr.add wrtPoseInitQuat.out position
+tr.add coshell.connectSOUT connectsig
+
+OpenHRP.periodicCall addSignal coshell.connectSOUT
+

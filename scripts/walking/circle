@@ -1,0 +1,3 @@
+pg.parsecmd :arc 0.0 1.0 360.0 -1.0
+pg.parsecmd :lastsupport
+pg.parsecmd :finish

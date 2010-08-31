@@ -1,0 +1,8 @@
+tr.stop
+tr.trace
+tr.clear
+tr.open /tmp/nmansard epfl_ .dat
+
+tr.add coshell.connectSOUT connect
+tr.add fsensor.out force
+tr.add wrtPoseInitQuat.out position

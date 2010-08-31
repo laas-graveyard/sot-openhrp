@@ -1,0 +1,519 @@
+t.[] 2 .85
+
+flex.fromSensor false
+
+# --- TASKS --------------------------------------------------
+# --- TASKS --------------------------------------------------
+# --- TASKS --------------------------------------------------
+
+# --- TASK FORCE ------------------------------------- 
+# --- TASK FORCE ------------------------------------- 
+# --- TASK FORCE ------------------------------------- 
+new Add<vector> addForce
+
+new HomoToRotation waistRh 
+plug dyn.0 waistRh.in
+
+# new HomoToRotation waistRleg 
+# plug dyn.lleg waistRleg.in
+
+new Inverse<matrixrotation> hRwaist
+plug waistRh.out hRwaist.in
+
+# new Multiply<matrixrotation> hRleg
+# plug hRwaist.out hRleg.in1
+# plug waistRleg.out hRleg.in2
+
+# This is to transform German forces to hand coordinates
+new Compose<R+T> Rwt0
+plug hRwaist.out Rwt0.in1
+set Rwt0.in2 [3](0,0,0)
+new HomoToTwist Vw
+plug Rwt0.out Vw.in
+new Multiply<vector,matrix> fgermany
+plug Vw.out fgermany.in2 
+plug fgermany.out addForce.in1
+
+# This is to transform sensor force to world coordinates
+new Compose<R+T> 0wtR
+plug waistRh.out 0wtR.in1
+set 0wtR.in2 [3](0,0,0)
+new HomoToTwist invVw
+plug 0wtR.out invVw.in
+new Multiply<vector,matrix> fsensor
+plug invVw.out fsensor.in2
+plug forceCompRH.torsorNullified fsensor.in1
+
+proc fgermany(enable)
+-> squeeze forceInt.force addForce.in2 addForce.out
+endproc
+
+proc fgermany(disable)
+-> zerohandswaist
+-> plug spr_force.out forceInt.force 
+endproc
+
+# fgermany(enable)
+
+proc chest(enable)
+-> taskForce.selec 12:13
+endproc
+
+proc chest(disable)
+-> taskForce.unselec 12:13
+endproc
+
+
+# --- TASK HEAD ------------------------------------- 
+new Selec<vector> posHead
+plug OpenHRP.state posHead.in
+posHead.selec 20 22
+
+new FeatureGeneric featureHead
+new FeatureGeneric featureHeadDes
+set featureHead.jacobianIN [2,36]((0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0),(0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0))
+plug posHead.out featureHead.errorIN 
+set featureHead.sdes featureHeadDes
+new Task taskHead
+taskHead.add featureHead
+set taskHead.controlGain .8
+
+taskHead.unselec :
+taskHead.selec 14:15
+
+# Neck limitation
+new NeckLimitation necklimit
+necklimit.rank 0 1
+set necklimit.joint [2](0,0)
+plug necklimit.jointLimited featureHeadDes.errorIN
+# plug coshell.headSOUT necklimit.joint
+# plug coshell.headSOUT featureHeadDes.errorIN
+
+new GainAdaptative gainHead
+gainHead.set 10 .1 100
+plug taskHead.error gainHead.error
+plug gainHead.gain taskHead.controlGain
+
+
+# --- TASK NEW HEAD
+new VectorToRotation Rdes_head
+plug necklimit.jointLimited Rdes_head.in
+# set Rdes_head.in [2](-0,-0)
+Rdes_head.size 2
+Rdes_head.axis 0 Z
+Rdes_head.axis 1 Y
+
+new Compose<R+T> Mdes_head
+plug Rdes_head.out Mdes_head.in1
+set Mdes_head.in2 [3](0,0,1.5)
+
+dyn.createOpPoint head 16
+
+new FeaturePoint6d phead
+new FeaturePoint6d pheadd
+
+plug dyn.head phead.position
+plug dyn.Jhead phead.Jq
+plug Mdes_head.out pheadd.position
+set phead.sdes pheadd
+phead.frame current
+# set phead.selec 111000
+set phead.selec 111000
+
+new Task taskHeadWB
+taskHeadWB.add phead
+set taskHeadWB.controlSelec 1100000000000000
+# set taskHeadWB.controlSelec 1111000000000000
+set taskHeadWB.controlGain .3
+
+new GainAdaptative gainHeadWB
+gainHeadWB.set 10 .1 100
+plug taskHeadWB.error gainHeadWB.error
+plug gainHeadWB.gain taskHeadWB.controlGain
+
+# --- GRIPER ------------------------------------- 
+# plug coshell.gripSOUT featureGripDes.errorIN
+plug OpenHRP.ptorque gripdes.torqueFullIN
+OpenHRP.withPseudoTorque 1
+
+set gripdes.position [2](.3,.3)
+
+# --- Joint limit
+new VectorConstant protectJl
+protectJl.resize 36
+protectJl.fill 0.97
+
+new Multiply<vector> upperJl
+plug protectJl.out upperJl.in2 
+
+new Multiply<vector> lowerJl
+plug protectJl.out lowerJl.in2 
+
+squeeze jointlimit.upperJl upperJl.in1 upperJl.out
+squeeze jointlimit.lowerJl lowerJl.in1 lowerJl.out
+
+set taskJl.controlGain 2
+
+# --- RETURN POS ------------------------------------- 
+# dyn.0 = wRh. Inverse = h0Rw
+new Inverse<matrixhomo>  poseInit
+plug dyn.0 poseInit.in
+compute poseInit.out
+freeze poseInit.in
+
+new Multiply<matrixhomo> wrtPoseInit
+plug poseInit.out wrtPoseInit.in1
+plug dyn.0 wrtPoseInit.in2
+
+new HomoToRotation wRh0
+plug poseInit.in wRh0.in
+
+new EndomorphismBasis wrtPoseInitinShoulder
+plug wrtPoseInit.out wrtPoseInitinShoulder.in1
+plug wRh0.out wrtPoseInitinShoulder.in2
+
+new MatrixHomoToPoseQuaternion wrtPoseInitQuat
+plug wrtPoseInitinShoulder.out wrtPoseInitQuat.in
+
+# --- RETURN VEL ------------------------------------- 
+
+# ------------
+# version 1 uses rotation matrices
+# new HomoToRotation absRrh
+# plug wrtPoseInitinShoulder.out absRrh.in
+
+# new Derivator<Matrix> dR
+# set dR.dt 200
+# plug absRrh.out dR.in
+
+# new Inverse<matrixrotation> absRrh_inv
+# plug absRrh.out absRrh_inv.in
+
+# new Multiply<matrix> Swrh
+# plug dR.out Swrh.in1
+# plug absRrh_inv.out Swrh.in2
+
+# new SkewSymToVector wrh
+# plug Swrh.out wrh.in
+# -------------
+
+# -------------
+# version 2 uses quaternions: much better but problem with sign and amplitude
+new HomoToRotation absRrh
+plug wrtPoseInitinShoulder.out absRrh.in
+
+new MatrixToQuaternion qrh
+plug absRrh.out qrh.in
+
+new Derivator<sotVectorQuaternion> dqrh
+set dqrh.dt 200
+plug qrh.out dqrh.in
+
+new Inverse<unitquat> invqrh
+plug qrh.out invqrh.in
+
+new Multiply<quaternion> dq_q
+plug dqrh.out dq_q.in1
+plug invqrh.out dq_q.in2
+
+new Multiply<vector,double> WRH
+plug dq_q.out WRH.in1
+set WRH.in2 2
+
+new Selec<vector> wrh
+plug WRH.out wrh.in
+wrh.selec 1 4
+compute wrh.out
+# -------------
+
+# -------------
+# version 3 uses the Jacobian. Alas, dyn.velocity is 0
+# new Multiply<vector,matrix> Jdq
+# plug dyn.velocity Jdq.in1
+# plug dyn.J0 Jdq.in2
+
+# new Selec<vector> whh
+# plug Jdq.out whh.in
+# whh.selec 3 6
+# compute whh.out
+
+# new Multiply<vector,matrix> wrh
+# plug waistRh.out wrh.in2
+# plug whh.out wrh.in1
+# -------------
+
+new Selec<vector> xrh
+plug wrtPoseInitQuat.out xrh.in
+xrh.selec 0 3
+
+new Derivator<Vector> dxrh
+set dxrh.dt 200
+plug xrh.out dxrh.in
+
+new Stack<vector> vrh
+plug dxrh.out vrh.in1
+plug wrh.out vrh.in2
+vrh.selec1 0 3
+vrh.selec2 0 3
+compute vrh.out
+
+
+# --- TASK FORCE LEFT ------------------------------------- 
+# --- TASK FORCE LEFT ------------------------------------- 
+# --- TASK FORCE LEFT ------------------------------------- 
+
+
+new Add<vector> addForceLH
+
+new HomoToRotation waistLh 
+plug dyn.lh waistLh.in
+
+new Inverse<matrixrotation> lhRwaist
+plug waistLh.out lhRwaist.in
+
+new Compose<R+T> Rwtlh
+plug lhRwaist.out Rwtlh.in1
+set Rwtlh.in2 [3](0,0,0)
+new HomoToTwist Vwlh
+plug Rwtlh.out Vwlh.in
+
+new Multiply<vector,matrix> fgermanyLH
+plug Vwlh.out fgermanyLH.in2 
+# plug coshell.forceLSOUT fgermanyLH.in1
+
+plug fgermanyLH.out addForceLH.in1
+
+proc fgermanyLH(enable)
+-> squeeze forceIntLH.force addForceLH.in2 addForceLH.out
+endproc
+
+proc fgermanyLH(disable)
+-> zerohandswaistL
+-> plug spr_forceL.out forceIntLH.force 
+endproc
+
+# fgermanyLH(enable)
+
+proc chestLH(enable)
+-> taskForceLH.selec 12:13
+endproc
+
+proc chestLH(disable)
+-> taskForceLH.unselec 12:13
+endproc
+
+# --- RETURN POS ------------------------------------- 
+# dyn.0 = wRh. Inverse = h0Rw
+new Inverse<matrixhomo>  poseInitLH
+plug dyn.lh poseInitLH.in
+compute poseInitLH.out
+freeze poseInitLH.in
+
+new Multiply<matrixhomo> wrtPoseInitLH
+plug poseInitLH.out wrtPoseInitLH.in1
+plug dyn.lh wrtPoseInitLH.in2
+
+new HomoToRotation wRh0LH
+plug poseInitLH.in wRh0LH.in
+
+new EndomorphismBasis wrtPoseInitinShoulderLH
+plug wrtPoseInitLH.out wrtPoseInitinShoulderLH.in1
+plug wRh0LH.out wrtPoseInitinShoulderLH.in2
+
+new MatrixHomoToPoseQuaternion wrtPoseInitQuatLH
+plug wrtPoseInitinShoulderLH.out wrtPoseInitQuatLH.in
+
+
+# --- SOT --------------------------------------------------
+# --- SOT --------------------------------------------------
+# --- SOT --------------------------------------------------
+
+sot.clear
+sot.clearConstraint
+# sot.push taskTwofeet
+# sot.push taskCom
+# sot.addConstraint legs
+
+# sot.push taskForce
+# sot.push taskForceLH
+# sot.push taskHead
+sot.push taskHeadWB
+# sot.push taskGrip
+
+plug sot.control controlsmall.in1
+set sot.damping 1e-2
+
+# --- COM
+set featureComDes.errorIN [3](0.0294045,-0.0936384,0.7)
+new GainAdaptative gainCom
+gainCom.set .1 .1 30
+plug taskCom.error gainCom.error
+plug gainCom.gain taskCom.controlGain
+
+
+# --- GOINIT -----------------------------------------------
+
+proc resetinit()
+-> plug dyn.0 poseInit.in
+-> sleep 1
+-> freeze poseInit.in
+endproc
+
+# new Add<vector> addp6LH
+# plug tasklh.task addp6LH.in1
+# plug poseInitLH.in p6dlh.position
+# set p6lh.selec 111111
+# p6lh.frame current
+
+# proc goinit(start,lh)
+# -> squeeze p3LH.errorIN addp6LH.in2 addp6LH.out
+# endproc
+# proc goinit(stop,lh)
+# -> plug forceIntLH.velocity p3LH.errorIN 
+# endproc
+# proc goinit(start,both)
+# -> squeeze p3.errorIN addp6.in2 addp6.out
+# -> squeeze p3LH.errorIN addp6LH.in2 addp6LH.out
+# endproc
+# proc goinit(stop,both)
+# -> plug forceInt.velocity p3.errorIN 
+# -> plug forceIntLH.velocity p3LH.errorIN 
+# endproc
+
+# --- PROC --------------------------------------------------
+
+proc urg
+-> plug zeroCom.out controlsmall.in1
+endproc
+
+proc endOfUrg
+-> plug sot.control controlsmall.in1
+-> zeroCom.fill 0
+endproc
+
+proc xpstart
+-> sot.push taskForce
+-> sot.push taskForceLH
+-> fgermany(enable)
+-> fgermanyLH(enable)
+endproc
+
+proc upperbody
+-> sot.clear
+-> sot.clearConstraint
+-> sot.push taskForce
+-> sot.push taskForceLH
+-> sot.push taskHeadWB
+# -> sot.push taskGrip
+-> set taskForce.controlSelec   1111110000000000000000
+-> set taskForceLH.controlSelec 11111100000000000000000000000
+endproc
+
+proc wholebody
+-> sot.clear
+-> sot.clearConstraint
+-> sot.push taskTwofeet
+-> sot.addConstraint legs
+-> sot.push taskCom
+-> sot.push taskForce
+-> sot.push taskForceLH
+-> sot.push taskHeadWB
+# -> sot.push taskGrip
+-> set taskForce.controlSelec ...1
+-> set taskForceLH.controlSelec ...1
+# -> set featureCom.selec 011
+-> sot.gradient taskJl
+endproc
+
+
+proc zerohands
+-> plug dyn.0 poseInit.in
+-> freeze poseInit.in
+-> plug dyn.lh poseInitLH.in
+-> freeze poseInitLH.in
+endproc
+
+proc start
+-> fgermany(enable)
+-> fgermanyLH(enable)
+endproc
+
+proc freezeandzerohands
+-> plug zeroForce.out forceInt.force
+-> plug zeroForce.out forceIntLH.force
+-> sleep 2
+-> zerohands
+endproc
+
+proc reducespringstiffness
+-> sleep 1
+-> set spr_Kwaist.in [6](0,0,160,0,0,0)
+-> set spr_KwaistL.in [6](0,0,160,0,0,0)
+-> sleep 1
+-> set spr_Kwaist.in [6](0,0,120,0,0,0)
+-> set spr_KwaistL.in [6](0,0,120,0,0,0)
+-> sleep 1
+-> set spr_Kwaist.in [6](0,0,80,0,0,0)
+-> set spr_KwaistL.in [6](0,0,80,0,0,0)
+-> sleep 1
+-> set spr_Kwaist.in [6](0,0,40,0,0,0)
+-> set spr_KwaistL.in [6](0,0,40,0,0,0)
+-> sleep 1
+-> set spr_Kwaist.in [6](0,0,0,0,0,0)
+-> set spr_KwaistL.in [6](0,0,0,0,0,0)
+endproc
+
+
+# --- IN SIMU 
+# --- IN SIMU 
+# --- IN SIMU 
+# set forceCompRH.precompensation [6](0,0,0,0,0,0)
+# set forceCompRH.handRsensor [3,3]((0,-1,0),(1,0,0),(0,0,1))
+# set forceCompRH.sensorCom [3](0,0,-0.05)
+# set forceCompRH.gravity [6](0.000000,0.000000,-11.2345,0.000000,0.000000,0.000000)
+# set forceCompRH.gain [6,6]((1,0,0,0,0,0),(0,1,0,0,0,0),(0,0,1,0,0,0),(0,0,0,1,0,0),(0,0,0,0,1,0),(0,0,0,0,0,1))
+
+# Position COM [-0.0041   -0.0012    0.1071]
+# Position Sensor [ 0.005 0   -0.05925 ]
+# Sensor->com -0.0009    0.0012   -0.0479
+# set forceCompRH.sensorCom [3](-0.0009,0.0012,-0.0479)
+# After "calibration" 
+# set forceCompRH.sensorCom [3](-0.0009,0.000,-0.03428)
+
+# set forceCompRH.gravity [6](0.000000,0.000000,-0,0.000000,0.000000,0.000000)
+
+# ----
+flex.fromSensor false
+
+
+# --- DEBUG --------------------------------------------------
+
+# new Stack<vector> forceOnly
+# forceOnly.selec1 0 3
+# forceOnly.selec2 0 3
+# set forceOnly.in2 [3](0,0,0)
+# set forceOnly.in1 [3](0,0,0)
+
+# set friction.in [6](150,150,150,3,3,3)
+set friction.in [6](180,180,180,5,5,5)
+
+# set p3.errorIN [6](0,0,0,0,0,0)
+# set friction.in [6](150,150,150,2,2,2)
+
+# OpenHRP.periodicCall addSignal necklimit.jointLimited
+
+# plug massRH.massInverse forceIntLH.massInverse
+# 
+
+# proc show
+# -> get forceIntLH.force
+# -> get forceIntLH.velocity
+# -> get forceInt.force
+# -> get forceInt.velocity
+# endproc
+# 
+
+# set taskForceLH.controlSelec 11111100000000000000000000000
+
+
+

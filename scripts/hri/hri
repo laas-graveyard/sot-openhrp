@@ -1,0 +1,172 @@
+# ----------------------------------------------------------------
+# --- Init collision detection -----------------------------------
+# ----------------------------------------------------------------
+
+# used to output the minimal distance between the arm and the trunk.
+new CollisionDetector collision
+
+# arm and trunk collisions.
+collision.addPair 0 20
+collision.addPair 14 19
+collision.addPair 0 27
+collision.addPair 14 26
+
+# works with script small only.
+plug controlsmall.out collision.controlIN
+
+
+# ----------------------------------------------------------------
+# --- Desired motion ---------------------------------------------
+# ----------------------------------------------------------------
+
+# this entity computes trajectories that go through a set of
+# key points using polynomial interpolation.
+new Motion plan
+
+# add key points which the trajectory will pass through.
+plan.addKey [3](0.25,-0.5,0.8)
+plan.addKey [3](0.25,-0.425,0.95)
+plan.addKey [3](0.25,-0.35,0.8)
+
+set plan.duration 3
+
+# compute the coeficients of the interpolation.
+plan.compute
+
+
+# ----------------------------------------------------------------
+# --- Homotopy-based controller ----------------------------------
+# ----------------------------------------------------------------
+
+# This part makes use of the task 'task' defined in script dyn.
+
+# I cannot sum two features with different dimensions.
+# TODO: find a solution!
+set p6.selec 111111
+set p3.selec 111111
+
+# Desired, fixed orientation of the hand.
+new MatrixConstant Rd
+Rd.resize 3 3
+Rd.fill 0
+Rd.[] 0 2 -1
+Rd.[] 1 1 1
+Rd.[] 2 0 1
+
+# comp is a Comp<R+T> definded in script dyn.
+plug Rd.out comp.in1
+plug plan.position comp.in2
+
+# gain of the leader and follower controllers
+new GainAdaptative glead
+glead.setConstant 1
+plug p6.error glead.error
+
+new GainAdaptative gfollow
+gfollow.setConstant 1
+plug p3.error gfollow.error
+
+# in case we want to use a constant alpha (e.g. for testing purpose).
+new VectorConstant a
+a.resize 6
+a.fill 1
+
+# LeadFollow is an entity that will balance the leader and
+# follower controller by defining the homotopy parameter.
+new LeadFollow hparam
+hparam.beta 1.2
+hparam.mode 2
+plug wrtPoseInitQuat.out hparam.positionIN
+plug vrh.out hparam.velocityIN
+plug fsensor.out hparam.forceIN
+plug plan.completion hparam.completionIN
+plug collision.dmin hparam.dminIN
+
+# transformation of vector alpha from world to hand frame.
+new MatrixDiagonal md
+plug hparam.alpha md.in
+new Multiply<matrix> md1
+plug Vw.out md1.in1
+plug md.out md1.in2
+new Multiply<matrix> hparamh
+plug md1.out hparamh.in1
+plug invVw.out hparamh.in2
+
+new VectorConstant one
+one.resize 6
+one.fill 1
+
+new Substract<vector> abar
+plug one.out abar.in1
+plug hparam.alpha abar.in2
+
+# transformation of the complement of alpha from world
+# to hand frame.
+new MatrixDiagonal mdbar
+plug abar.out mdbar.in
+new Multiply<matrix> mdbar1
+plug Vw.out mdbar1.in1
+plug mdbar.out mdbar1.in2
+new Multiply<matrix> hparamhbar
+plug mdbar1.out hparamhbar.in1
+plug invVw.out hparamhbar.in2
+
+# does the job of a task :) multiplies the error by the gain.
+new Multiply<vector,double> tasklead
+plug p6.error tasklead.in1
+plug glead.gain tasklead.in2
+
+new Multiply<vector,double> taskfollow
+plug p3.error taskfollow.in1
+plug gfollow.gain taskfollow.in2
+
+# finally apply the weight to the lead and follow tasks...
+new Multiply<vector,matrix> lead
+plug hparamh.out lead.in2
+plug tasklead.out lead.in1
+
+new Multiply<vector,matrix> follow
+plug hparamhbar.out follow.in2
+plug taskfollow.out follow.in1
+
+# ... and add the weighted tasks.
+new Add<vector> ui
+plug lead.out ui.in1
+plug follow.out ui.in2
+
+# Then all we havce to do is define a feature and a task, and plug
+# the output of ui, set a gain of -1 and we have our homotopy-based
+# controller.
+new FeatureGeneric phomotopy
+plug dyn.J0 phomotopy.jacobianIN
+
+new Task thomotopy
+thomotopy.add phomotopy
+
+set phomotopy.selec 111111
+set phomotopy.sdes
+plug ui.out phomotopy.errorIN
+set thomotopy.controlGain -1
+phomotopy.dimDefault 6
+
+# make the follower controller a bit softer
+set friction.in [6](150,150,150,5,5,5)
+
+# ----------------------------------------------------------------
+# --- Traces -----------------------------------------------------
+# ----------------------------------------------------------------
+
+tr.stop
+tr.trace
+tr.clear
+tr.open /tmp/nmansard roman_ .dat
+tr.add fsensor.out force
+tr.add wrtPoseInitQuat.out pos
+tr.add hparam.alpha
+tr.add collision.dmin
+tr.add plan.completion
+tr.add plan.position xd
+
+OpenHRP.periodicCall addSignal fsensor.out
+OpenHRP.periodicCall addSignal wrtPoseInitQuat.out
+

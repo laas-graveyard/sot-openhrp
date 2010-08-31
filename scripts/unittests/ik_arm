@@ -1,0 +1,37 @@
+# Test (1) cf readme
+# Chest is on. No motion from the legs. No feedback on the position sensor. No stab.
+p6.frame current
+p6d.frame current
+posKF.fromSensor false
+
+# Tune task <task>
+set task.controlGain .2
+plug dyn.J0 p6.Jq
+plug dyn.0 p6.position
+t.[] 0 0.25
+t.[] 1 -0.5
+t.[] 2 .85
+
+# Configure the SOT
+sot.clear
+sot.push task
+
+# Remove the contact from the kinematic model
+compute posKF.contact
+freeze posKF.contact
+sot.clearConstraint
+
+# Lock the chest
+dyn.createOpPoint chest 14
+legs.clear
+legs.add dyn.Jchest
+# sot.addConstraint legs
+
+# Remove stab and sensor
+unplug OpenHRP.zmp
+unplug posKF.attitudeIN
+
+tr.add task.task
+tr.add task.jacobian 
+tr.add sot.control qdot
+tr.add dyn.position

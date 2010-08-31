@@ -1,0 +1,40 @@
+# --- Plug IN
+# --- Plug IN
+# --- Plug IN
+
+plug coshell.headSOUT featureHeadDes.errorIN
+plug coshell.headSOUT Rdes_head.in
+
+plug coshell.gripSOUT gripdes.position
+
+plug coshell.velRSOUT vgermanyselec.in1
+plug coshell.velLSOUT vgermanyLH.in1
+
+plug coshell.forceRSOUT fgermany.in1
+plug coshell.forceLSOUT fgermanyLH.in1
+
+
+# --- Plug OUT
+# --- Plug OUT
+# --- Plug OUT
+
+OpenHRP.periodicCall addSignal wrtPoseInitQuat.out
+plug wrtPoseInitQuat.out coshell.posRSIN
+
+OpenHRP.periodicCall addSignal wrtPoseInitQuatLH.out
+plug wrtPoseInitQuatLH.out coshell.posLSIN
+
+OpenHRP.periodicCall addSignal fsensor.out
+plug fsensor.out coshell.forceRSIN
+
+OpenHRP.periodicCall addSignal fsensorLH.out
+plug fsensorLH.out coshell.forceLSIN
+
+OpenHRP.periodicCall addSignal vrh.out
+plug vrh.out coshell.velRSIN
+
+OpenHRP.periodicCall addSignal vlh.out
+plug vlh.out coshell.velLSIN
+
+tr.add coshell.forceRSOUT
+tr.add coshell.headSOUT

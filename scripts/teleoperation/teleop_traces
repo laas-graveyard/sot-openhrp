@@ -1,0 +1,21 @@
+resettr()
+tr.stop
+
+tr.clear
+tr.add dyn.0
+tr.add coshell.posRSIN
+tr.add forceInt.force
+tr.add forceInt.velocity
+tr.add taskForce.task
+tr.add taskForce.error
+OpenHRP.periodicCallBefore addSignal taskForce.task
+
+proc start_data_teleop()
+-> tr.start
+endproc
+
+proc save_data_teleop()
+-> tr.stop
+-> tr.trace
+-> tr.record
+endproc

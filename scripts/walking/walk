@@ -1,0 +1,28 @@
+OpenHRP.withPreviousControl true
+# plug OpenHRP.previousControl OpenHRP.control
+# get OpenHRP.previousControl
+# plug zeroCom.out OpenHRP.control
+
+sot.clear
+sot.push taskLegs
+new Selec<vector> cmdLegs
+plug OpenHRP.previousControl cmdLegs.in
+cmdLegs.selec 0 12
+plug cmdLegs.out featureLegs.errorIN
+set taskLegs.controlGain -1
+
+# sot.push task
+# set task.controlGain 0
+
+OpenHRP.withForces 3 1
+tr.add OpenHRP.forceLARM
+tr.add OpenHRP.forceRARM
+tr.add forceCompRH.torsor torsorR
+tr.add forceCompLH.torsor torsorL
+OpenHRP.periodicCall addSignal forceCompRH.torsor
+OpenHRP.periodicCall addSignal forceCompLH.torsor
+
+plug sot.control OpenHRP.control
+
+run /home/nmansard/src/StackOfTasks/script/forceSimu
+

@@ -1,0 +1,68 @@
+# --- COM REF ---
+new Multiply<vector,matrixHomo> pg_comref
+plug pg.comref pg_comref.in1
+plug lfo_H_pg.out pg_comref.in2
+
+new Selector comselec
+comselec.reset 2 1
+comselec.create vector scomref 0
+
+plug dyn.com comselec.scomref0
+plug pg_comref.out comselec.scomref1
+plug pg.inprocess comselec.selec
+
+plug comselec.scomref featureComDes.errorIN
+set featureCom.selec 011
+set taskCom.controlGain 1
+
+# --- CORRECTION OF TWO FEET ---
+new FeaturePoint6dRelative featureTwofeetDes
+featureTwofeet.initSdes featureTwofeetDes
+set featureTwofeet.sdes featureTwofeetDes
+
+set taskTwofeet.controlGain 10
+
+# --- SOT ---
+
+set sot.damping 1e-15
+
+# -> Balancing only
+sot.clear
+sot.push taskTwofeet
+sot.push taskCom
+
+# --- TRACE ---
+
+OpenHRP.periodicCall addSignal pg_comref.out
+OpenHRP.periodicCall addSignal dyn.com
+OpenHRP.periodicCall addSignal taskCom.error
+OpenHRP.periodicCall addSignal featureTwofeet.error
+
+tr.add taskCom.error errorcom
+tr.add taskCom.task taskcom
+tr.add dyn.com
+tr.add pg_comref.out comref
+tr.add taskCom.controlGain gaincom
+tr.add pg.comref comref0
+tr.add pg.zmpref zpmref
+tr.add featureTwofeet.error errorfeet
+
+tr.start
+
+
+# Plug in the control the left foot position reference from the pg.
+unplug featureTwofeet.positionRef
+plug pg.LeftFootRef featureTwofeet.positionRef
+
+# Plug in the control the right foot position reference from the pg.
+unplug featureTwofeet.position
+plug pg.RightFootRef featureTwofeet.position
+
+plug pg.ZMPRef OpenHRP.zmp
+
+# Now push back the task in SoT.
+
+sot.push taskTwofeet
+sot.push taskCom
+
+

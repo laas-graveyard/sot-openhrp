@@ -1,0 +1,41 @@
+# Test (3) cf readme
+# Chest is off. No motion from the legs. No feedback on the position sensor. No
+# stab. 
+# Check the noise and effect of the sensor.
+
+# Remove stab and the sensor
+unplug OpenHRP.zmp
+flex.fromSensor false
+OpenHRP.periodicCall addSignal flex.angles
+
+# Tune task <task>
+set task.controlGain .2
+plug dyn.J0 p6.Jq
+plug dyn.0 p6.position
+t.[] 0 0.25
+t.[] 1 -0.5
+t.[] 2 .85
+
+set p6.selec 111111
+task.unselec :
+task.selec 16:21
+
+# Configure the SOT
+sot.clear
+sot.push task
+
+# Remove the contact from the kinematic model
+sot.clearConstraint
+
+# Lock the chest
+# dyn.createOpPoint chest 14
+# legs.clear
+# legs.add dyn.Jchest
+# sot.addConstraint legs
+
+
+tr.clear
+tr.add task.task
+tr.add OpenHRP.attitude
+tr.add flex.angles
+tr.add dyn.ffposition

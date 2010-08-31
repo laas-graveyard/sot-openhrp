@@ -1,0 +1,59 @@
+(1) Basic Inverse Kinematics
+----------------------------
+Robot in free floating. No sensor feedback except the joint proprio.
+Bring one op-point to desired position.
+	ik_arm:	    op-point=right hand
+	ik_leg:     op-point=left feet
+The task error is recorded. Just check the exponential decrease.
+
+(2) Basic IK + joint limit stopper
+----------------------------------
+Same test as (1), and play with the desired position to push the robot
+behind its jl. Check that the JointLimit is enforced.
+
+
+(3) Basic IK + sensor passive
+-----------------------------
+Same test as (1). The angle of the flexibility and drift
+are computed from the rotation sensor, and logged. 
+Two points to consider:
+- the noise of the sensor when the robot waist is not moving.
+- vibration in the sensor measurement when the flexibility is exited
+
+(4) Basic IK + sensor
+---------------------
+Same test as (1), but using the KF sensor to compute the ff position.
+In order to avoid undesired joint-limit blocking, the chest is not used
+to fullfil the task. Chest being not used, the robot can stand on the ground.
+Three points to consider:
+- the noise of the sensor when the robot waist is not moving.
+- vibration in the sensor measurement when the flexibility is exited
+- compensatory motions of the arm when the waist is disturbed.
+
+(5) Basic IK + sensor + velocity
+--------------------------------
+Same test as (4), but using the KF velocity estimation as q0 entry of the sot.
+In order to avoid undesired joint-limit blocking, the chest is not used
+to fullfil the task. Chest being not used, the robot can stand on the ground.
+Main point to consider:
+- compensatory motions of the arm when the waist is disturbed.
+
+
+
+-----------------------------------------------------------------------------------
+--- COM --- COM --- COM --- COM --- COM --- COM --- COM --- COM --- COM --- COM ---
+-----------------------------------------------------------------------------------
+
+(1) Basic COM-XY
+----------------
+No sensor feedback. Both feet on the ground.
+Task twofeet has priority. Task Com in second range: dim 2, Z is unactive. 
+
+(2) Basic COM-XY + sensor
+-------------------------
+Same as (1) but with a feedback on the rotation sensor used to compute the position 
+of the waist.
+
+
+
+

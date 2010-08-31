@@ -1,0 +1,30 @@
+# run script/simu
+# run script/simusmall
+
+sot.gradient rm
+
+chrono OpenHRP.inc
+chrono OpenHRP.inc
+chrono OpenHRP.inc
+chrono OpenHRP.inc
+chrono OpenHRP.inc
+signalTime sot.control
+
+
+chrono compute taskCom.jacobian 10
+chrono compute legs.jacobian 10
+chrono compute taskTwofeet.jacobian 10
+chrono compute task.jacobian 10
+chrono compute taskTwofeet.task 10
+chrono compute taskCom.task 10
+chrono compute task.task 10
+get sot.control
+
+chrono  compute sot.control 10
+
+
+
+# synchro task.jacobian 4 1
+# synchro taskCom.jacobian 4 2
+# synchro taskTwofeet.jacobian 4 3
+# synchro legs.jacobian 4 4
