@@ -1,10 +1,10 @@
-loadPlugin sotStepChecker${DYN_LIB_EXT}
-loadPlugin sotStepObserver${DYN_LIB_EXT}
-loadPlugin sotStepQueue${DYN_LIB_EXT}
-loadPlugin sotStepComputerPos${DYN_LIB_EXT}
-loadPlugin sotStepComputerJoystick${DYN_LIB_EXT}
-loadPlugin sotPGManager${DYN_LIB_EXT}
-loadPlugin sotStepTimeLine${DYN_LIB_EXT}
+loadPlugin step-checker${DYN_LIB_EXT}
+loadPlugin step-observer${DYN_LIB_EXT}
+loadPlugin step-queue${DYN_LIB_EXT}
+loadPlugin step-computer-pos${DYN_LIB_EXT}
+loadPlugin step-computer-joystick${DYN_LIB_EXT}
+loadPlugin pg-manager${DYN_LIB_EXT}
+loadPlugin step-time-line${DYN_LIB_EXT}
 
 new StepObserver stepobs
 new StepQueue stepqueue

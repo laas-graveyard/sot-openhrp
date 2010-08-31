@@ -111,8 +111,11 @@ SET(listofscripttocreate
      dynsmallpart1hrp2_10_old.cmake
      hwpg.cmake
      hwpgpginit.cmake
+     hwpgpginitpart1hrp2_10.cmake
      traces.cmake
 )
+
+SOT_INSTALL_SCRIPT(hwpgpginitpart2)
 
 OPTION(GENERATE_DYNFILES "Generate the dyn-files giving the model-file pathes." 1)
 IF(GENERATE_DYNFILES)
@@ -194,6 +197,7 @@ SOT_INSTALL_SCRIPT(teleoperation/initConnec
 		   teleoperation/initConnecVFwave
 		   teleoperation/initConnecAll
 		   teleoperation/teleop
+		   teleoperation/teleophrp2_10
 		   teleoperation/teleopVFwave
 		   teleoperation/teleopAll
 		   teleoperation/data_epfl
