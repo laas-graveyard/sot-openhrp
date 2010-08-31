@@ -59,7 +59,7 @@ plug Vw.out reflearn.in2
 # 
 # new Task taskRhand
 # taskRhand.add o6
-# new GainAdaptative gainRhand
+# new GainAdaptive gainRhand
 # gainRhand.setConstant .2
 # plug taskRhand.error gainRhand.error
 # plug gainRhand.gain taskRhand.controlGain

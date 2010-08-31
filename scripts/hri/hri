@@ -58,11 +58,11 @@ plug Rd.out comp.in1
 plug plan.position comp.in2
 
 # gain of the leader and follower controllers
-new GainAdaptative glead
+new GainAdaptive glead
 glead.setConstant 1
 plug p6.error glead.error
 
-new GainAdaptative gfollow
+new GainAdaptive gfollow
 gfollow.setConstant 1
 plug p3.error gfollow.error
 

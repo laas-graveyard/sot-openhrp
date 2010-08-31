@@ -19,7 +19,7 @@ set lleg6.sdes lleg6d
 
 new Task taskposlleg
 taskposlleg.add lleg6
-new GainAdaptative gainlleg
+new GainAdaptive gainlleg
 gainlleg.setConstant 1
 plug taskposlleg.error gainlleg.error
 plug gainlleg.gain taskposlleg.controlGain
@@ -37,7 +37,7 @@ plug pg.rightfootref rleg6d.position
 
 new Task taskposrleg
 taskposrleg.add rleg6
-new GainAdaptative gainrleg
+new GainAdaptive gainrleg
 gainrleg.setConstant 1
 plug taskposrleg.error gainrleg.error
 plug gainrleg.gain taskposrleg.controlGain

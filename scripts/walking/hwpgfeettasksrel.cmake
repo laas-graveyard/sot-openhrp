@@ -178,12 +178,12 @@ plug featureCom.errordot taskComPD.errorDot
 # --- Creating task for the waist
 
 # --- Adaptative Gain ---
-# new GainAdaptative gainAdapCom
+# new GainAdaptive gainAdapCom
 # gainAdapCom.set 5 .5 50
 # plug gainAdapCom.gain taskCom.controlGain
 # plug taskCom.error gainAdapCom.error
 
-# new GainAdaptative gainAdapTwofeet
+# new GainAdaptive gainAdapTwofeet
 # gainAdapTwofeet.set 5 .5 100
 # plug gainAdapTwofeet.gain taskTwofeet.controlGain
 # plug taskTwofeet.error gainAdapTwofeet.error

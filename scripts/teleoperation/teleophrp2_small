@@ -89,7 +89,7 @@ plug necklimit.jointLimited featureHeadDes.errorIN
 # plug coshell.headSOUT necklimit.joint
 # plug coshell.headSOUT featureHeadDes.errorIN
 
-new GainAdaptative gainHead
+new GainAdaptive gainHead
 gainHead.set 10 .1 100
 plug taskHead.error gainHead.error
 plug gainHead.gain taskHead.controlGain
@@ -126,7 +126,7 @@ set taskHeadWB.controlSelec 1100000000000000
 # set taskHeadWB.controlSelec 1111000000000000
 set taskHeadWB.controlGain .3
 
-new GainAdaptative gainHeadWB
+new GainAdaptive gainHeadWB
 gainHeadWB.set 10 .1 100
 plug taskHeadWB.error gainHeadWB.error
 plug gainHeadWB.gain taskHeadWB.controlGain
@@ -345,7 +345,7 @@ set sot.damping 1e-2
 
 # --- COM
 set featureComDes.errorIN [3](0.0294045,-0.0936384,0.7)
-new GainAdaptative gainCom
+new GainAdaptive gainCom
 gainCom.set .1 .1 30
 plug taskCom.error gainCom.error
 plug gainCom.gain taskCom.controlGain

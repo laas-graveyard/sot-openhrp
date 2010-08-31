@@ -102,11 +102,11 @@ plug hparam_lh.ref href_lh.in2
 # --- Right Hand ---
 
 # gain of the leader and follower controllers
-new GainAdaptative glead
+new GainAdaptive glead
 glead.setConstant 1
 plug p6rel_rh.error glead.error
 
-new GainAdaptative gfollow
+new GainAdaptive gfollow
 gfollow.setConstant 1
 plug p3.error gfollow.error
 
@@ -136,11 +136,11 @@ plug follow.out ui.in2
 # --- Left Hand ---
 
 # gain of the leader and follower controllers
-new GainAdaptative glead_lh
+new GainAdaptive glead_lh
 glead_lh.setConstant 1
 plug p6rel_lh.error glead_lh.error
 
-new GainAdaptative gfollow_lh
+new GainAdaptive gfollow_lh
 gfollow_lh.setConstant 1
 plug p3LH.error gfollow_lh.error
 

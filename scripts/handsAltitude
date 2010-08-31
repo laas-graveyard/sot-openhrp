@@ -20,7 +20,7 @@ set o6_r.sdes o6d_r
 
 new Task taskRhand
 taskRhand.add o6_r
-new GainAdaptative gainRhand
+new GainAdaptive gainRhand
 gainRhand.setConstant 0.7
 plug taskRhand.error gainRhand.error
 plug gainRhand.gain taskRhand.controlGain
@@ -52,7 +52,7 @@ set o6_l.sdes o6d_l
 
 new Task taskLhand
 taskLhand.add o6_l
-new GainAdaptative gainLhand
+new GainAdaptive gainLhand
 gainLhand.setConstant 0.7
 plug taskLhand.error gainLhand.error
 plug gainLhand.gain taskLhand.controlGain

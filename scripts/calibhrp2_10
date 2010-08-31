@@ -20,7 +20,7 @@ taskJ.selec 18:20
 set taskJ.controlGain 1
 sot.push taskJ
 
-new GainAdaptative jgain
+new GainAdaptive jgain
 plug taskJ.error jgain.error
 plug jgain.gain taskJ.controlGain
 jgain.set 3 .5 10

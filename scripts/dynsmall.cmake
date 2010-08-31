@@ -106,7 +106,7 @@ set p6.sdes p6d
 
 new Task task
 task.add p6
-new GainAdaptative gain
+new GainAdaptive gain
 gain.setConstant .2
 plug task.error gain.error
 plug gain.gain task.controlGain
