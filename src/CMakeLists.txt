@@ -2,6 +2,9 @@
 #  Copyright 
 # 
 
+# WalkGenJrl compilation flags
+LIST(APPEND ${PROJECT_NAME}_CXXFLAGS ${WALKGENJRL_CFLAGS})
+
 # Add MatrixAbstractLayer compilation flags and link to library libMatrixAbstractLayer.so
 ADD_DEFINITIONS(${MATRIXABSTRACTLAYER_CFLAGS})
 
