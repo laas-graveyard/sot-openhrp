@@ -70,7 +70,7 @@ ENDMACRO(SOT_INSTALL_SCRIPT)
 SET(PLUGIN_LIST_FILENAME plugin.txt)
 #NOTE: plugins list disabled for now, assuming all present
  SET(BoostThread_Plugins "distant-shell${DYN_LIB_EXT}\nperiodic-call-entity${DYN_LIB_EXT}")
- SET(unix_Plugins "mailbox${DYN_LIB_EXT}\n")
+ SET(unix_Plugins "mailbox-vector${DYN_LIB_EXT}\n")
  SET(dynamicsJRLJapan_Plugins "dynamic${DYN_LIB_EXT}")
  SET(hrp2Dynamics_Plugins "dynamic-hrp2${DYN_LIB_EXT}")
  SET(walkGenJrl_Plugins "selector${DYN_LIB_EXT}\nwhich-foot-upper${DYN_LIB_EXT}\nnext-step${DYN_LIB_EXT}")
