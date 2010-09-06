@@ -49,6 +49,7 @@ integrator-force${DYN_LIB_EXT}
 mass-apparent${DYN_LIB_EXT}
 clamp-workspace${DYN_LIB_EXT}
 com-freezer${DYN_LIB_EXT}
+exception-pg${DYN_LIB_EXT}
 ${unix_Plugins}
 ${walkGenJrl_Plugins}
 ${BoostThread_Plugins}
