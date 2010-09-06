@@ -14,7 +14,7 @@
 /* --- INCLUDE -------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
-#define VP_DEBUG 
+//#define VP_DEBUG
 #define VP_DEBUG_MODE 40
 #define SOT_CHECK_TIME
 #include "StackOfTasks.h"              /* Header of the below-defined class. */
