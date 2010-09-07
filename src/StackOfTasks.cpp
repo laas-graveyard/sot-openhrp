@@ -114,7 +114,9 @@ StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl)
 {
   m_ReferenceState = REFSTATE_RS;
 
-  if( sotDEBUG_ENABLE(1) ) { DebugTrace::openFile(); }
+#ifdef VP_DEBUG
+  { DebugTrace::openFile(); }
+#endif
   sotDEBUGIN(5);
 
   assigned_time = 0.005;
