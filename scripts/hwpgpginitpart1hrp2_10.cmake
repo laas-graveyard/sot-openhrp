@@ -1,4 +1,5 @@
 loadPlugin pg${DYN_LIB_EXT}
+loadPlugin exception-pg${DYN_LIB_EXT}
 new PatternGenerator pg
 
 # Initialize files and information of the pattern generator.

@@ -1,7 +1,6 @@
 loadPlugin next-step.so
 loadPlugin next-step-pg-sot.so
 
-
 # --- Configure stepper --------------------------
 
 new NextStepPgSot stepper
