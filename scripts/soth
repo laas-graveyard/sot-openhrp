@@ -10,7 +10,7 @@ plug OpenHRP.attitude flex.sensorWorldRotation
 run /home/nmansard/src/StackOfTasks/script/small
 
 # --- TASK UNILATERAL ---
-loadPlugin sotTaskUnilateral.so
+loadPlugin task-unilateral${DYN_LIB_EXT}
 new TaskUnilateral taskuJl
 
 new Selec<vector> jl

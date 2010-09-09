@@ -1,4 +1,4 @@
-loadPlugin sotPatternGenerator${DYN_LIB_EXT}
+loadPlugin pg${DYN_LIB_EXT}
 new PatternGenerator pg
 
 # Initialize files and information of the pattern generator.

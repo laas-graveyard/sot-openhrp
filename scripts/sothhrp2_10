@@ -10,7 +10,7 @@ plug OpenHRP.attitude flex.sensorWorldRotation
 run /home/nmansard/src/StackOfTasks/script/small
 
 # --- TASK UNILATERAL ---
-loadPlugin sotTaskUnilateral.so
+loadPlugin task-unilateral.so
 new TaskUnilateral taskuJl
 
 new Selec<vector> jl
@@ -58,7 +58,7 @@ endproc
 # --- Stack of tasks --- 
 # --- Stack of tasks --- 
 # --- Stack of tasks --- 
-loadPlugin sotSOTH.so
+loadPlugin sot-h.so
 new SOTH soth
 soth.nbJoints 38
 

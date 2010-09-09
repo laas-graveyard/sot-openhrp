@@ -1,5 +1,5 @@
-loadPlugin sotReproConstraints${DYN_LIB_EXT} ${CMAKE_INSTALL_PREFIX}/lib/plugin
-loadPlugin sotTaskLearning${DYN_LIB_EXT} ${CMAKE_INSTALL_PREFIX}/lib/plugin
+loadPlugin repro-constraints${DYN_LIB_EXT} ${CMAKE_INSTALL_PREFIX}/lib/plugin
+loadPlugin task-learning${DYN_LIB_EXT} ${CMAKE_INSTALL_PREFIX}/lib/plugin
 
 new ReproConstraints freezer
 new TaskLearning tlearn

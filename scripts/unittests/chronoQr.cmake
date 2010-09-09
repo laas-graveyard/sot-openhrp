@@ -3,7 +3,7 @@ run ${CMAKE_INSTALL_PREFIX}/script/simusmall
 set taskCom.controlGain 10
 
 
-loadPlugin sotSOTQr.so
+loadPlugin sot-qr.so
 new SOTQr sotqr
 sotqr.nbJoints 36
 sotqr.push task

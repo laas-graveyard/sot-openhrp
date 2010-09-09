@@ -1,5 +1,5 @@
 loadPlugin HumanoidRobotSCD${DYN_LIB_EXT}
-loadPlugin sotCollisionDetector${DYN_LIB_EXT}
+loadPlugin collision-detector${DYN_LIB_EXT}
 
 new CollisionDetector collision
 
