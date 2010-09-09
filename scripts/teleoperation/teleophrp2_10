@@ -26,9 +26,11 @@ plug waistRh.out hRwaist.in
 
 # This is to transform German forces to hand coordinates
 new Compose<R+T> Rwt0
-plug hRwaist.out Rwt0.in1
+new MatrixRotToMatrix matrix_cast
+plug hRwaist.out matrix_cast.in
+plug matrix_cast.out Rwt0.in1
 set Rwt0.in2 [3](0,0,0)
-new HomoToTwist Vw
+new HomoToTwist2 Vw
 plug Rwt0.out Vw.in
 new Multiply<vector,matrix> fgermany
 plug Vw.out fgermany.in2 
@@ -36,9 +38,11 @@ plug fgermany.out addForce.in1
 
 # This is to transform sensor force to world coordinates
 new Compose<R+T> 0wtR
-plug waistRh.out 0wtR.in1
+new MatrixRotToMatrix matrix_cast1
+plug waistRh.out matrix_cast1.in
+plug matrix_cast1.out 0wtR.in1
 set 0wtR.in2 [3](0,0,0)
-new HomoToTwist invVw
+new HomoToTwist2 invVw
 plug 0wtR.out invVw.in
 new Multiply<vector,matrix> fsensor
 plug invVw.out fsensor.in2
@@ -104,7 +108,9 @@ Rdes_head.axis 0 Z
 Rdes_head.axis 1 Y
 
 new Compose<R+T> Mdes_head
-plug Rdes_head.out Mdes_head.in1
+new MatrixRotToMatrix matrix_cast2
+plug Rdes_head.out matrix_cast2.in
+plug matrix_cast2.out Mdes_head.in1
 set Mdes_head.in2 [3](0,0,1.5)
 
 dyn.createOpPoint head 16
@@ -272,9 +278,11 @@ new Inverse<matrixrotation> lhRwaist
 plug waistLh.out lhRwaist.in
 
 new Compose<R+T> Rwtlh
-plug lhRwaist.out Rwtlh.in1
+new MatrixRotToMatrix matrix_cast3
+plug lhRwaist.out matrix_cast3.in
+plug matrix_cast3.out Rwtlh.in1
 set Rwtlh.in2 [3](0,0,0)
-new HomoToTwist Vwlh
+new HomoToTwist2 Vwlh
 plug Rwtlh.out Vwlh.in
 
 new Multiply<vector,matrix> fgermanyLH
