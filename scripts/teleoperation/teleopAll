@@ -88,7 +88,7 @@ plug wrtPoseInitinShoulder.out absRrh.in
 new MatrixToQuaternion qrh
 plug absRrh.out qrh.in
 
-new Derivator<sotVectorQuaternion> dqrh
+new Derivator<VectorQuaternion> dqrh
 set dqrh.dt 200
 plug qrh.out dqrh.in
 
@@ -282,7 +282,7 @@ plug wrtPoseInitinShoulderLH.out absRlh.in
 new MatrixToQuaternion qlh
 plug absRlh.out qlh.in
 
-new Derivator<sotVectorQuaternion> dqlh
+new Derivator<VectorQuaternion> dqlh
 set dqlh.dt 200
 plug qlh.out dqlh.in
 
