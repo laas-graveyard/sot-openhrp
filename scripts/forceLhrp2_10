@@ -76,21 +76,17 @@ set spr_KwaistL.in [6] (0,0,200,0,0,0)
 new HomoToRotation spr_waistRL
 plug dyn2.lh spr_waistRL.in
 new Compose<R+T> spr_waistHL
-new MatrixRotToMatrix spr_waistHL_typecast
-plug spr_waistRL.out spr_waistHL_typecast.in
-plug spr_waistHL_typecast.out spr_waistHL.in1
+plug spr_waistRL.out spr_waistHL.in1
 set spr_waistHL.in2 [3](0,0,0)
-new HomoToTwist2 spr_waistVhandL
+new HomoToTwist spr_waistVhandL
 plug spr_waistHL.out spr_waistVhandL.in
 
 new Inverse<matrixrotation> spr_LRwaist
 plug spr_waistRL.out spr_LRwaist.in
 new Compose<R+T> spr_LHwaist
-new MatrixRotToMatrix spr_LHwaist_typecast
-plug spr_LRwaist.out spr_LHwaist_typecast.in
-plug spr_LHwaist_typecast.out spr_LHwaist.in1
+plug spr_LRwaist.out spr_LHwaist.in1
 set spr_LHwaist.in2 [3](0,0,0)
-new HomoToTwist2 spr_handVwaistL
+new HomoToTwist spr_handVwaistL
 plug spr_LHwaist.out spr_handVwaistL.in
 
 new Multiply<matrix> spr_tmpL

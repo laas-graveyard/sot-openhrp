@@ -4,7 +4,6 @@ OpenHRP.withForces 2 1
 
 new ForceCompensation forceCompRH
 new HomoToRotation dynR0
-
 plug dyn.0 dynR0.in
 plug dynR0.out forceCompRH.worldRhand
 set forceCompRH.handRsensor [3,3]((0,-1,0),(1,0,0),(0,0,1))
@@ -172,21 +171,17 @@ set spr_Kwaist.in [6](0,0,200,0,0,0)
 new HomoToRotation spr_waistR0
 plug dyn2.0 spr_waistR0.in
 new Compose<R+T> spr_waistH0
-new MatrixRotToMatrix convert_waist0
-plug spr_waistR0.out convert_waist0.in
-plug convert_waist0.out spr_waistH0.in1
+plug spr_waistR0.out spr_waistH0.in1
 set spr_waistH0.in2 [3](0,0,0)
-new HomoToTwist2 spr_waistVhand
+new HomoToTwist spr_waistVhand
 plug spr_waistH0.out spr_waistVhand.in
 
 new Inverse<matrixrotation> spr_0Rwaist
 plug spr_waistR0.out spr_0Rwaist.in
 new Compose<R+T> spr_0Hwaist
-new MatrixRotToMatrix convert_waist1
-plug spr_0Rwaist.out convert_waist1.in
-plug convert_waist1.out spr_0Hwaist.in1
+plug spr_0Rwaist.out spr_0Hwaist.in1
 set spr_0Hwaist.in2 [3](0,0,0)
-new HomoToTwist2 spr_handVwaist
+new HomoToTwist spr_handVwaist
 plug spr_0Hwaist.out spr_handVwaist.in
 
 new Multiply<matrix> spr_tmp
