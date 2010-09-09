@@ -159,7 +159,7 @@ StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl)
 		      << previousStateSOUT 
 		      << previousControlSOUT);
   {
-    void * dlib = dlopen( "libsot-0.so",RTLD_NOW|RTLD_GLOBAL);
+    void * dlib = dlopen( "libsot-core.so",RTLD_NOW|RTLD_GLOBAL);
     if( NULL==dlib ) 
       {
 	sotDEBUG(5) << "Failure while loading: " <<dlerror() <<endl;
