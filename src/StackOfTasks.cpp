@@ -162,16 +162,16 @@ StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl)
     void * dlib = dlopen( "libsot-core.so",RTLD_NOW|RTLD_GLOBAL);
     if( NULL==dlib ) 
       {
-	sotDEBUG(5) << "Failure while loading: " <<dlerror() <<endl;
+	sotDEBUG(5) << "Failure while loading libsot-core.so: " <<dlerror() <<endl;
 	SOT_THROW ExceptionFactory( ExceptionFactory::DYNAMIC_LOADING,
-				       "Error while dlopen. ",dlerror() );
+				       "Error while dlopen on libsot-core.so. ",dlerror() );
       }
     void * dlib2 = dlopen( "StackOfTasks.so",RTLD_NOW|RTLD_GLOBAL);
     if( NULL==dlib2 ) 
       {
 	sotDEBUG(5) << "Failure while loading StackOfTasks.so: " <<dlerror() <<endl;
 	SOT_THROW ExceptionFactory( ExceptionFactory::DYNAMIC_LOADING,
-				       "Error while dlopen. ",dlerror() );
+				       "Error while loading StackOfTasks.so. ",dlerror() );
       }
   }
 
