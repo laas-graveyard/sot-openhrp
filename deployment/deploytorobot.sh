@@ -10,6 +10,10 @@ USERNAME=`whoami`
 
 echo $USERNAME
 
+if [ -n "$OPENHRPHOME" ]; then
+  OPENHRPHOME=/home/${USERNAME}/src/OpenHRP-3.0.5
+fi;
+
 ${CPCMD} -r ${USEROPENROBOTSPATH}/script ${WORKINGDIRECTORY}
 WDSCRIPT=${WORKINGDIRECTORY}/script
 chmod u+w ${WDSCRIPT}/* -R
@@ -55,6 +59,7 @@ TARGETPYTHON=grxuser@192.168.10.201:/home/grxuser/src/OpenHRP/Controller/IOserve
 WDPYTHON=/tmp/python
 mkdir -p ${WDPYTHON}
 cp ${HRPSCRIPTDIR}/sot*.py ${WDPYTHON}
+
 
 cd ${WDPYTHON}
 
@@ -137,8 +142,7 @@ CopyAndLinkFiles "gfortran"
 CopyAndLinkFiles "boost"
 
 rsh grxuser@hrp2010c rm /home/grxuser/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so
-${SCPCMD_NOLINKS} /home/${USERNAME}/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so 
-grxuser@hrp2010c:/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/bin
+${SCPCMD_NOLINKS} $OPENHRPHOME/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so grxuser@hrp2010c:/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/bin
 
 # Robots description
 ${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10-small-old grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
