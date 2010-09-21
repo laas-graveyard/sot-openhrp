@@ -1,7 +1,10 @@
+# This script is used internally in the JRL to copy the binary files to the robot's computer.
+
 USEROPENROBOTSPATH=${ROBOTPKG_BASE}
 WORKINGDIRECTORY=/tmp/
 TARGETPATH=grxuser@hrp2010c:/home/grxuser/devel/openrobots
-SCPCMD=scp
+SCPCMD="rsync -l"
+SCPCMD_NOLINKS=scp
 CPCMD=/bin/cp
 USERNAME=`whoami`
 
@@ -133,10 +136,11 @@ CopyAndLinkFiles "hrp2opt"
 CopyAndLinkFiles "gfortran"
 CopyAndLinkFiles "boost"
 
-${SCPCMD} /home/${USERNAME}/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so grxuser@hrp2010c:/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/bin
-
+rsh grxuser@hrp2010c rm /home/grxuser/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so
+${SCPCMD_NOLINKS} /home/${USERNAME}/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so 
+grxuser@hrp2010c:/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/bin
 
 # Robots description
-${SCPCMD} -r ${ORIGINSHARE}/hrp2_10-small-old grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
-${SCPCMD} -r ${ORIGINSHARE}/hrp2_10-small grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
-${SCPCMD} -r ${ORIGINSHARE}/hrp2_10 grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
+${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10-small-old grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
+${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10-small grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
+${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10 grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
