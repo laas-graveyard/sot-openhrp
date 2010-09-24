@@ -7,6 +7,7 @@ LIST(APPEND ${PROJECT_NAME}_CXXFLAGS ${WALKGENJRL_CFLAGS})
 
 # Add MatrixAbstractLayer compilation flags and link to library libMatrixAbstractLayer.so
 ADD_DEFINITIONS(${MATRIXABSTRACTLAYER_CFLAGS})
+INCLUDE_DIRECTORIES(${CMAKE_INSTALL_PREFIX}/include)
 
 # -------------------------------------------------------------------
 # --- UTILS ---------------------------------------------------------
