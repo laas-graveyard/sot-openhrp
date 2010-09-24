@@ -3,8 +3,7 @@
 # 
 
 SET(${PROJECT_NAME}_HEADERS
-sot-openhrp.hh
-sot-openhrp-api.hh
+# Nothing to install
 )
 
 # Recreate correct path for the headers
