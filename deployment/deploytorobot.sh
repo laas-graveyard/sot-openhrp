@@ -10,7 +10,7 @@ USERNAME=`whoami`
 
 echo $USERNAME
 
-if [ -n "$OPENHRPHOME" ]; then
+if ![ -n "$OPENHRPHOME" ]; then
   OPENHRPHOME=/home/${USERNAME}/src/OpenHRP-3.0.5
 fi;
 
@@ -85,6 +85,7 @@ ${SCPCMD} ${WDPYTHON}/* ${TARGETPYTHON}
 rsh grxuser@hrp2010c mkdir -p ${TARGETLIB}/plugin
 rsh grxuser@hrp2010c mkdir -p ${TARGETSHARE}
 
+echo "Copying scripts and openrobots files"
 #scp openrobots
 
 ${SCPCMD} -r ${WDSCRIPT} ${TARGETPATH}
@@ -141,6 +142,7 @@ CopyAndLinkFiles "hrp2opt"
 CopyAndLinkFiles "gfortran"
 CopyAndLinkFiles "boost"
 
+echo "rsh grxuser@hrp2010c rm /home/grxuser/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so"
 rsh grxuser@hrp2010c rm /home/grxuser/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so
 ${SCPCMD_NOLINKS} $OPENHRPHOME/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so grxuser@hrp2010c:/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/bin
 
