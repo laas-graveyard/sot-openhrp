@@ -185,14 +185,6 @@ class WalkTask:
 
     self.SoT.sendMsg(":script sot.clear")
 
-    # --- Play --- #
-
-    self.SoT.sendMsg(":script OpenHRP.reinit from mc")
-    self.SoT.sendMsg(":script OpenHRP.play")
-    
-    if(self.with_trace):
-      self.SoT.sendMsg(":script tr.start")
-
     # --- PG --- #
     if (self.robot=="HRP2JRL10Small"):
       self.SoT.sendMsg(":script run ${CMAKE_INSTALL_PREFIX}/script/hwpgpginitpart1hrp2_10")
@@ -212,6 +204,14 @@ class WalkTask:
     else:
       self.SoT.sendMsg(":script run ${CMAKE_INSTALL_PREFIX}/script/walkreact-joystick")
     self.SoT.sendMsg(":script run ${CMAKE_INSTALL_PREFIX}/script/walking/hwpgfeettasksrel")
+
+    # --- Play --- #
+
+    self.SoT.sendMsg(":script OpenHRP.reinit from mc")
+    self.SoT.sendMsg(":script OpenHRP.play")
+    
+    if(self.with_trace):
+      self.SoT.sendMsg(":script tr.start")
 
     # --- Misc --- #
     self.SoT.sendMsg(":script run ${CMAKE_INSTALL_PREFIX}/script/clamp-workspace")
