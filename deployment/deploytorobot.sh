@@ -1,11 +1,18 @@
+# This script is used internally in the JRL to copy the binary files to the robot's computer.
+
 USEROPENROBOTSPATH=${ROBOTPKG_BASE}
 WORKINGDIRECTORY=/tmp/
 TARGETPATH=grxuser@hrp2010c:/home/grxuser/devel/openrobots
-SCPCMD=scp
+SCPCMD="rsync -l"
+SCPCMD_NOLINKS=scp
 CPCMD=/bin/cp
 USERNAME=`whoami`
 
 echo $USERNAME
+
+if ![ -n "$OPENHRPHOME" ]; then
+  OPENHRPHOME=/home/${USERNAME}/src/OpenHRP-3.0.5
+fi;
 
 ${CPCMD} -r ${USEROPENROBOTSPATH}/script ${WORKINGDIRECTORY}
 WDSCRIPT=${WORKINGDIRECTORY}/script
@@ -53,6 +60,7 @@ WDPYTHON=/tmp/python
 mkdir -p ${WDPYTHON}
 cp ${HRPSCRIPTDIR}/sot*.py ${WDPYTHON}
 
+
 cd ${WDPYTHON}
 
 for i in `ls`; do
@@ -77,6 +85,7 @@ ${SCPCMD} ${WDPYTHON}/* ${TARGETPYTHON}
 rsh grxuser@hrp2010c mkdir -p ${TARGETLIB}/plugin
 rsh grxuser@hrp2010c mkdir -p ${TARGETSHARE}
 
+echo "Copying scripts and openrobots files"
 #scp openrobots
 
 ${SCPCMD} -r ${WDSCRIPT} ${TARGETPATH}
@@ -133,10 +142,11 @@ CopyAndLinkFiles "hrp2opt"
 CopyAndLinkFiles "gfortran"
 CopyAndLinkFiles "boost"
 
-${SCPCMD} /home/${USERNAME}/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so grxuser@hrp2010c:/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/bin
-
+echo "rsh grxuser@hrp2010c rm /home/grxuser/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so"
+rsh grxuser@hrp2010c rm /home/grxuser/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so
+${SCPCMD_NOLINKS} $OPENHRPHOME/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so grxuser@hrp2010c:/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/bin
 
 # Robots description
-${SCPCMD} -r ${ORIGINSHARE}/hrp2_10-small-old grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
-${SCPCMD} -r ${ORIGINSHARE}/hrp2_10-small grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
-${SCPCMD} -r ${ORIGINSHARE}/hrp2_10 grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
+${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10-small-old grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
+${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10-small grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
+${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10 grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
