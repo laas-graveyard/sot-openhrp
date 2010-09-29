@@ -54,7 +54,7 @@ ChangeFiles ${WORKINGDIRECTORY}/script
 
 # python scripts
 
-HRPSCRIPTDIR=/home/${USERNAME}/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/script/
+HRPSCRIPTDIR=${OPENHRPHOME}/Controller/IOserver/robot/HRP2JRL/script/
 TARGETPYTHON=grxuser@192.168.10.201:/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/script/
 WDPYTHON=/tmp/python
 mkdir -p ${WDPYTHON}
