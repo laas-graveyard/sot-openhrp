@@ -8,8 +8,8 @@ Build-Depends: debhelper (>= 7.0.50~), cmake (>= 2.6),
 	       libboost-thread-dev (>= 1.33.1),
 	       libjrl-mal-dev (>= 1.9.0.99),
 	       libdynamic-graph-dev (>= 1.0.0.99),
-	       libsot-core-dev (>= 1.0.0.99)
-#FIXME: jrl-walkgen
+	       libsot-core-dev (>= 1.0.0.99),
+	       libjrl-walkgen-dev (>= 1.0.0.99)
 #FIXME: hrp2-10-optimized
 #FIXME: openhrp
 Standards-Version: 3.8.4
@@ -21,7 +21,7 @@ Section: libs
 Package: libsot-openhrp-dev
 Section: libdevel
 Architecture: any
-Depends: libboost-dev (>= 1.33.1), libboost-thread-dev (>= 1.33.1), libjrl-mal-dev (>= 1.9.0.99), libdynamic-graph-dev (>= 1.0.0.99), libsot-core-dev (>= 1.0.0.99), libsot-openhrp1.0.0.99 (= ${binary:Version}), ${misc:Depends}
+Depends: libboost-dev (>= 1.33.1), libboost-thread-dev (>= 1.33.1), libjrl-mal-dev (>= 1.9.0.99), libdynamic-graph-dev (>= 1.0.0.99), libsot-core-dev (>= 1.0.0.99), libjrl-walkgen-dev (>= 1.0.0.99), libsot-openhrp1.0.0.99 (= ${binary:Version}), ${misc:Depends}
 Suggests: libsot-openhrp-doc
 Description: the hierarchichal task solver
  The stack of tasks provides a hierarchical task solver as a dynamic
