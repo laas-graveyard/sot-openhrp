@@ -1,0 +1,9 @@
+Document: sot-openhrp
+Title: Debian sot-openhrp Manual
+Author: Thomas Moulard <thomas.moulard@gmail.com>
+Abstract: Doxygen documentation of sot-openhrp.
+Section: Programming
+
+Format: HTML
+Index: /usr/share/doc/sot-openhrp/html/index.html
+Files: /usr/share/doc/sot-openhrp/html/*.html
