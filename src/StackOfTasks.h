@@ -1,14 +1,22 @@
-/*+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
- * Copyright JRL-Japan, 2010
- *+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+/*
+ * Copyright 2010,
+ * François Bleibel,
+ * Olivier Stasse,
  *
- * File:      StackOfTasks.h
- * Project:   SOT
- * Author:    Olivier Stasse
- *            Nicolas Mansard
+ * CNRS/AIST
  *
- * ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++*/
-
+ * This file is part of sot-openhrp.
+ * sot-openhrp is free software: you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public License
+ * as published by the Free Software Foundation, either version 3 of
+ * the License, or (at your option) any later version.
+ * sot-openhrp is distributed in the hope that it will be
+ * useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.  You should
+ * have received a copy of the GNU Lesser General Public License along
+ * with sot-openhrp.  If not, see <http://www.gnu.org/licenses/>.
+ */
 
 #ifndef __STACK_OF_TASKS_OPENHRP_PLUGIN_H__
 #define __STACK_OF_TASKS_OPENHRP_PLUGIN_H__
@@ -40,7 +48,7 @@ typedef SequencePlayer sotSequencePlayer;
 
 #endif
 
-#include "bodyinfo.h"	    
+#include "bodyinfo.h"
 
 
 #include <dynamic-graph/interpreter.h>
@@ -62,7 +70,7 @@ namespace ml = maal::boost;
 #include <boost/thread.hpp>
 #endif
 
-#define SOT_CHECK_TIME 
+#define SOT_CHECK_TIME
 #define SOT_TIME_FILENAME "/tmp/dt.dat"
 
 
@@ -80,20 +88,20 @@ enum robotType
   };
 
 class StackOfTasks
-:public plugin 
+:public plugin
   ,public dg::Entity
 {
-    
+
 public:  /* --- GENERIC PLUGIN IMPLEMENTATION --- */
 
   /** @name GenericPlugin
    * Generic plugin implementation: implements the method inherited from
-   * the plugin class. 
+   * the plugin class.
    */
-  // @{ 
+  // @{
   StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl );
   virtual ~StackOfTasks( void );
-  bool setup  ( sotRobotState* rs, sotMotorCommand* mc );  
+  bool setup  ( sotRobotState* rs, sotMotorCommand* mc );
   void control( sotRobotState* rs, sotMotorCommand* mc );
   bool cleanup( sotRobotState* rs, sotMotorCommand* mc );
   // @}
@@ -127,7 +135,7 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
   void m_init( istringstream &strm );
   void m_setForces( istringstream &strm );
 
-  /* @name ProperFinishing 
+  /* @name ProperFinishing
      This method makes sure that the seq player internal
      state comes back to the current situation. It usually
      assumes that the WPG has finish its work.
@@ -136,7 +144,7 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
   void m_hold(istringstream &strm);
   void m_waitForFinished( istringstream &strm );
   // @}
-  
+
   void m_test(istringstream &strm);
   //void m_distantShell(istringstream &strm);
 
@@ -156,41 +164,41 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
 #endif
   bool suspend;
 
-# ifdef SOT_CHECK_TIME 
+# ifdef SOT_CHECK_TIME
   static const int TIME_ARRAY_SIZE = 100000;
   double timeArray[TIME_ARRAY_SIZE];
   int stateArray[TIME_ARRAY_SIZE];
-  int timeIndex; 
-# endif  // #ifdef SOT_CHECK_TIME 
+  int timeIndex;
+# endif  // #ifdef SOT_CHECK_TIME
 
   static const double TIMESTEP_DEFAULT;
   double timestep;
 
- protected: 
+ protected:
   /*! Used to handle different robots */
   string m_RobotName;
   unsigned int m_nbDofs;
   robotType m_robotToControl;
 
-  void updateHRP2SmallFromMC(sotMotorCommand *mc, 
+  void updateHRP2SmallFromMC(sotMotorCommand *mc,
 			     maal::boost::Vector &VectorCommand,
 			     unsigned int ref=0);
-  void updateHRP2SmallMC(sotMotorCommand *mc, 
+  void updateHRP2SmallMC(sotMotorCommand *mc,
 			 maal::boost::Vector &VectorCommand,
 			 unsigned int ref=0);
   void updateHRP2Smalltorque(sotMotorCommand *rs,
 			     maal::boost::Vector &Torque);
 
-  void updateHRP210SmallOldFromMC(sotMotorCommand *mc, 
+  void updateHRP210SmallOldFromMC(sotMotorCommand *mc,
 				  maal::boost::Vector &VectorCommand,
 				  unsigned int ref=0);
-  void updateHRP210SmallOldMC(sotMotorCommand *mc, 
+  void updateHRP210SmallOldMC(sotMotorCommand *mc,
 			      maal::boost::Vector &VectorCommand,
 			      unsigned int ref =0);
-  
+
   void updateHRP210SmallOldtorque(sotMotorCommand *rs,
 				  maal::boost::Vector &Torque);
-  
+
  public: /* --- SOT ENTITY --- */
 
   static const std::string CLASS_NAME;
@@ -200,7 +208,7 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
 		    std::ostream& os );
 
   void updateMC(sotMotorCommand *mc, maal::boost::Vector &VectorCommand);
-  void updateFromMC(sotMotorCommand *mc, 
+  void updateFromMC(sotMotorCommand *mc,
 		    maal::boost::Vector &VectorCommand,
 		    unsigned int ref=0);
   void updateTorque(sotRobotState *rs,
@@ -209,9 +217,9 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
   void play( void );
   void pause( void );
 
-  //! Specific fields of the 
+  //! Specific fields of the
   unsigned int iter;
-  maal::boost::Vector robotStatePrec; 
+  maal::boost::Vector robotStatePrec;
   bool robotStatePrecInit;
   bool reinitFromMc;
 
@@ -253,7 +261,7 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
   bool activatePreviousControlSignal;
 
   /*! Peridic call that is called /before/ the MC computation
-   * (ie for precomputation needed by the main graph, like 
+   * (ie for precomputation needed by the main graph, like
    * event FSM-based computations). */
   PeriodicCall periodicCallBefore;
 
@@ -263,7 +271,7 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
 
   /*! Member storing the reference state.  */
   unsigned int m_ReferenceState;
-    
+
 };
 
 
