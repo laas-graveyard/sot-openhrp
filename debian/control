@@ -6,12 +6,12 @@ Build-Depends: debhelper (>= 7.0.50~), cmake (>= 2.6),
 	       pkg-config (>= 0.22),
 	       libboost-dev (>= 1.33.1),
 	       libboost-thread-dev (>= 1.33.1),
-	       libboost-filesystem-dev (>= 1.33.1),
-	       libboost-system-dev (>= 1.33.1),
-	       liblapack-dev (>= 1.2),
-	       gfortran (>= 4:4.4.3),
 	       libjrl-mal-dev (>= 1.9.0.99),
-	       libdynamic-graph-dev (>= 1.0.0.99)
+	       libdynamic-graph-dev (>= 1.0.0.99),
+	       libsot-core-dev (>= 1.0.0.99)
+#FIXME: jrl-walkgen
+#FIXME: hrp2-10-optimized
+#FIXME: openhrp
 Standards-Version: 3.8.4
 #Vcs-Git:
 #Vcs-browser:
