@@ -1,2 +1,0 @@
-loadPlugin shell-functions.so
-loadPlugins @PROJECT_HOME@/script/plugin.txt

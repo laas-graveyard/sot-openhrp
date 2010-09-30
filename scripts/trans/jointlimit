@@ -1,8 +1,0 @@
-new JointLimitator jointlimit
-plug dyn.position jointlimit.joint
-plug dyn.upperJl jointlimit.upperJl
-plug dyn.lowerJl jointlimit.lowerJl
-
-# plug sot.control jointlimit.controlIN
-# plug jointlimit.control OpenHRP.control
-squeeze OpenHRP.control jointlimit.controlIN jointlimit.control

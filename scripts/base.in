@@ -1,2 +1,0 @@
-loadPlugin sotShellFunctions.so @PROJECT_HOME@/lib/plugin
-loadPlugins @PROJECT_HOME@/script/plugin.txt

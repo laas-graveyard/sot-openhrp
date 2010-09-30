@@ -1,8 +1,0 @@
-proc demo_step1()
--> sot.push taskForce
--> sot.push taskForceLH
--> set friction.in [6](50,50,50,2,1,1)
--> stepper.thisIsZero record
--> run /home/grxuser/devel/openrobots/script/stepping
--> stepper.state start
-endproc

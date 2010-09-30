@@ -1,5 +1,0 @@
-loadPlugin sotFIRFilter.so
-
-new FIRFilter<Vector,double> ffilt
-
-ffilt.setCoefs 0.0034 0.0074 0.0188 0.0395 0.0677 0.0984 0.1248 0.1400 0.1400 0.1248 0.0984 0.0677 0.0395 0.0188 0.0074 0.0034

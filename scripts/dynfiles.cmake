@@ -1,2 +1,0 @@
-dyn2.setFiles ${HRP2_MODEL_DIRECTORY}/ HRP2JRLmain.wrl ${HRP2_CONFIG_DIRECTORY}/HRP2Specificities.xml ${HRP2_CONFIG_DIRECTORY}/HRP2LinkJointRank.xml 
-dyn.setFiles ${HRP2_MODEL_DIRECTORY}/ HRP2JRLmain.wrl ${HRP2_CONFIG_DIRECTORY}/HRP2Specificities.xml ${HRP2_CONFIG_DIRECTORY}/HRP2LinkJointRank.xml 

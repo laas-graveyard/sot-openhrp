@@ -1,6 +1,0 @@
-loadPlugin server-abstract.so /usr/local/lib/plugin
-loadPlugin server-command.so /usr/local/lib/plugin
-
-debugtrace true
-new ServerCommand coshell
-coshell.initAndStart sot

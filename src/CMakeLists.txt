@@ -30,12 +30,8 @@ ENDMACRO(LIST2STRING)
 
     SET(HRP_ROBOT_SPEC HRP2JRL CACHE STRING "Robot name, to resolve specific path in OpenHRP.")
 
-    SET(SOT_OPENHRP_SCRIPT_SOURCE_DIR "${CMAKE_CURRENT_SOURCE_DIR}")
-    SET(SOT_OPENHRP_SCRIPT_BUILD_DIR "${${PROJECT_NAME}_BINARY_DIR}/plugin")
-    SET(SOT_OPENHRP_SCRIPT_INSTALL_DIR "plugin")
     SET(SOT_OPENHRP_PLUGIN_INSTALL_DIR "lib")
     IF(INSTALL_IN_OPENHRP)
-	SET(SOT_OPENHRP_SCRIPT_INSTALL_DIR "${OPENHRP_HOME}/Controller/IOserver/robot/HRP2JRL/script")
         SET(SOT_OPENHRP_PLUGIN_INSTALL_DIR "${OPENHRP_HOME}/Controller/IOserver/robot/${HRP_ROBOT_SPEC}/bin")
     ENDIF(INSTALL_IN_OPENHRP)
 
@@ -74,36 +70,6 @@ ENDMACRO(LIST2STRING)
     INSTALL(FILES ${${PROJECT_NAME}_BINARY_DIR}/lib/${PLUGINBASENAME}.so
     		  DESTINATION ${SOT_OPENHRP_PLUGIN_INSTALL_DIR}
 		  PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
-		
-
-    # --- SCRIPT GENERATION AND INSTALL -----------------------------------------------------
-    SET(SEQPLAYERTYPENAME "SequencePlayer")
-    SET(SOT_OPENHRP_SCRIPT_TO_INSTALL 
-          TestStackOfTasksV3.py.cmake
-          sotTeleopV3.py.cmake
-	  sotTeleopV3nonemodal.py.cmake
-	  sotGeometry.py.cmake
-	  sotTaskLearning.py.cmake
-	  sotWalkTask.py.cmake
-	  sotSOTH.py.cmake
-	  sotWalkTaskGeometry.py.cmake
-	  sot_plugin.py.cmake
-	  TestHWPGinSOT.py.cmake
-	  TestHWPGinSOT.py.cmake
-	  demoBSCWreviewmeeting.py.cmake
-	  sotWalkTaskDemoROBOTatCWE.py.cmake
-          sotTutorial.py.cmake
-	  )
-
-    FOREACH(SCRIPT_NAME ${SOT_OPENHRP_SCRIPT_TO_INSTALL})
-      SET(cmakeextension "\\.cmake")
-      STRING(REGEX REPLACE "${cmakeextension}$" "" TARGET_NAME ${SCRIPT_NAME})
-      CONFIGURE_FILE(${SOT_OPENHRP_SCRIPT_SOURCE_DIR}/${SCRIPT_NAME}
-   	             ${SOT_OPENHRP_SCRIPT_BUILD_DIR}/${TARGET_NAME})
-      INSTALL(FILES ${SOT_OPENHRP_SCRIPT_BUILD_DIR}/${TARGET_NAME}
-	      DESTINATION ${SOT_OPENHRP_SCRIPT_INSTALL_DIR}
-	      PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
-   ENDFOREACH(SCRIPT_NAME)
 
   ENDIF(OPENHRP_VERSION_3)
 
