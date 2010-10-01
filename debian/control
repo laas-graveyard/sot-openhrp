@@ -22,7 +22,7 @@ Section: libs
 
 Package: libsot-openhrp-dev
 Section: libdevel
-Architecture: any
+Architecture: i386
 Depends: libboost-dev (>= 1.33.1), libboost-thread-dev (>= 1.33.1), libjrl-mal-dev (>= 1.9.0.99), libdynamic-graph-dev (>= 1.0.0.99), libsot-core-dev (>= 1.0.0.99), libjrl-walkgen-dev (>= 1.0.0.99), jrl-hrpsys3.0.1 (>= 3.0.1), openhrp3.0.5 (>= 3.0.5), libsot-openhrp1.0.0.99 (= ${binary:Version}), ${misc:Depends}
 Suggests: libsot-openhrp-doc
 Description: the hierarchichal task solver
