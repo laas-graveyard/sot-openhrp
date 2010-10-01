@@ -10,7 +10,7 @@
 # export DH_VERBOSE=1
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DOPENHRP3_HOME=/usr/OpenHRP
+	dh_auto_configure -- -DOPENHRP3_HOME=/opt/OpenHRP-3.0.5
 
 %:
 	dh  $@
