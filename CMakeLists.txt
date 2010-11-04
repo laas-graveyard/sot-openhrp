@@ -26,6 +26,9 @@ SET(PROJECT_URL "https://github.com/jrl-umi3218/sot-openhrp")
 
 SET(CUSTOM_HEADER_DIR "${PROJECT_NAME}")
 
+# Define the location of the CMakeModules directory.
+SET(CMAKE_MODULE_PATH ${${PROJECT_NAME}_SOURCE_DIR}/CMakeModules)
+
 # Disable -Werror on Unix for now.
 SET(CXX_DISABLE_WERROR True)
 
@@ -54,6 +57,10 @@ ADD_REQUIRED_DEPENDENCY("sot-core >= 1.0")
 ADD_REQUIRED_DEPENDENCY("hrp2_10-small")
 ADD_REQUIRED_DEPENDENCY("hrp2_10-small-old")
 ADD_REQUIRED_DEPENDENCY("hrp2_10")
+
+# Search for OpenHRP.
+INCLUDE(${CMAKE_MODULE_PATH}/UseOmniORB4.cmake)
+FIND_PACKAGE(OpenHRP REQUIRED)
 
 ADD_SUBDIRECTORY(src)
 ADD_SUBDIRECTORY(include)

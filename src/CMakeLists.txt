@@ -16,10 +16,9 @@
 # WalkGenJrl compilation flags
 LIST(APPEND ${PROJECT_NAME}_CXXFLAGS ${WALKGENJRL_CFLAGS})
 
-# Add MatrixAbstractLayer compilation flags and link to library
+# Add jrl-mal compilation flags and link to library
 # libMatrixAbstractLayer.so
-ADD_DEFINITIONS(${MATRIXABSTRACTLAYER_CFLAGS})
-INCLUDE_DIRECTORIES(${CMAKE_INSTALL_PREFIX}/include)
+ADD_DEFINITIONS(${JRL_MAL_CFLAGS})
 
 # -------------------------------------------------------------------
 # --- UTILS ---------------------------------------------------------
@@ -40,11 +39,13 @@ ENDMACRO(LIST2STRING)
 # --- OpenHRP 3 -----------------------------------------------------------
 IF(OPENHRP_VERSION_3)
 
-  SET(HRP_ROBOT_SPEC HRP2JRL CACHE STRING "Robot name, to resolve specific path in OpenHRP.")
+  SET(HRP_ROBOT_SPEC HRP2JRL CACHE STRING
+    "Robot name, to resolve specific path in OpenHRP.")
 
   SET(SOT_OPENHRP_PLUGIN_INSTALL_DIR "lib")
   IF(INSTALL_IN_OPENHRP)
-    SET(SOT_OPENHRP_PLUGIN_INSTALL_DIR "${OPENHRP_HOME}/Controller/IOserver/robot/${HRP_ROBOT_SPEC}/bin")
+    SET(SOT_OPENHRP_PLUGIN_INSTALL_DIR
+      "${OPENHRP_HOME}/Controller/IOserver/robot/${HRP_ROBOT_SPEC}/bin")
   ENDIF(INSTALL_IN_OPENHRP)
 
   # Create "stubs" directory before IDL generation
@@ -64,7 +65,7 @@ IF(OPENHRP_VERSION_3)
   SET(PLUGINNAME_PATH ${${PROJECT_NAME}_BINARY_DIR}/stubs)
   SET(PLUGINLINKS
     ${SOT_CORE_LDFLAGS}
-    ${MATRIXABSTRACTLAYER_LDFLAGS}
+    ${JRL_MAL_LDFLAGS}
     ${BOOST_THREAD_LIB_NAME} -pthread)
   SET(PLUGINDEPS ${OPENHRP_HOME}/Controller/IOserver/plugin/SequencePlayer/corba/SequencePlayer.idl)
   SET(PLUGINCOMPILE ${${PROJECT_NAME}_CXX_FLAGS}
