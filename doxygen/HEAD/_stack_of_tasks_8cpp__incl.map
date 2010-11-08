@@ -1,0 +1,12 @@
+<map id="G" name="G">
+<area shape="rect" href="$_stack_of_tasks_8h.html" title="StackOfTasks.h" alt="" coords="803,83,917,112"/>
+<area shape="rect" href="sot-core.doxytag$debug_8h.html" title="sot&#45;core/debug.h" alt="" coords="1321,237,1439,267"/>
+<area shape="rect" href="sot-core.doxytag$exception-abstract_8h.html" title="sot&#45;core/exception&#45;abstract.h" alt="" coords="1701,160,1891,189"/>
+<area shape="rect" href="sot-core.doxytag$exception-task_8h.html" title="sot&#45;core/exception&#45;task.h" alt="" coords="1752,83,1920,112"/>
+<area shape="rect" href="sot-core.doxytag$vector-roll-pitch-yaw_8h.html" title="sot&#45;core/vector&#45;roll&#45;pitch&#45;yaw.h" alt="" coords="603,160,797,189"/>
+<area shape="rect" href="sot-core.doxytag$matrix-rotation_8h.html" title="sot&#45;core/matrix&#45;rotation.h" alt="" coords="552,315,717,344"/>
+<area shape="rect" href="sot-core.doxytag$matrix-homogeneous_8h.html" title="sot&#45;core/matrix&#45;homogeneous.h" alt="" coords="843,237,1045,267"/>
+<area shape="rect" href="sot-core.doxytag$periodic-call_8h.html" title="sot&#45;core/periodic&#45;call.h" alt="" coords="999,315,1151,344"/>
+<area shape="rect" href="sot-core.doxytag$vector-rotation_8h.html" title="sot&#45;core/vector&#45;rotation.h" alt="" coords="603,237,768,267"/>
+<area shape="rect" href="sot-core.doxytag$sot-core-api_8h.html" title="sot&#45;core/sot&#45;core&#45;api.h" alt="" coords="939,392,1088,421"/>
+</map>
