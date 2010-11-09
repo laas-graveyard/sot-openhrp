@@ -27,7 +27,7 @@ SET(PROJECT_URL "https://github.com/jrl-umi3218/sot-openhrp")
 SET(CUSTOM_HEADER_DIR "${PROJECT_NAME}")
 
 # Define the location of the CMakeModules directory.
-SET(CMAKE_MODULE_PATH ${${PROJECT_NAME}_SOURCE_DIR}/CMakeModules)
+SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
 
 # Disable -Werror on Unix for now.
 SET(CXX_DISABLE_WERROR True)
@@ -47,7 +47,7 @@ SEARCH_FOR_BOOST()
 ADD_DEFINITIONS(-DHAVE_LIBBOOST_THREAD)
 
 # Search for dependencies.
-ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.4")
+ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.1")
 ADD_REQUIRED_DEPENDENCY("walkGenJrl >= 3.0.0")
 ADD_REQUIRED_DEPENDENCY("jrl-mal >= 1.8.0")
 
