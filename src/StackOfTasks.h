@@ -25,11 +25,14 @@
 /* --- INCLUDE -------------------------------------------------------------- */
 /* -------------------------------------------------------------------------- */
 
+
+#include <jrl/mal/boost.hh>
+namespace ml = maal::boost;
+
 /* --- HRP --- */
 
 
 #ifdef OPENHRP_VERSION_3
-#include <MatrixAbstractLayer/boost.h>
 #include "Plugin_impl.h"
 #include "SequencePlayer.h"
 /*! Include for OpenHRP new dynamics library. */
@@ -62,8 +65,6 @@ typedef SequencePlayer sotSequencePlayer;
 
 #include <sot-core/periodic-call.h>
 
-#include <MatrixAbstractLayer/boost.h>
-namespace ml = maal::boost;
 
 
 #ifdef HAVE_LIBBOOST_THREAD
