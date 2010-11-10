@@ -13,9 +13,6 @@
 # received a copy of the GNU Lesser General Public License along with
 # sot-openhrp. If not, see <http://www.gnu.org/licenses/>.
 
-# WalkGenJrl compilation flags
-LIST(APPEND ${PROJECT_NAME}_CXXFLAGS ${WALKGENJRL_CFLAGS})
-
 # Add jrl-mal compilation flags and link to library
 # libMatrixAbstractLayer.so
 ADD_DEFINITIONS(${JRL_MAL_CFLAGS})
