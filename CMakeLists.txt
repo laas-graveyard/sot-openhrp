@@ -27,7 +27,7 @@ SET(PROJECT_URL "https://github.com/jrl-umi3218/sot-openhrp")
 SET(CUSTOM_HEADER_DIR "${PROJECT_NAME}")
 
 # Define the location of the CMakeModules directory.
-SET(CMAKE_MODULE_PATH ${${PROJECT_NAME}_SOURCE_DIR}/CMakeModules)
+SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
 
 # Disable -Werror on Unix for now.
 SET(CXX_DISABLE_WERROR True)
