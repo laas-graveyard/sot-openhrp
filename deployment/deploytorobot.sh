@@ -3,7 +3,7 @@
 USEROPENROBOTSPATH=${ROBOTPKG_BASE}
 WORKINGDIRECTORY=/tmp/
 TARGETPATH=grxuser@hrp2010c:/home/grxuser/devel/openrobots
-SCPCMD="rsync -lt"
+SCPCMD="rsync -l"
 SCPCMD_NOLINKS=scp
 CPCMD=/bin/cp
 USERNAME=`whoami`
