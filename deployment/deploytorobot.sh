@@ -2,7 +2,9 @@
 
 USEROPENROBOTSPATH=${ROBOTPKG_BASE}
 WORKINGDIRECTORY=/tmp/
-TARGETPATH=grxuser@hrp2010c:/home/grxuser/devel/openrobots
+TARGETHOST=grxuser@hrp2010c
+TARGETDIR=/home/grxuser/devel/openrobots
+TARGETPATH=$TARGETHOST:$TARGETDIR
 SCPCMD="rsync -l"
 SCPCMD_NOLINKS=scp
 CPCMD=/bin/cp
@@ -10,6 +12,16 @@ USERNAME=`whoami`
 
 echo "Running deployment script from '${USEROPENROBOTSPATH}' to the robot"
 echo "This script also applies some modifications to paths in script files"
+echo
+echo "/!\ The current openrobots path is:"
+ssh $TARGETHOST ls -al --color $TARGETDIR
+echo "Do you wish to proceed with this path? (y/n)"
+read WISH
+
+if [ $WISH = "n" ] ; then
+echo "Deployment canceled"
+exit
+fi;
 
 if [ -z "$OPENHRPHOME" ]; then
   OPENHRPHOME=/home/${USERNAME}/src/OpenHRP-3.0.5
@@ -89,18 +101,19 @@ rsh grxuser@hrp2010c mkdir -p ${TARGETDYNGRAPH}
 rsh grxuser@hrp2010c mkdir -p ${TARGETLIB}/plugin
 rsh grxuser@hrp2010c mkdir -p ${TARGETPYTHON}
 
-echo "* Deploying bin/ share/ lib/ and python+sot scripts using '${SCPCMD}'"
+echo "* Deploying bin/ lib/ and python+sot scripts using '${SCPCMD}'"
 
 # Copy all openrobots directories
-#${SCPCMD} -r ${USEROPENROBOTSPATH}/share ${TARGETPATH}
-
+echo "... lib/plugin"
 ${SCPCMD} -r ${USEROPENROBOTSPATH}/lib/plugin ${TARGETPATH}/lib
-
+echo "... bin"
 ${SCPCMD} -r ${USEROPENROBOTSPATH}/bin ${TARGETPATH}
 
+echo "... share/dynamic-graph"
 # Copy scripts over
 ${SCPCMD} -r ${WDSCRIPT} ${TARGETDYNGRAPH}
 
+echo "... python scripts"
 # Copy python scripts over
 ${SCPCMD} ${WDPYTHON}/* ${TARGETPYTHON}
 
