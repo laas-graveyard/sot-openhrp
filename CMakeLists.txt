@@ -18,6 +18,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
 INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/lapack.cmake)
+INCLUDE(cmake/cpack.cmake)
 
 SET(PROJECT_NAME sot-openhrp)
 SET(PROJECT_DESCRIPTION "jrl-walkgen bindings for dynamic-graph.")
@@ -67,3 +68,4 @@ ADD_SUBDIRECTORY(include)
 #ADD_SUBDIRECTORY(tests)
 
 SETUP_PROJECT_FINALIZE()
+SETUP_PROJECT_CPACK()
