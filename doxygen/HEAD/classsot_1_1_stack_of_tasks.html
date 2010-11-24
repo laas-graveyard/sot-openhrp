@@ -40,13 +40,13 @@
 </div>
 <div class="contents">
 <!-- doxytag: class="sot::StackOfTasks" -->
-<p><code>#include &lt;/home/thomas/profiles/laas/src/unstable/sot/sot-openhrp/src/StackOfTasks.h&gt;</code></p>
+<p><code>#include &lt;/home/buildbot/devel-src/tools/pkg-dev-mng/Testing/Buildbot/slaves/jrlserver/jrlserverubuntu/build-sot-openhrp-jrlmt-master/pkgsrc/src/StackOfTasks.h&gt;</code></p>
 <!-- startSectionHeader --><div class="dynheader">
 Collaboration diagram for sot::StackOfTasks:<!-- endSectionHeader --></div>
 <!-- startSectionSummary --><!-- endSectionSummary --><!-- startSectionContent --><div class="dyncontent">
 <div class="center"><img src="classsot_1_1_stack_of_tasks__coll__graph.png" border="0" usemap="#sot_1_1_stack_of_tasks_coll__map" alt="Collaboration graph"/></div>
 <map name="sot_1_1_stack_of_tasks_coll__map" id="sot_1_1_stack_of_tasks_coll__map">
-<area shape="rect" title="STL class." alt="" coords="48,85,128,115"/><area shape="rect" title="STL class." alt="" coords="5,5,171,35"/><area shape="rect" doxygen="jrl-mal.doxytag:" href="classmaal_1_1boost_1_1_vector.html" title="maal::boost::Vector" alt="" coords="152,85,285,115"/></map>
+<area shape="rect" href="classsot_1_1_periodic_call.html" title="sot::PeriodicCall" alt="" coords="991,40,1113,67"/><area shape="rect" title="STL class." alt="" coords="240,37,325,64"/><area shape="rect" title="STL class." alt="" coords="5,37,189,64"/><area shape="rect" href="classmaal_1_1boost_1_1_vector.html" title="maal::boost::Vector" alt="" coords="979,104,1125,131"/></map>
 <center><span class="legend">[<a target="top" href="graph_legend.html">legend</a>]</span></center><!-- endSectionContent --></div>
 
 <p><a href="classsot_1_1_stack_of_tasks-members.html">List of all members.</a></p>
@@ -132,11 +132,11 @@ Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::SignalPtr&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="classmaal_1_1boost_1_1_vector.html">ml::Vector</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a1796d6612255b030ac185c82b43ebf0f">controlSIN</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::SignalPtr&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="classmaal_1_1boost_1_1_vector.html">ml::Vector</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a17e1fad98c5aa65f88b0f5be88416d57">attitudeSIN</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::SignalPtr<br class="typebreak"/>
-&lt; MatrixHomogeneous, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a5d282974558aacfa78c04556996bc136">positionSIN</a></td></tr>
+&lt; <a class="elRef" doxygen="sot-core.doxytag:" href="classsot_1_1_matrix_homogeneous.html">MatrixHomogeneous</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a5d282974558aacfa78c04556996bc136">positionSIN</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::SignalPtr&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="classmaal_1_1boost_1_1_vector.html">ml::Vector</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a4771b75d0c0575f0e08f0a749f96cf54">zmpSIN</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::Signal&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="classmaal_1_1boost_1_1_vector.html">ml::Vector</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#aaabb3007b9ac21ddc5ddfdcdcfb9d3ff">stateSOUT</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::Signal&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="classmaal_1_1boost_1_1_vector.html">ml::Vector</a>, int &gt; *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a3a76d9daed8bd938dd8c9d18928d570c">forcesSOUT</a> [4]</td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">dg::Signal&lt; MatrixRotation, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#aa3edb0781d9099c8dceef9aec0b77c2c">attitudeSOUT</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">dg::Signal&lt; <a class="elRef" doxygen="sot-core.doxytag:" href="classsot_1_1_matrix_rotation.html">MatrixRotation</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#aa3edb0781d9099c8dceef9aec0b77c2c">attitudeSOUT</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::Signal&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="classmaal_1_1boost_1_1_vector.html">ml::Vector</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a197247a8bf417cd4786d43d8c89dc04b">pseudoTorqueSOUT</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#aecb59a2e5f4f9e78ba92b3937f77ccdd">activatePseudoTorqueSignal</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::Signal&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="classmaal_1_1boost_1_1_vector.html">ml::Vector</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a13d9da8ae7bcadb1bca9f93b6063b935">previousStateSOUT</a></td></tr>
@@ -146,8 +146,8 @@ Public Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::Signal&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="classmaal_1_1boost_1_1_vector.html">ml::Vector</a>, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#af6d2ef6a722ae2781b52a998305a46e6">ZMPPreviousControllerSOUT</a></td></tr>
 <tr><td class="mdescLeft">&#160;</td><td class="mdescRight">The ZMP reference send by the previous controller.  <a href="#af6d2ef6a722ae2781b52a998305a46e6"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a084b732895305ef08d172695449a0812">activatePreviousControlSignal</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">PeriodicCall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a496f29aa4229ddbcad6d33de8283bca8">periodicCallBefore</a></td></tr>
-<tr><td class="memItemLeft" align="right" valign="top">PeriodicCall&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#abfd3e8784cd61466b914576f80f72f5a">periodicCallAfter</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="elRef" doxygen="sot-core.doxytag:" href="classsot_1_1_periodic_call.html">PeriodicCall</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a496f29aa4229ddbcad6d33de8283bca8">periodicCallBefore</a></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top"><a class="elRef" doxygen="sot-core.doxytag:" href="classsot_1_1_periodic_call.html">PeriodicCall</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#abfd3e8784cd61466b914576f80f72f5a">periodicCallAfter</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">unsigned int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classsot_1_1_stack_of_tasks.html#a25f9aeaa26c742c8d35b734ac99309b4">m_ReferenceState</a></td></tr>
 <tr><td colspan="2"><h2><a name="pub-static-attribs"></a>
 Static Public Attributes</h2></td></tr>
@@ -963,7 +963,7 @@ Protected Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">dg:: Signal&lt;MatrixRotation,int&gt; <a class="el" href="classsot_1_1_stack_of_tasks.html#aa3edb0781d9099c8dceef9aec0b77c2c">sot::StackOfTasks::attitudeSOUT</a></td>
+          <td class="memname">dg:: Signal&lt;<a class="elRef" doxygen="sot-core.doxytag:" href="classsot_1_1_matrix_rotation.html">MatrixRotation</a>,int&gt; <a class="el" href="classsot_1_1_stack_of_tasks.html#aa3edb0781d9099c8dceef9aec0b77c2c">sot::StackOfTasks::attitudeSOUT</a></td>
         </tr>
       </table>
 </div>
@@ -1127,7 +1127,7 @@ Protected Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">PeriodicCall <a class="el" href="classsot_1_1_stack_of_tasks.html#abfd3e8784cd61466b914576f80f72f5a">sot::StackOfTasks::periodicCallAfter</a></td>
+          <td class="memname"><a class="elRef" doxygen="sot-core.doxytag:" href="classsot_1_1_periodic_call.html">PeriodicCall</a> <a class="el" href="classsot_1_1_stack_of_tasks.html#abfd3e8784cd61466b914576f80f72f5a">sot::StackOfTasks::periodicCallAfter</a></td>
         </tr>
       </table>
 </div>
@@ -1141,7 +1141,7 @@ Protected Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">PeriodicCall <a class="el" href="classsot_1_1_stack_of_tasks.html#a496f29aa4229ddbcad6d33de8283bca8">sot::StackOfTasks::periodicCallBefore</a></td>
+          <td class="memname"><a class="elRef" doxygen="sot-core.doxytag:" href="classsot_1_1_periodic_call.html">PeriodicCall</a> <a class="el" href="classsot_1_1_stack_of_tasks.html#a496f29aa4229ddbcad6d33de8283bca8">sot::StackOfTasks::periodicCallBefore</a></td>
         </tr>
       </table>
 </div>
@@ -1181,7 +1181,7 @@ Protected Attributes</h2></td></tr>
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">dg::SignalPtr&lt;MatrixHomogeneous,int&gt; <a class="el" href="classsot_1_1_stack_of_tasks.html#a5d282974558aacfa78c04556996bc136">sot::StackOfTasks::positionSIN</a></td>
+          <td class="memname">dg::SignalPtr&lt;<a class="elRef" doxygen="sot-core.doxytag:" href="classsot_1_1_matrix_homogeneous.html">MatrixHomogeneous</a>,int&gt; <a class="el" href="classsot_1_1_stack_of_tasks.html#a5d282974558aacfa78c04556996bc136">sot::StackOfTasks::positionSIN</a></td>
         </tr>
       </table>
 </div>
