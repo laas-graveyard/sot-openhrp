@@ -55,8 +55,6 @@ ADD_REQUIRED_DEPENDENCY("jrl-mal >= 1.8.0")
 ADD_REQUIRED_DEPENDENCY("sot-core >= 1.0")
 
 # Search for closed-source packages.
-ADD_REQUIRED_DEPENDENCY("hrp2_10-small >= 1.0.0")
-ADD_REQUIRED_DEPENDENCY("hrp2_10-small-old >= 1.0.0")
 ADD_REQUIRED_DEPENDENCY("hrp2_10 >= 1.0.0")
 
 # Search for OpenHRP.
