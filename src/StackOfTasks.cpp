@@ -674,6 +674,7 @@ sotControlLoop( sotRobotState* rs, sotMotorCommand* mc )
 	if(! suspend)
 	  {
 	    sotDEBUG(25) << robotStatePrec <<endl;
+	    // trigger evaluation of the whole graph.
 	    const ml::Vector &mlmc = controlSIN(iter);
 	    bool mcIsNan = false;
 	    for(unsigned int i=0;i<m_nbDofs-6;++i ) if( isnan(mlmc(i)) ) 
