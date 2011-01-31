@@ -21,10 +21,10 @@ INCLUDE(cmake/lapack.cmake)
 INCLUDE(cmake/cpack.cmake)
 
 SET(PROJECT_NAME sot-openhrp)
-SET(PROJECT_DESCRIPTION "jrl-walkgen bindings for dynamic-graph.")
+SET(PROJECT_DESCRIPTION "OpenHRP plugin implementing the Stack of Tasks.")
 SET(PROJECT_URL "https://github.com/jrl-umi3218/sot-openhrp")
 
-SET(CUSTOM_HEADER_DIR "${PROJECT_NAME}")
+SET(CUSTOM_HEADER_DIR "dynamic_graph/sot/openhrp")
 
 # Define the location of the CMakeModules directory.
 SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
