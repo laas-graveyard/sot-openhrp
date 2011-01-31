@@ -32,7 +32,6 @@ it is accessible from inside the dynamic-graph framework as any other entity.
 This package has the following dependencies:
 \li sot-core
 \li jrl-mal
-\li jrl-walkgen
 \li hrp2Dynamics [optional]
 \li hrp2-10-small [optional]
 

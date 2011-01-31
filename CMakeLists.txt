@@ -49,13 +49,9 @@ ADD_DEFINITIONS(-DHAVE_LIBBOOST_THREAD)
 
 # Search for dependencies.
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.1")
-ADD_REQUIRED_DEPENDENCY("jrl-walkgen >= 3.0.0")
 ADD_REQUIRED_DEPENDENCY("jrl-mal >= 1.8.0")
 
 ADD_REQUIRED_DEPENDENCY("sot-core >= 1.0")
-
-# Search for closed-source packages.
-ADD_REQUIRED_DEPENDENCY("hrp2_10 >= 1.0.0")
 
 # Search for OpenHRP.
 INCLUDE(${CMAKE_MODULE_PATH}/UseOmniORB4.cmake)
