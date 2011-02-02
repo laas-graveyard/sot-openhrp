@@ -24,10 +24,12 @@ SET(OPENHRP_VERSION_3 0)
 FIND_PATH(OPENHRP_HOME NAMES Controller/IOserver/include/plugin.h
     		       PATHS $ENV{OPENHRPHOME}
     		       $ENV{HOME}/src/OpenHRP )
-FIND_PATH(OPENHRP3_HOME NAME Controller/IOserver/corba/HRPcontroller.idl
-    			PATHS $ENV{OPENHRPHOME}
-    			      $ENV{HOME}/src/OpenHRP $ENV{HOME}/src/OpenHRP-3
-			      $ENV{HOME} )
+IF (NOT OPENHRP3_HOME)
+  FIND_PATH(OPENHRP3_HOME NAME Controller/IOserver/corba/HRPcontroller.idl
+    PATHS $ENV{OPENHRPHOME}
+    $ENV{HOME}/src/OpenHRP $ENV{HOME}/src/OpenHRP-3
+    $ENV{HOME} )
+ENDIF(NOT OPENHRP3_HOME)
 
 # --- MACRO ---
 # Define automatic variables for the robot model, depending on the OH version.
