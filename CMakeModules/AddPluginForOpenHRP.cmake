@@ -39,6 +39,7 @@ IF (OPENHRP_VERSION_3)
   LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/CollisionDetector/corba/)
   LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/ViewSimulator/corba/)
   LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/ModelLoader/corba/)
+  LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/include/idl/)
 ENDIF(OPENHRP_VERSION_3)
 
 # --- MAIN IDL -------------------------------------------------------------
@@ -47,6 +48,7 @@ ENDIF(OPENHRP_VERSION_3)
 IF(EXISTS "${PLUGINCORBAIDL}")
   SET(plugincorbaidl_CPP "${${PROJECT_NAME}_BINARY_DIR}/stubs}/${PluginBaseNameIDL}SK.cc")
   SET(plugincorbaidl_Header "${${PROJECT_NAME}_BINARY_DIR}/stubs}/${PluginBaseNameIDL}.h")
+  MESSAGE(STATUS "IDL_INCLUDE_DIR : " ${IDL_INCLUDE_DIR})
   IDLFILERULE(${PLUGINCORBAIDL} ${plugincorbaidl_CPP} ${plugincorbaidl_Header}
      				${WORKINGDIRIDL} ${IDL_INCLUDE_DIR})
   LIST(APPEND PLUGIN_SRCS ${plugincorbaidl_CPP})
@@ -58,12 +60,13 @@ IF (OPENHRP_VERSION_2)
   LIST(APPEND IDL_FILES_OPENHRP ${OPENHRP_HOME}/Common/corba/common.idl)
 ELSE(OPENHRP_VERSION_2) # openhrp_version_3
   LIST(APPEND IDL_FILES_FOR_OPENHRP 
-      ${OPENHRP_HOME}/Common/corba/OpenHRPCommon.idl
-      ${OPENHRP_HOME}/Controller/IOserver/corba/HRPcontroller.idl
-      ${OPENHRP_HOME}/ViewSimulator/corba/ViewSimulator.idl
-      ${OPENHRP_HOME}/DynamicsSimulator/corba/DynamicsSimulator.idl
-      ${OPENHRP_HOME}/ModelLoader/corba/ModelLoader.idl	
-      ${OPENHRP_HOME}/CollisionDetector/corba/CollisionDetector.idl	
+      ${OPENHRP_HOME}/include/idl/OpenHRPCommon.idl
+      ${OPENHRP_HOME}/include/idl/HRPcontroller.idl
+      ${OPENHRP_HOME}/include/idl/ViewSimulator.idl
+      ${OPENHRP_HOME}/include/idl/DynamicsSimulator.idl
+      ${OPENHRP_HOME}/include/idl/ModelLoader.idl	
+      ${OPENHRP_HOME}/include/idl/CollisionDetector.idl	
+      ${OPENHRP_HOME}/include/idl/SequencePlayer.idl	
    )
 ENDIF(OPENHRP_VERSION_2)
 FOREACH( locidlfile ${IDL_FILES_FOR_OPENHRP})
@@ -75,6 +78,7 @@ FOREACH( locidlfile ${IDL_FILES_FOR_OPENHRP})
   LIST(APPEND PLUGIN_SRCS ${locIDL_CPP})
 ENDFOREACH(locidlfile)
 
+  MESSAGE(STATUS "IDL_INCLUDE_DIR : " ${IDL_INCLUDE_DIR})
 # --- C++ ------------------------------------------------------------------
 # --- C++ ------------------------------------------------------------------
 # --- C++ ------------------------------------------------------------------

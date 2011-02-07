@@ -24,7 +24,7 @@ SET(OPENHRP_VERSION_3 0)
 FIND_PATH(OPENHRP_HOME NAMES Controller/IOserver/include/plugin.h
     		       PATHS $ENV{OPENHRPHOME}
     		       $ENV{HOME}/src/OpenHRP )
-FIND_PATH(OPENHRP3_HOME NAME Controller/IOserver/corba/HRPcontroller.idl
+FIND_PATH(OPENHRP3_HOME NAME include/idl/HRPcontroller.idl
     			PATHS $ENV{OPENHRPHOME}
     			      $ENV{HOME}/src/OpenHRP $ENV{HOME}/src/OpenHRP-3
 			      $ENV{HOME} )
@@ -55,8 +55,8 @@ IF(OPENHRP_HOME OR OPENHRP3_HOME)
   IF(OPENHRP3_HOME)
     SET(OPENHRP_VERSION_3 1)
     SET(OPENHRP_HOME ${OPENHRP3_HOME})  
-    OPENHRP_CONFIG_DIR_DEFAULT(${OPENHRP_HOME}/Controller/IOserver/robot/HRP2JRL/model/ 
-                               ${OPENHRP_HOME}/Controller/IOserver/robot/HRP2JRL/etc/)
+    OPENHRP_CONFIG_DIR_DEFAULT(${OPENHRP_HOME}/HRP2JRL/model/ 
+                               ${OPENHRP_HOME}/HRP2JRL/etc/)
   ELSE(OPENHRP3_HOME)
     SET(OPENHRP_VERSION_2 1)
     OPENHRP_CONFIG_DIR_DEFAULT(${OPENHRP_HOME}/etc/HRP2JRL/
