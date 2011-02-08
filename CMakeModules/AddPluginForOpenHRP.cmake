@@ -9,18 +9,18 @@
 # The macro is non-specific, and could be called from any project. It is
 # just using the ${PROJECT_NAME}_CXX_FLAGS and ${PROJECT_NAME}_LD_FLAGS
 # for compiling the project.
-# The result is a rule for compiling the PLUGINNAME.so library, in BUILD_DIR/lib. 
+# The result is a rule for compiling the PLUGINNAME.so library, in BUILD_DIR/lib.
 # This lib should then be installed in OHRP controller dir.
 # Erratum: ${HRP_ROBOT_SPEC} global var is also used, and should  be removed.
 
-MACRO(ADD_OPENHRP_PLUGIN PLUGINNAME PLUGINNAME_SRCS PLUGINCORBAIDL 
+MACRO(ADD_OPENHRP_PLUGIN PLUGINNAME PLUGINNAME_SRCS PLUGINCORBAIDL
 			 WORKINGDIRIDL PLUGINCOMPILE PLUGINLINKS
-			 CORBAPLUGINDEPS COMPILEPLUGINDEPS)
+			 COMPILEPLUGINDEPS)
 
 GET_FILENAME_COMPONENT(PluginBaseName ${PLUGINNAME} NAME)
 GET_FILENAME_COMPONENT(PluginBasePath ${PLUGINNAME} PATH)
 
-# Collect all the sources (mainplugin cpp plus idl dependancies).
+# Collect all the sources (mainplugin cpp plus idl dependencies).
 SET(PLUGIN_SRCS ${PLUGINNAME_SRCS})
 IF(NOT ${PLUGINNAME_SRCS})
   SET(PLUGINNAME_SRCS "${PluginBasePath}/${PluginBaseName}.cpp")
@@ -31,15 +31,13 @@ ENDIF(NOT ${PLUGINNAME_SRCS})
 # --- IDLS -----------------------------------------------------------------
 
 # Set the directories for idl dependancies.
-SET(IDL_INCLUDE_DIR "${OPENHRP_HOME}/Common/corba")
-IF (OPENHRP_VERSION_3)
-  LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/DynamicsSimulator/corba)
-  LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/Controller/IOserver/corba)
-  LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/Controller/IOserver/plugin/SequencePlayer/corba)
-  LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/CollisionDetector/corba/)
-  LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/ViewSimulator/corba/)
-  LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/ModelLoader/corba/)
-ENDIF(OPENHRP_VERSION_3)
+SET(IDL_INCLUDE_DIR "${OPENHRP_HOME}/OpenHRP/Common/corba")
+
+LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/OpenHRP/DynamicsSimulator/corba)
+LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/include/idl)
+LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/OpenHRP/CollisionDetector/corba)
+LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/OpenHRP/ViewSimulator/corba)
+LIST(APPEND IDL_INCLUDE_DIR ${OPENHRP_HOME}/OpenHRP/ModelLoader/corba)
 
 # --- MAIN IDL -------------------------------------------------------------
 # IDL Generation rule.
@@ -53,24 +51,20 @@ IF(EXISTS "${PLUGINCORBAIDL}")
 ENDIF(EXISTS "${PLUGINCORBAIDL}")
 
 # --- OHRP GENERIC IDLS ----------------------------------------------------
-SET(IDL_FILES_FOR_OPENHRP ${CORBAPLUGINDEPS})
-IF (OPENHRP_VERSION_2)
-  LIST(APPEND IDL_FILES_OPENHRP ${OPENHRP_HOME}/Common/corba/common.idl)
-ELSE(OPENHRP_VERSION_2) # openhrp_version_3
-  LIST(APPEND IDL_FILES_FOR_OPENHRP 
-      ${OPENHRP_HOME}/Common/corba/OpenHRPCommon.idl
-      ${OPENHRP_HOME}/Controller/IOserver/corba/HRPcontroller.idl
-      ${OPENHRP_HOME}/ViewSimulator/corba/ViewSimulator.idl
-      ${OPENHRP_HOME}/DynamicsSimulator/corba/DynamicsSimulator.idl
-      ${OPENHRP_HOME}/ModelLoader/corba/ModelLoader.idl	
-      ${OPENHRP_HOME}/CollisionDetector/corba/CollisionDetector.idl	
-   )
-ENDIF(OPENHRP_VERSION_2)
+LIST(APPEND IDL_FILES_FOR_OPENHRP
+  ${OPENHRP_HOME}/OpenHRP/Common/corba/OpenHRPCommon.idl
+  ${OPENHRP_HOME}/include/idl/HRPcontroller.idl
+  ${OPENHRP_HOME}/include/idl/ViewSimulator.idl
+  ${OPENHRP_HOME}/include/idl/DynamicsSimulator.idl
+  ${OPENHRP_HOME}/include/idl/ModelLoader.idl
+  ${OPENHRP_HOME}/include/idl/CollisionDetector.idl
+  )
+
 FOREACH( locidlfile ${IDL_FILES_FOR_OPENHRP})
   GET_FILENAME_COMPONENT(locIDLBaseName ${locidlfile} NAME_WE)
   SET(locIDL_CPP "${WORKINGDIRIDL}/${locIDLBaseName}SK.cc")
-  SET(locIDL_Header "${WORKINGDIRIDL}/${locIDLBaseName}.h" )	
-  IDLFILERULE(${locidlfile} 
+  SET(locIDL_Header "${WORKINGDIRIDL}/${locIDLBaseName}.h" )
+  IDLFILERULE(${locidlfile}
               ${locIDL_CPP} ${locIDL_Header} ${WORKINGDIRIDL} ${IDL_INCLUDE_DIR})
   LIST(APPEND PLUGIN_SRCS ${locIDL_CPP})
 ENDFOREACH(locidlfile)
@@ -97,20 +91,15 @@ TARGET_LINK_LIBRARIES(${PluginBaseName} ${COMPILEPLUGINDEPS})
 
 # --- C++ FLAGS ------------------------------------------------------------
 SET(PLUGIN_CFLAGS ${PLUGINCOMPILE}
-       -I${OPENHRP_HOME}/Controller/IOserver/include -I${OPENHRP_HOME}/Common
-       -I${OPENHRP_HOME}/Controller/common -I${OPENHRP_HOME}/Controller/IOserver/sys/plugin
-       -I${WORKINGDIRIDL} -pthread ${${PROJECT_NAME}_CXX_FLAGS} ${omniORB4_cflags})
-IF (OPENHRP_VERSION_2)
-  LIST(APPEND PLUGIN_CFLAGS -DOPENHRP_VERSION_2)
-ELSE(OPENHRP_VERSION_2) # OpenHRP3
-  LIST(APPEND PLUGIN_CFLAGS -DOPENHRP_VERSION_3 -I${OPENHRP_HOME}/DynamicsSimulator/server/)
-ENDIF (OPENHRP_VERSION_2)
+  -I${OPENHRP_HOME}/OpenHRP/Common
+  -I${WORKINGDIRIDL} -pthread ${${PROJECT_NAME}_CXX_FLAGS} ${omniORB4_cflags})
+LIST(APPEND PLUGIN_CFLAGS -DOPENHRP_VERSION_3 -I${OPENHRP_HOME}/OpenHRP/DynamicsSimulator/server/)
 #LIST(APPEND PLUGIN_CFLAGS ${_tvmet_invoke_result_cxxflags})
 
 LIST2STRING(_cf ${PLUGIN_CFLAGS})
 LIST2STRING(_lf ${omniORB4_link_FLAGS} ${PLUGINLINKS} ${${PROJECT_NAME}_LINK_FLAGS})
 SET_TARGET_PROPERTIES(${PluginBaseName}
-			PROPERTIES	
+			PROPERTIES
 		        COMPILE_FLAGS ${_cf}
 			LINK_FLAGS ${_lf}
 			PREFIX "" SUFFIX ".so"

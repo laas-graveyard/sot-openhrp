@@ -62,7 +62,7 @@ plugin* create_plugin(istringstream &strm)
 
 dynamicgraph::sot::openhrp::Plugin::
 Plugin(int nbDofs, robotType robotToControl) :
-  interpreter_(), entity_(NULL), pluginManager_(manager)
+  interpreter_(), entity_(NULL)
 {
   // Create an instance of Robot in python domain
   interpreter_.python("import dynamic_graph.sot.openhrp");
@@ -95,12 +95,6 @@ Plugin::setup  (OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 {
   // Initialize client to seqplay.
   sotDEBUGIN(5);
-  if (pluginManager_ == NULL)
-    throw ::sot::ExceptionFactory(::sot::ExceptionFactory::GENERIC,
-				  "OpenHRP plugin manager has not been set");
-  seqplayClient_ = SequencePlayer::_narrow(pluginManager_->find("seq",""));
-  sotDEBUG(25) << "Seqplugin: " << seqplayClient_ <<endl;
-
   dynamicgraph::sot::openhrp::RobotState robotState(rs->angle, rs->force,
 						    rs->attitude, rs->torque,
 						    rs->zmp, rs->basePos,

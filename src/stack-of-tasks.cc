@@ -540,7 +540,8 @@ void StackOfTasks::sotControlFinishing(RobotState *rs, RobotState *mc)
   // pluginState_ is either sotHOLD or sotFINISHING.
   // If sotFINISHING,
   //    - run one step of control loop and
-  //    - if possible send halfsitting request to seqplay.
+  //    - if possible send halfsitting request to seqplay (not applicable
+  //      anymore).
   // If sotHOLD,
   //    - if seqplay client is empty (?) switch to sotFINISHED
   //    - otherwise do nothing.

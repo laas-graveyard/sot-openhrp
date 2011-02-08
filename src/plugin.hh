@@ -27,16 +27,16 @@
 
 #include "Plugin_impl.h"
 /*! Include for OpenHRP new dynamics library. */
-#include "Body.h"
-#include "Link.h"
-#include "LinkTraverse.h"
-#include "ModelLoaderUtil.h"
+//#include "Body.h"
+//#include "Link.h"
+//#include "LinkTraverse.h"
+//#include "ModelLoaderUtil.h"
 
 #define ROBOT_STATE_VAR_POS(x) x->basePos
 #define ROBOT_STATE_VAR_ATT(x) x->baseAtt
 
-#include "bodyinfo.h"
-#include "SequencePlayer.h"
+//#include "bodyinfo.h"
+//#include "SequencePlayer.h"
 
 namespace dynamicgraph {
   namespace sot {
@@ -62,10 +62,6 @@ namespace dynamicgraph {
 	dynamicgraph::corba::Interpreter interpreter_;
 	/// Pointer to Entity StackOfTasks
 	StackOfTasks *entity_;
-	// OpenHRP plugin manager
-	plugin_manager* pluginManager_;
-	// Reference to the sequence player plugin.
-	SequencePlayer_var seqplayClient_;
       };
     } // namespace openhrp
   } // namespace sot
