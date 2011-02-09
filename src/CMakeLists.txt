@@ -36,8 +36,10 @@ ENDMACRO(LIST2STRING)
 # --- OpenHRP 3 -----------------------------------------------------------
 IF(OPENHRP_VERSION_3)
 
-  SET(HRP_ROBOT_SPEC HRP2JRL CACHE STRING
-    "Robot name, to resolve specific path in OpenHRP.")
+  IF(NOT HRP_ROBOT_SPEC)
+    SET(HRP_ROBOT_SPEC HRP2JRL CACHE STRING
+      "Robot name, to resolve specific path in OpenHRP.")
+  ENDIF(NOT HRP_ROBOT_SPEC)
 
   SET(SOT_OPENHRP_PLUGIN_INSTALL_DIR "lib")
   IF(INSTALL_IN_OPENHRP)
