@@ -3,7 +3,7 @@
 USEROPENROBOTSPATH=${ROBOTPKG_BASE}
 WORKINGDIRECTORY=/tmp/
 TARGETHOST=grxuser@hrp2010c
-TARGETDIR=/home/grxuser/devel/openrobots
+TARGETDIR=/opt/openrobots/
 TARGETPATH=$TARGETHOST:$TARGETDIR
 SCPCMD="rsync -l"
 SCPCMD_NOLINKS=scp
@@ -24,16 +24,16 @@ exit
 fi;
 
 if [ -z "$OPENHRPHOME" ]; then
-  OPENHRPHOME=/home/${USERNAME}/src/OpenHRP-3.0.5
+  OPENHRPHOME=/opt/grx3.0/
 fi;
-TARGETOPENHRPHOME=/home/grxuser/src/OpenHRP/
+TARGETOPENHRPHOME=/opt/openrobots/
 
 echo "* Copying script files into work directory"
 ${CPCMD} -r ${USEROPENROBOTSPATH}/share/dynamic-graph/script ${WORKINGDIRECTORY}
 WDSCRIPT=${WORKINGDIRECTORY}/script
 chmod u+w ${WDSCRIPT}/* -R
 
-TARGETLIB=/home/grxuser/devel/openrobots/lib/
+TARGETLIB=/opt/openrobots/lib/
 ORIGINSHARE=${USEROPENROBOTSPATH}/share
 
 function ChangeFiles()
@@ -47,13 +47,13 @@ function ChangeFiles()
 	    cp ${filetooperate} tmp_$i;
 	    chmod u+rw tmp_$i;
 
-	    cat tmp_$i | sed "s@${OPENHRPHOME}@/home/grxuser/src/OpenHRP@g" > tmp3_$i;
+	    cat tmp_$i | sed "s@${OPENHRPHOME}@/opt/grx3.0@g" > tmp3_$i;
 	    chmod u+rw tmp3_$i;
 
-	    cat tmp3_$i | sed "s@/home/${USERNAME}/src/OpenHRP@/home/grxuser/src/OpenHRP@g" > tmp2_$i;
+	    cat tmp3_$i | sed "s@/opt/grx3.0@/opt/grx3.0@g" > tmp2_$i;
 	    chmod u+rw tmp2_$i;
 
-	    cat tmp2_$i | sed "s@${USEROPENROBOTSPATH}@/home/grxuser/devel/openrobots/@g" > $i;
+	    cat tmp2_$i | sed "s@${USEROPENROBOTSPATH}@/opt/openrobots/@g" > $i;
 	    rm tmp*_$i -f
 	elif [ -d $i ]; then
 #	    echo
@@ -70,7 +70,7 @@ ChangeFiles ${WORKINGDIRECTORY}/script
 # python scripts
 
 HRPSCRIPTDIR=${USEROPENROBOTSPATH}/share/sot-openhrp/script
-TARGETPYTHON=grxuser@hrp2010c:/home/grxuser/devel/openrobots/share/sot-openhrp/script
+TARGETPYTHON=grxuser@150.29.145.110:/opt/openrobots/share/sot-openhrp/script
 WDPYTHON=/tmp/python
 mkdir -p ${WDPYTHON}
 echo "* Copying python scripts into work directory"
@@ -97,9 +97,9 @@ cd -
 
 
 TARGETDYNGRAPH=${TARGETPATH}/share/dynamic-graph
-rsh grxuser@hrp2010c mkdir -p ${TARGETDYNGRAPH}
-rsh grxuser@hrp2010c mkdir -p ${TARGETLIB}/plugin
-rsh grxuser@hrp2010c mkdir -p ${TARGETPYTHON}
+/usr/bin/rsh grxuser@hrp2010c mkdir -p ${TARGETDYNGRAPH}
+/usr/bin/rsh grxuser@hrp2010c mkdir -p ${TARGETLIB}/plugin
+/usr/bin/rsh grxuser@hrp2010c mkdir -p ${TARGETPYTHON}
 
 echo "* Deploying bin/ lib/ and python+sot scripts using '${SCPCMD}'"
 
@@ -122,7 +122,8 @@ ${SCPCMD} ${WDPYTHON}/* ${TARGETPYTHON}
 function CopyAndLinkFiles()
 {
 
-    TARGETBIN=/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/bin
+    TARGETBIN=/opt/grx3.0/HRP2JRL/bin
+
 
     if  [ "$1" = "dyn" ] ; then 
       v=`ls ${USEROPENROBOTSPATH}/lib/libjrl-dynamics*`;
@@ -168,12 +169,12 @@ CopyAndLinkFiles "gfortran"
 CopyAndLinkFiles "boost"
 
 echo "* Removing distant StackOfTasks.so"
-rsh grxuser@hrp2010c rm /home/grxuser/src/OpenHRP-3.0.5/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so
+rsh grxuser@hrp2010c rm /opt/grx3.0/HRP2JRL/bin/StackOfTasks.so
 echo "* Copying new plugin"
-${SCPCMD_NOLINKS} $OPENHRPHOME/Controller/IOserver/robot/HRP2JRL/bin/StackOfTasks.so grxuser@hrp2010c:/home/grxuser/src/OpenHRP/Controller/IOserver/robot/HRP2JRL/bin
+${SCPCMD_NOLINKS} /opt/grx3.0/HRP2JRL/bin/StackOfTasks.so grxuser@hrp2010c:/opt/grx3.0/HRP2JRL/bin
 
 # Robots description
-${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10-small-old grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
-${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10-small grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
-${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10 grxuser@hrp2010c:/home/grxuser/devel/openrobots/share
+${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10-small-old grxuser@hrp2010c:/opt/openrobots/share
+${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10-small grxuser@hrp2010c:/opt/openrobots/share
+${SCPCMD_NOLINKS} -r ${ORIGINSHARE}/hrp2_10 grxuser@hrp2010c:/opt/openrobots/share
 echo "Done"

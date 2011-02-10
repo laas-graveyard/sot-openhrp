@@ -197,7 +197,7 @@ StackOfTasks::
   if(! admissibleState( pluginState,sotCLEANED_UP )) ; // TRACE
 
 # ifdef SOT_CHECK_TIME 
-  ofstream of( "/tmp/nmansard/dt.dat" );
+  ofstream of( "/tmp/dt.dat" );
   for( int i=0;i<timeIndex;++i )
     {
       of<<i<<"\t"<<timeArray[i]<<"\t"<<stateArray[i]<<endl;
@@ -510,7 +510,7 @@ sotControlLoop( sotRobotState* rs, sotMotorCommand* mc )
   const unsigned int iterCurrent = iter;
   sotDEBUG(15) << "--- Iter = "<<iter 
 	       <<"-------------------------------------------------"<<endl;
-
+  sotDEBUG(25) << " rs->angle.length()= " << rs->angle.length() << endl;
   try {
 #ifdef HAVE_LIBBOOST_THREAD
     boost::try_mutex::scoped_try_lock lock(controlMutex);
