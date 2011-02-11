@@ -28,11 +28,27 @@
 #include "plugin.hh"
 #include "dynamic-graph/python/interpreter.hh"
 
+#define SOT_OPENHRP_OUTPUT_FILE "/tmp/sot.out"
+
 using dynamicgraph::sot::openhrp::robotType;
 using dynamicgraph::sot::openhrp::Plugin;
 using dynamicgraph::sot::openhrp::hrp2_14_small;
 using dynamicgraph::sot::openhrp::hrp2_10_small_old;
 using dynamicgraph::sot::openhrp::hrp2_10_small;
+
+namespace dynamicgraph {
+  namespace sot {
+    namespace openhrp {
+      static void runPython(std::ostream& file, const std::string& command,
+			    corba::Interpreter& interpreter) {
+	file << ">>> " << command << std::endl;
+	std::string value = interpreter.python(command);
+	if (value != "None")
+	  file << value;
+      }
+    } // namespace openhrp
+  } // namespace sot
+} // namespace dynamicgraph
 
 plugin* create_plugin(istringstream &strm) 
 {
@@ -52,7 +68,7 @@ plugin* create_plugin(istringstream &strm)
       aRobotToControl = hrp2_10_small;
     }
   ofstream aof;
-  aof.open("/tmp/starting.txt");
+  aof.open(SOT_OPENHRP_OUTPUT_FILE);
   aof << "Robot name: " << lRobotName <<endl;
   aof << "NbDofs:" << lnbDofs << endl;
   aof << "aRobotToControl:" << aRobotToControl << endl;
@@ -62,26 +78,15 @@ plugin* create_plugin(istringstream &strm)
 
 dynamicgraph::sot::openhrp::Plugin::
 Plugin(int nbDofs, robotType robotToControl) :
-  interpreter_(), entity_(NULL)
+  interpreter_(), entity_(new StackOfTasks("device"))
 {
-  // Create an instance of Robot in python domain
-  interpreter_.python("import dynamic_graph.sot.openhrp");
-  interpreter_.python
-    ("robotController = dynamic_graph.sot.openhrp.Robot('robot')");
-  interpreter_.python("_robotControllerObj = robotController.obj");
-  // Get pointer to Robot entity
-  PyObject* dict = interpreter_.local().globals();
-  PyObject* robotControllerObj =
-    PyDict_GetItemString(dict, "_robotControllerObj");
-  if (!PyCObject_Check(robotControllerObj)) {
-    throw ExceptionFactory(ExceptionFactory::GENERIC,
-			   "failed to get pointer to entity Robot");
-  }
-  entity_ = static_cast<StackOfTasks*>(PyCObject_AsVoidPtr(robotControllerObj));
-  entity_->setNumberDofs(nbDofs);
-  entity_->setRobotType(robotToControl);
-
+  ofstream aof;
+  aof.open(SOT_OPENHRP_OUTPUT_FILE, std::ios_base::app);
+  runPython(aof, "from dynamic_graph.sot.openhrp.prologue import robot",
+	    interpreter_);
   assigned_time = 0.005;
+  interpreter_.startCorbaServer("openhrp", "", "stackOfTasks", "");
+  aof.close();
 }
 
 dynamicgraph::sot::openhrp::

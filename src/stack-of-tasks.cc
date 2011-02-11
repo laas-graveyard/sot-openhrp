@@ -30,7 +30,7 @@
 using dynamicgraph::sot::openhrp::StackOfTasks;
 const double StackOfTasks::TIMESTEP_DEFAULT = 0.005;
 
-DYNAMICGRAPH_FACTORY_ENTITY_PLUGIN(StackOfTasks, "Robot");
+const std::string StackOfTasks::CLASS_NAME = "Device";
 
 StackOfTasks::StackOfTasks(const std::string& inName)
   :Entity(inName),
@@ -42,23 +42,23 @@ StackOfTasks::StackOfTasks(const std::string& inName)
    motorCommandInit_( false ),
    pluginState_(sotJUST_BUILT),
    suspend_(true),
-# ifdef SOT_CHECK_TIME 
+# ifdef SOT_CHECK_TIME
    timeIndex_(0),
-#endif // #ifdef SOT_CHECK_TIME 
+#endif // #ifdef SOT_CHECK_TIME
    timestep_( TIMESTEP_DEFAULT ),
-   controlSIN(NULL,"OpenHRPplugin("+inName+")::input(vector)::control"),
-   attitudeSIN(NULL,"OpenHRPplugin("+inName+")::input(vector3)::attitudeIN"),
-   positionSIN(NULL,"OpenHRPplugin("+inName+")::input(sotMatrixHomogeneous)::positionIN"),
-   zmpSIN(NULL,"OpenHRPplugin("+inName+")::input(vector3)::zmp"),
-   stateSOUT( "OpenHRPplugin("+inName+")::output(vector)::state" ),
-   attitudeSOUT( "OpenHRPplugin("+inName+")::output(sotMatrixRotation)::attitude" ),
-   
-   pseudoTorqueSOUT( "OpenHRPplugin("+inName+")::output(vector)::ptorque" ),
+   controlSIN(NULL,"StackOfStasks("+inName+")::input(vector)::control"),
+   attitudeSIN(NULL,"StackOfStasks("+inName+")::input(vector3)::attitudeIN"),
+   positionSIN(NULL,"StackOfStasks("+inName+")::input(sotMatrixHomogeneous)::positionIN"),
+   zmpSIN(NULL,"StackOfStasks("+inName+")::input(vector3)::zmp"),
+   stateSOUT( "StackOfStasks("+inName+")::output(vector)::state" ),
+   attitudeSOUT( "StackOfStasks("+inName+")::output(sotMatrixRotation)::attitude" ),
+
+   pseudoTorqueSOUT( "StackOfStasks("+inName+")::output(vector)::ptorque" ),
    activatePseudoTorqueSignal(false),
-   previousStateSOUT("OpenHRPplug("+inName+")::output(vector)::previousState"),
-   previousControlSOUT( "OpenHRPplugin("+inName+")::output(vector)::previouscontrol" ),
-   motorcontrolSOUT("OpenHRPplugin("+inName+")::output(vector)::motorcontrol"),
-   ZMPPreviousControllerSOUT("OpenHRPplugin("+inName+")::output(vector)::zmppreviouscontroller") ,
+   previousStateSOUT("(StackOfStasks"+inName+")::output(vector)::previousState"),
+   previousControlSOUT( "StackOfStasks("+inName+")::output(vector)::previouscontrol" ),
+   motorcontrolSOUT("StackOfStasks("+inName+")::output(vector)::motorcontrol"),
+   ZMPPreviousControllerSOUT("StackOfStasks("+inName+")::output(vector)::zmppreviouscontroller") ,
    activatePreviousControlSignal(false)
 {
   referenceState_ = REFSTATE_RS;
@@ -71,13 +71,13 @@ StackOfTasks::StackOfTasks(const std::string& inName)
   /* --- FORCES --- */
   for( int i=0;i<4;++i ){ withForceSignals[i] = false; }
   forcesSOUT[0] =
-    new Signal<ml::Vector, int>("OpenHRPplugin("+inName+")::output(vector6)::forceRLEG");
+    new Signal<ml::Vector, int>("StackOfStasks("+inName+")::output(vector6)::forceRLEG");
   forcesSOUT[1] =
-    new Signal<ml::Vector, int>("OpenHRPplugin("+inName+")::output(vector6)::forceLLEG");
+    new Signal<ml::Vector, int>("StackOfStasks("+inName+")::output(vector6)::forceLLEG");
   forcesSOUT[2] =
-    new Signal<ml::Vector, int>("OpenHRPplugin("+inName+")::output(vector6)::forceRARM");
+    new Signal<ml::Vector, int>("StackOfStasks("+inName+")::output(vector6)::forceRARM");
   forcesSOUT[3] =
-    new Signal<ml::Vector, int>("OpenHRPplugin("+inName+")::output(vector6)::forceLARM");
+    new Signal<ml::Vector, int>("StackOfStasks("+inName+")::output(vector6)::forceLARM");
 
   motorcontrolSOUT.setConstant(robotStatePrec_);
   motorcontrolSOUT.setTime(iter_);
@@ -96,7 +96,7 @@ StackOfTasks::StackOfTasks(const std::string& inName)
 		      << attitudeSOUT
 		      //		      <<velocitySOUT
 		      << pseudoTorqueSOUT
-		      << previousStateSOUT 
+		      << previousStateSOUT
 		      << previousControlSOUT);
   {
   }
@@ -108,18 +108,18 @@ StackOfTasks::StackOfTasks(const std::string& inName)
 
 bool StackOfTasks::setup( RobotState* rs, RobotState* )
 {
-  sotDEBUG(25) << "Iter = "<<iter_ 
+  sotDEBUG(25) << "Iter = "<<iter_
 	       <<"   state = "<< pluginState_ << endl;
-# ifdef SOT_CHECK_TIME 
+# ifdef SOT_CHECK_TIME
   struct timeval t0,t1;
   gettimeofday(&t0,NULL);
-# endif // ifdef SOT_CHECK_TIME 
+# endif // ifdef SOT_CHECK_TIME
 
   sotDEBUGIN(5);
   if(pluginState_ != sotINIT) return false;
-  
+
   ml::Vector mlrs(numberDofs_);
-  sotDEBUG(25) << endl; 
+  sotDEBUG(25) << endl;
   //  for( int i=0;i<40;++i )
   //    {mlrs(i+6) = rs->angle[i]; }
   updateFromMC(rs,mlrs,6);
@@ -141,17 +141,17 @@ bool StackOfTasks::setup( RobotState* rs, RobotState* )
   sotDEBUG(25) << mlrs <<endl;
 
   pluginState_ = sotSETUP;
-# ifdef SOT_CHECK_TIME 
+# ifdef SOT_CHECK_TIME
   gettimeofday(&t1,NULL);
   double dt = ( (t1.tv_sec-t0.tv_sec) * 1000.
 		+ (t1.tv_usec-t0.tv_usec+0.) / 1000. );
-  if( timeIndex_<TIME_ARRAY_SIZE ) 
+  if( timeIndex_<TIME_ARRAY_SIZE )
     {
       timeArray[ timeIndex_ ] = dt;
       stateArray[ timeIndex_++ ] = pluginState_;
     }
 
-# endif // ifdef SOT_CHECK_TIME 
+# endif // ifdef SOT_CHECK_TIME
   sotDEBUGOUT(5);
 
   return true;
@@ -159,19 +159,19 @@ bool StackOfTasks::setup( RobotState* rs, RobotState* )
 
 void StackOfTasks::
 control( RobotState* rs, RobotState* mc )
-{  
-  sotDEBUG(25) << "Iter = "<<iter_ 
+{
+  sotDEBUG(25) << "Iter = "<<iter_
 	       <<"   state = "<< pluginState_ << endl;
 
-# ifdef SOT_CHECK_TIME 
+# ifdef SOT_CHECK_TIME
   struct timeval t0,t1;
   gettimeofday(&t0,NULL);
-# endif // ifdef SOT_CHECK_TIME 
+# endif // ifdef SOT_CHECK_TIME
 
   switch( pluginState_ )
     {
     case sotSETUP: pluginState_ = sotLOOP; // no break
-    case sotLOOP: 
+    case sotLOOP:
       sotControlLoop( rs,mc );
       break;
     case sotFINISHING:
@@ -182,17 +182,17 @@ control( RobotState* rs, RobotState* mc )
       break;
     }
 
-# ifdef SOT_CHECK_TIME 
+# ifdef SOT_CHECK_TIME
   gettimeofday(&t1,NULL);
   double dt = ( (t1.tv_sec-t0.tv_sec) * 1000.
 		+ (t1.tv_usec-t0.tv_usec+0.) / 1000. );
-  if( timeIndex_<TIME_ARRAY_SIZE ) 
+  if( timeIndex_<TIME_ARRAY_SIZE )
     {
       timeArray[ timeIndex_ ] = dt;
       stateArray[ timeIndex_++ ] = pluginState_;
     }
   sotDEBUG(25) << "dt = " << dt << endl;
-# endif // ifdef SOT_CHECK_TIME 
+# endif // ifdef SOT_CHECK_TIME
 
   return;
 }
@@ -208,19 +208,19 @@ StackOfTasks::~StackOfTasks()
   sotDEBUGIN(5);
   if(pluginState_ != sotCLEANED_UP) {}; // TRACE
 
-# ifdef SOT_CHECK_TIME 
+# ifdef SOT_CHECK_TIME
   ofstream of( "/tmp/nmansard/dt.dat" );
   for( int i=0;i<timeIndex_;++i )
     {
       of<<i<<"\t"<<timeArray[i]<<"\t"<<stateArray[i]<<endl;
     }
-# endif  // #ifdef SOT_CHECK_TIME 
+# endif  // #ifdef SOT_CHECK_TIME
 
   for( int i=0;i<4;++i ) { delete forcesSOUT[i]; }
 
   sotDEBUGOUT(5);
 }
- 
+
 void StackOfTasks::setNumberDofs(int numberDofs)
 {
   if (numberDofs < 6) {
@@ -254,16 +254,16 @@ sotControlLoop( RobotState* rs, RobotState* mc )
   sotDEBUGIN(5) << std::endl;
 
   if(pluginState_ != sotLOOP) return;
-  iter_ ++; 
+  iter_ ++;
   const unsigned int iterCurrent = iter_;
-  sotDEBUG(15) << "--- Iter = "<<iter_ 
+  sotDEBUG(15) << "--- Iter = "<<iter_
 	       <<"-------------------------------------------------"<<endl;
 
   try {
 #ifdef HAVE_LIBBOOST_THREAD
     boost::try_mutex::scoped_try_lock lock(controlMutex_);
 #endif
-      
+
     /* --- RS --- */
     ml::Vector mlrs(numberDofs_);
     sotDEBUG(25) << endl;
@@ -286,7 +286,7 @@ sotControlLoop( RobotState* rs, RobotState* mc )
     ml::Vector ZMPPrevContr(3);
     for(unsigned int i=0;i<3;i++)
       ZMPPrevContr(i) = mc->zmp[i];
-  
+
     ZMPPreviousControllerSOUT.setConstant(ZMPPrevContr);
     ZMPPreviousControllerSOUT.setTime(iter_);
 
@@ -301,13 +301,13 @@ sotControlLoop( RobotState* rs, RobotState* mc )
 	else
 	  {
 	    for(unsigned int i=0;i<numberDofs_;++i )
-	      robotStatePrec_(i) = mlrs(i+6); 
+	      robotStatePrec_(i) = mlrs(i+6);
 	  }
 
-      
+
 	robotStatePrecInit_ = true;
       }
-  
+
 
     /* --- FORCES --- */
     ml::Vector mlforces(6);
@@ -324,11 +324,11 @@ sotControlLoop( RobotState* rs, RobotState* mc )
     sotDEBUG(15) << "force = "<< rs->force.length() << std::endl;
 
     /* --- KF --- */
-    ::sot::MatrixRotation mlkf;  
+    ::sot::MatrixRotation mlkf;
     if( rs->attitude.length() )
       {
 	sotDEBUG( 25 ) << "Get KF " << rs->attitude[0].length() << endl;
-	for( unsigned int i=0;i<rs->attitude[0].length();++i ) 
+	for( unsigned int i=0;i<rs->attitude[0].length();++i )
 	  sotDEBUG( 25 ) << "Value  " << i << " " << rs->attitude[0][i] <<endl;
 
 	/* --- HACK: in simulation, attitude is a rotation matrix, while
@@ -362,10 +362,10 @@ sotControlLoop( RobotState* rs, RobotState* mc )
 	  mlkf(2,2) = 1 - 2*qx2 - 2*qy2;
 	}
 	else      /* --- END OF HACK --- */
-	  if(rs->attitude[0].length() == 9) 
+	  if(rs->attitude[0].length() == 9)
 	    { // we have a quaternion: convert it to a matrix
-	      for( unsigned int i=0;i<3;++i ) 
-		for( unsigned int j=0;j<3;++j ) 
+	      for( unsigned int i=0;i<3;++i )
+		for( unsigned int j=0;j<3;++j )
 		  mlkf(i,j)=rs->attitude[0][i*3+j];
 	    }
       }
@@ -389,7 +389,7 @@ sotControlLoop( RobotState* rs, RobotState* mc )
 
 	pseudoTorqueSOUT.setConstant( torque );
 	pseudoTorqueSOUT.setTime( iter_ );
-	
+
       }
     if( activatePreviousControlSignal&&(robotStatePrec_.size()>0) )
       {
@@ -399,7 +399,7 @@ sotControlLoop( RobotState* rs, RobotState* mc )
 	robotStatePrec_.opposite(previousmc);
 
 	updateFromMC(mc,previousmc);
-	for(unsigned int i=0;i<numberDofs_-6;++i ) 
+	for(unsigned int i=0;i<numberDofs_-6;++i )
 	  {
 	    previousControl(i) += previousmc(i);
 	    previousControl(i) *= dtinv;
@@ -413,7 +413,7 @@ sotControlLoop( RobotState* rs, RobotState* mc )
 		     motorCommandInit_);
     if( motorCommandInit_ ) robotStatePrec_ += (motorCommandPrec_*0.005);
     updateMC(mc,robotStatePrec_);
-    
+
     /* --- MC --- */
     try
       {
@@ -430,14 +430,14 @@ sotControlLoop( RobotState* rs, RobotState* mc )
 	      mlmc = control;
 	    }
 	    bool mcIsNan = false;
-	    for(unsigned int i=0;i<numberDofs_-6;++i ) if( isnan(mlmc(i)) ) 
+	    for(unsigned int i=0;i<numberDofs_-6;++i ) if( isnan(mlmc(i)) )
 	      { mcIsNan=true; break; }
-	    if( mcIsNan ) 
+	    if( mcIsNan )
 	      { controlSIN.unplug(); }
-	    else 
+	    else
 	      {
 		sotDEBUG(25) << mlmc <<endl;
-		
+
 		if( (iter_==iterCurrent)&&motorCommandInit_ )
 		  { /* No overlaps with next iteration. */
 		    robotStatePrec_ -= (motorCommandPrec_*0.005);
@@ -446,10 +446,10 @@ sotControlLoop( RobotState* rs, RobotState* mc )
 		if( iter_==iterCurrent )
 		  {
 		    robotStatePrec_ += (motorCommandPrec_*0.005);
-		    //for( int i=0;i<40;++i ) 
+		    //for( int i=0;i<40;++i )
 		    //		      { mc->angle[i] = robotStatePrec_(i); }
 		    updateMC(mc,robotStatePrec_);
-		    sotDEBUG(15) << "MotorControl :" 
+		    sotDEBUG(15) << "MotorControl :"
 				 << robotStatePrec_ <<endl;
 
 		    /* Update motor control output signal. */
@@ -464,7 +464,7 @@ sotControlLoop( RobotState* rs, RobotState* mc )
       }
     catch( const ExceptionAbstract& e ) {sotDEBUG(1) << e;}
     catch( ... ) { sotDEBUG(1) << "Unknown catched." <<endl; }
-  
+
     /* --- WAIST POSITION --- */
     try {
       if (!suspend_)
@@ -501,30 +501,30 @@ sotControlLoop( RobotState* rs, RobotState* mc )
 	    {
 	    }
 	}
-    } 
-    catch (...) 
-      { 
+    }
+    catch (...)
+      {
       }
-    
+
     /* --- ZMP REF --- */
     try {
-      if(! suspend_ ) 
+      if(! suspend_ )
 	{
-	  const ml::Vector & zmpmc = zmpSIN(iter_); 
+	  const ml::Vector & zmpmc = zmpSIN(iter_);
 	  sotDEBUG(25) << "Copy zmpref:"<< zmpmc << endl;
 	  if( iter_==iterCurrent )
 	    for( int i=0;i<3;++i ) mc->zmp[i] = zmpmc(i);
 	}
     } catch (...) {}
-  } 
+  }
 
 #ifdef HAVE_LIBBOOST_THREAD
-  catch( boost::lock_error le ) 
+  catch( boost::lock_error le )
     {
       sotDEBUG(1) << "Overlaps catched." << std::endl;
-      if( motorCommandInit_&&robotStatePrecInit_ ) 
+      if( motorCommandInit_&&robotStatePrecInit_ )
 	robotStatePrec_ += (motorCommandPrec_*0.005);
-      //      for( int i=0;i<40;++i ) 
+      //      for( int i=0;i<40;++i )
       //	{ mc->angle[i] = robotStatePrec_(i); }
       updateMC(mc,robotStatePrec_);
     }
@@ -532,11 +532,11 @@ sotControlLoop( RobotState* rs, RobotState* mc )
 
   previousStateSOUT.setConstant(robotStatePrec_);
 
-  sotDEBUGOUT(5) << std::endl; 
+  sotDEBUGOUT(5) << std::endl;
 }
 
 void StackOfTasks::sotControlFinishing(RobotState *rs, RobotState *mc)
-{ 
+{
   // pluginState_ is either sotHOLD or sotFINISHING.
   // If sotFINISHING,
   //    - run one step of control loop and
@@ -545,12 +545,12 @@ void StackOfTasks::sotControlFinishing(RobotState *rs, RobotState *mc)
   // If sotHOLD,
   //    - if seqplay client is empty (?) switch to sotFINISHED
   //    - otherwise do nothing.
-  sotDEBUG(15) << "--- Iter = "<<iter_ 
+  sotDEBUG(15) << "--- Iter = "<<iter_
 	       <<"-------------------------------------------------"<<endl;
   if(pluginState_ == sotFINISHING) {
-    pluginState_=sotLOOP;    
+    pluginState_=sotLOOP;
     sotControlLoop(rs,mc);
-    
+
     pluginState_=sotFINISHING;
     return ;
   }  // if(pluginState_ == sotFINISHING ))
@@ -580,7 +580,7 @@ void StackOfTasks::updateMC(RobotState *mc,
       updateHRP210SmallOldMC(mc,VectorCommand,0);
       break;
     }
-  
+
 }
 
 void StackOfTasks::updateFromMC(RobotState *mc,
@@ -629,7 +629,7 @@ void StackOfTasks::play( void )
 
 void StackOfTasks::pause( void )
 {
-  if(!suspend_) 
+  if(!suspend_)
     {
       suspend_ = true;
       //robotStatePrecInit_=false;
@@ -647,8 +647,8 @@ void StackOfTasks::updateHRP2SmallFromMC(RobotState *mc,
   //  if (VectorCommand.size()!=40+ref)
   //    VectorCommand.resize(40+ref);
 
-  sotDEBUG(5) << "Vector.size():" <<VectorCommand.size() 
-	      << " mc->angle length:" << mc->angle.length() <<endl; 
+  sotDEBUG(5) << "Vector.size():" <<VectorCommand.size()
+	      << " mc->angle length:" << mc->angle.length() <<endl;
 
   for(unsigned int i=0;i<numberDofs_-6;i++)
     VectorCommand(lindex++) = mc->angle[i];
@@ -677,15 +677,15 @@ void StackOfTasks::updateHRP2Smalltorque(RobotState *rs,
     Torque(i) = rs->torque[i];
 }
 
- 
+
 void StackOfTasks::updateHRP210SmallOldMC(RobotState *mc,
 					  maal::boost::Vector &VectorCommand,
 					  unsigned int ref)
 {
 
   sotDEBUGIN(5);
-  sotDEBUG(5) << "Vector.size():" <<VectorCommand.size() 
-	      << " mc->angle length:" << mc->angle.length() <<endl; 
+  sotDEBUG(5) << "Vector.size():" <<VectorCommand.size()
+	      << " mc->angle length:" << mc->angle.length() <<endl;
 
   unsigned int lindex=ref;
   for(unsigned int i=0;i<21;i++)
@@ -693,7 +693,7 @@ void StackOfTasks::updateHRP210SmallOldMC(RobotState *mc,
   mc->angle[21] = 0.0;
   for(unsigned int i=22;i<29;i++)
     mc->angle[i] = VectorCommand(lindex++);
-  mc->angle[29] = 0.0; 
+  mc->angle[29] = 0.0;
   for(unsigned int i=30;i<42;i++)
     mc->angle[i] = VectorCommand(lindex++);
 
@@ -709,8 +709,8 @@ void StackOfTasks::updateHRP210SmallOldMC(RobotState *mc,
     }
   sotDEBUG(5) <<endl;
 
-  sotDEBUGOUT(5); 
-  
+  sotDEBUGOUT(5);
+
 }
 
 void StackOfTasks::updateHRP210SmallOldFromMC(RobotState *mc,
@@ -724,8 +724,8 @@ void StackOfTasks::updateHRP210SmallOldFromMC(RobotState *mc,
   //  if (VectorCommand.size()!=40+ref)
   //    VectorCommand.resize(40+ref);
 
-  sotDEBUG(5) << "Vector.size():" <<VectorCommand.size() 
-	      << " mc->angle length:" << mc->angle.length() <<endl; 
+  sotDEBUG(5) << "Vector.size():" <<VectorCommand.size()
+	      << " mc->angle length:" << mc->angle.length() <<endl;
 
   for(unsigned int i=0;i<21;i++)
     VectorCommand(lindex++) = mc->angle[i];
@@ -769,8 +769,8 @@ void StackOfTasks::updateHRP2SmallMC(RobotState *mc,
 {
 
   sotDEBUGIN(5);
-  sotDEBUG(5) << "Vector.size():" <<VectorCommand.size() 
-	      << " mc->angle length:" << mc->angle.length() <<endl; 
+  sotDEBUG(5) << "Vector.size():" <<VectorCommand.size()
+	      << " mc->angle length:" << mc->angle.length() <<endl;
 
   unsigned int lindex=ref;
   for(unsigned int i=0;i<numberDofs_-6;i++)
@@ -788,7 +788,7 @@ void StackOfTasks::updateHRP2SmallMC(RobotState *mc,
     }
   sotDEBUG(5) <<endl;
 
-  sotDEBUGOUT(5); 
-  
+  sotDEBUGOUT(5);
+
 }
 

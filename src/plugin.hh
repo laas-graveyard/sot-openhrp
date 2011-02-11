@@ -61,7 +61,7 @@ namespace dynamicgraph {
 	/// Embedded python interpreter accessible via Corba
 	dynamicgraph::corba::Interpreter interpreter_;
 	/// Pointer to Entity StackOfTasks
-	StackOfTasks *entity_;
+	StackOfTasks* entity_;
       };
     } // namespace openhrp
   } // namespace sot
