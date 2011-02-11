@@ -50,7 +50,7 @@ namespace dynamicgraph {
   } // namespace sot
 } // namespace dynamicgraph
 
-plugin* create_plugin(istringstream &strm) 
+plugin* create_plugin(istringstream &strm)
 {
   unsigned int lnbDofs = 46;
   robotType aRobotToControl = hrp2_14_small;
@@ -82,6 +82,18 @@ Plugin(int nbDofs, robotType robotToControl) :
 {
   ofstream aof;
   aof.open(SOT_OPENHRP_OUTPUT_FILE, std::ios_base::app);
+  runPython(aof, "import sys, os", interpreter_);
+  runPython(aof, "pythonpath = ''", interpreter_);
+  runPython(aof,
+	    "with open('./python-path') as f:\n"
+	    "  pythonpath = f.readline().rstrip('\\n ')", interpreter_);
+  runPython(aof, "path = []", interpreter_);
+  runPython(aof,
+	    "for p in pythonpath.split(':'):\n"
+	    "  if p not in sys.path:\n"
+	    "    path.append(p)", interpreter_);
+  runPython(aof, "path.extend(sys.path)", interpreter_);
+  runPython(aof, "sys.path = path", interpreter_);
   runPython(aof, "from dynamic_graph.sot.openhrp.prologue import robot",
 	    interpreter_);
   assigned_time = 0.005;
