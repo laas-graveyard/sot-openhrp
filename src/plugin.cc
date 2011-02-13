@@ -22,6 +22,7 @@
 #include <Python.h>
 
 #include <dynamic-graph/exception-factory.h>
+#include <dynamic-graph/debug.h>
 #include <sot-core/exception-factory.h>
 #include <sot-core/debug.h>
 
@@ -73,6 +74,9 @@ plugin* create_plugin(istringstream &strm)
   aof << "NbDofs:" << lnbDofs << endl;
   aof << "aRobotToControl:" << aRobotToControl << endl;
   aof.close();
+#ifdef VP_DEBUG
+  { dynamicgraph::DebugTrace::openFile(); }
+#endif
   return new dynamicgraph::sot::openhrp::Plugin(lnbDofs,aRobotToControl);
 }
 
@@ -111,7 +115,6 @@ bool dynamicgraph::sot::openhrp::
 Plugin::setup  (OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 {
   // Initialize client to seqplay.
-  sotDEBUGIN(5);
   dynamicgraph::sot::openhrp::RobotState robotState(rs->angle, rs->force,
 						    rs->attitude, rs->torque,
 						    rs->zmp, rs->basePos,
