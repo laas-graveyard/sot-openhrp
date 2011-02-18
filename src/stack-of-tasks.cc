@@ -22,111 +22,48 @@
 #include <dynamic-graph/factory.h>
 #include <dynamic-graph/command-setter.h>
 
-#include <sot-core/debug.h>
-#include <sot-core/exception-factory.h>
+#include <dynamic-graph/debug.h>
+#include <sot/core/debug.hh>
+#include <sot/core/exception-factory.hh>
 
 #include "stack-of-tasks.hh"
 
 #include "Plugin_impl.h"
 
-#define SOT_OPENHRP_OUTPUT_FILE "/tmp/sot.out"
-
 using dynamicgraph::sot::openhrp::StackOfTasks;
+using dynamicgraph::sot::ExceptionFactory;
+
 const double StackOfTasks::TIMESTEP_DEFAULT = 0.005;
 
 const std::string StackOfTasks::CLASS_NAME = "Device";
 
 StackOfTasks::StackOfTasks(const std::string& inName)
-  : ::dynamicgraph::Entity(inName),
-   iter_(0),
-   robotStatePrec_((unsigned int)0),
+  : dynamicgraph::sot::Device(inName),
 # ifdef SOT_CHECK_TIME
    timeIndex_(0),
 #endif // #ifdef SOT_CHECK_TIME
-   timestep_(TIMESTEP_DEFAULT),
-   controlSIN(NULL,"StackOfStasks("+inName+")::input(vector)::control"),
-   attitudeSIN(NULL,"StackOfStasks("+inName+")::input(vector3)::attitudeIN"),
-   positionSIN
-   (NULL,"StackOfStasks("+inName+")::input(sotMatrixHomogeneous)::positionIN"),
-   zmpSIN(NULL,"StackOfStasks("+inName+")::input(vector3)::zmp"),
-   stateSOUT("StackOfStasks("+inName+")::output(vector)::state"),
-   attitudeSOUT
-   ("StackOfStasks("+inName+")::output(sotMatrixRotation)::attitude"),
-
-   pseudoTorqueSOUT("StackOfStasks("+inName+")::output(vector)::ptorque"),
-   activatePseudoTorqueSignal(false),
-   previousStateSOUT
-   ("(StackOfStasks"+inName+")::output(vector)::previousState"),
-   previousControlSOUT
-   ("StackOfStasks("+inName+")::output(vector)::previouscontrol"),
-   motorcontrolSOUT("StackOfStasks("+inName+")::output(vector)::motorcontrol"),
-   ZMPPreviousControllerSOUT
-   ("StackOfStasks("+inName+")::output(vector)::zmppreviouscontroller")
+   timestep_(TIMESTEP_DEFAULT)
 {
-  /* --- FORCES --- */
-  for(int i=0;i<4;++i){ withForceSignals[i] = false; }
-  forcesSOUT[0] =
-    new Signal<ml::Vector, int>("StackOfStasks("+inName+")::output(vector6)::forceRLEG");
-  forcesSOUT[1] =
-    new Signal<ml::Vector, int>("StackOfStasks("+inName+")::output(vector6)::forceLLEG");
-  forcesSOUT[2] =
-    new Signal<ml::Vector, int>("StackOfStasks("+inName+")::output(vector6)::forceRARM");
-  forcesSOUT[3] =
-    new Signal<ml::Vector, int>("StackOfStasks("+inName+")::output(vector6)::forceLARM");
-
-  signalRegistration(controlSIN
-		      << attitudeSIN
-		      << positionSIN
-		      << zmpSIN
-		      << stateSOUT
-		      << motorcontrolSOUT
-		      << ZMPPreviousControllerSOUT
-		      << *forcesSOUT[0]
-		      << *forcesSOUT[1]
-		      << *forcesSOUT[2]
-		      << *forcesSOUT[3]
-		      << attitudeSOUT
-		      //		      <<velocitySOUT
-		      << pseudoTorqueSOUT
-		      << previousStateSOUT
-		      << previousControlSOUT);
-
-  using namespace dynamicgraph::command;
-  std::string docstring;
-  /* Command setStateSize. */
-  docstring =
-    "\n"
-    "    Set size of state vector\n"
-    "\n";
-  addCommand("resize",
-	     new Setter<StackOfTasks, unsigned int>
-	     (*this, &StackOfTasks::setStateSize, docstring));
-  /* Command set. */
-  docstring =
-    "\n"
-    "    Set state vector value\n"
-    "\n";
-  addCommand("set",
-	     new Setter<StackOfTasks, Vector>
-	     (*this, &StackOfTasks::setState, docstring));
 }
 
 bool StackOfTasks::setup(RobotState*, RobotState* mc)
 {
-  ofstream aof;
-  aof.open(SOT_OPENHRP_OUTPUT_FILE, std::ios_base::app);
+#ifdef VP_DEBUG
+  dynamicgraph::DebugTrace::openFile();
+  dynamicgraph::sot::DebugTrace::openFile();
+#endif
   // Read state from motor command
   maal::boost::Vector state = stateSOUT.access(0);
 
-  aof << "stateSOUT.access(0) = " << state << std::endl;
-  aof << "numberDofs_ = " << numberDofs_ << std::endl;
-  aof << "mc->angle.length() = " << mc->angle.length() << std::endl;
+  sotDEBUG(25) << "stateSOUT.access(0) = " << state << std::endl;
+  sotDEBUG(25) << "state.size() = " << state.size() << std::endl;
+  sotDEBUG(25) << "mc->angle.length() = " << mc->angle.length() << std::endl;
 
   for (unsigned int i=6; i<state.size(); i++) {
     state(i) = mc->angle[i-6];
   }
 
-  aof << "state = " << state << std::endl;
+  sotDEBUG(25) << "state = " << state << std::endl;
 
   sotDEBUG(25) << "state = "<< state << std::endl;
   stateSOUT.setConstant(state);
@@ -136,13 +73,22 @@ bool StackOfTasks::setup(RobotState*, RobotState* mc)
 void StackOfTasks::
 control(RobotState* rs, RobotState* mc)
 {
-  ofstream aof;
-  aof.open(SOT_OPENHRP_OUTPUT_FILE, std::ios_base::app);
-
-  for (unsigned int i=0; i<rs->angle.length(); i++) {
-    mc->angle[i] = rs->angle[i];
+  sotDEBUG(25) << "control-----------------" << std::endl;
+  sotDEBUG(25) << "state = " << state_ << std::endl;
+  // Integrate control
+  increment(timestep_);
+  sotDEBUG(25) << "state = " << state_ << std::endl;
+  // Write new state into motor command
+  for (unsigned int i=6; i<state_.size(); i++) {
+    mc->angle[i-6] = state_(i);
   }
-  return;
+#if 0
+  sotDEBUG(25) << "mc->angle = (";
+  for (unsigned int i=0; i<mc->angle.length(); i++) {
+    sotDEBUG(25) << mc->angle[i] << ",";
+  }
+  sotDEBUG(25) << ")" << std::endl;
+#endif
 }
 
 bool StackOfTasks::
@@ -154,26 +100,3 @@ cleanup(RobotState*, RobotState*)
 StackOfTasks::~StackOfTasks()
 {
 }
-
-void StackOfTasks::setState(const ml::Vector& inState)
-{
-  numberDofs_ = inState.size();
-  stateSOUT.setConstant(inState);
-  motorcontrolSOUT.setConstant(inState);
-}
-
-void StackOfTasks::setStateSize(const unsigned int& numberDofs)
-{
-  if (numberDofs < 6) {
-    std::ostringstream oss;
-    oss << "dimension of robot is "
-	<< numberDofs
-	<< ", should be 6 or more.";
-    throw(::sot::ExceptionFactory(::sot::ExceptionFactory::GENERIC, oss.str()));
-  }
-  numberDofs_ = numberDofs;
-  robotStatePrec_ = ml::Vector((unsigned int)numberDofs-6);
-  stateSOUT.setConstant(ml::Vector((unsigned int)numberDofs));
-  motorCommandPrec_ = maal::boost::Vector((unsigned int)numberDofs-6);
-}
-

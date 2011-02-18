@@ -16,6 +16,7 @@
 
 from dynamic_graph.sot.dynamics.hrp2 import Hrp2Laas, Hrp2Jrl
 from dynamic_graph.entity import PyEntityFactoryClass
+from dynamic_graph.sot.dynamics.solver import Solver
 
 Device = PyEntityFactoryClass('Device')
 
@@ -23,3 +24,7 @@ HRP2LAAS = Hrp2Laas
 HRP2JRL = Hrp2Jrl
 
 robot = @HRP_ROBOT_SPEC@(name = 'robot', device = Device('device'))
+solver = Solver(robot)
+
+# push com task
+solver.push(robot.name + ".task.com")

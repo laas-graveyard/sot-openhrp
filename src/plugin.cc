@@ -23,8 +23,8 @@
 
 #include <dynamic-graph/exception-factory.h>
 #include <dynamic-graph/debug.h>
-#include <sot-core/exception-factory.h>
-#include <sot-core/debug.h>
+#include <sot/core/exception-factory.hh>
+#include <sot/core/debug.hh>
 
 #include "plugin.hh"
 #include "dynamic-graph/python/interpreter.hh"
@@ -74,9 +74,6 @@ plugin* create_plugin(istringstream &strm)
   aof << "NbDofs:" << lnbDofs << endl;
   aof << "aRobotToControl:" << aRobotToControl << endl;
   aof.close();
-#ifdef VP_DEBUG
-  { dynamicgraph::DebugTrace::openFile(); }
-#endif
   return new dynamicgraph::sot::openhrp::Plugin(lnbDofs,aRobotToControl);
 }
 
@@ -98,7 +95,7 @@ Plugin(int nbDofs, robotType robotToControl) :
 	    "    path.append(p)", interpreter_);
   runPython(aof, "path.extend(sys.path)", interpreter_);
   runPython(aof, "sys.path = path", interpreter_);
-  runPython(aof, "from dynamic_graph.sot.openhrp.prologue import robot",
+  runPython(aof, "from dynamic_graph.sot.openhrp.prologue import robot, solver",
 	    interpreter_);
   assigned_time = 0.005;
   interpreter_.startCorbaServer("openhrp", "", "stackOfTasks", "");

@@ -25,9 +25,9 @@
 #include <dynamic-graph/entity.h>
 #include <dynamic-graph/signal.h>
 #include <dynamic-graph/signal-ptr.h>
-//#include <sot-core/vector-roll-pitch-yaw.h>
-#include <sot-core/matrix-homogeneous.h>
-#include <sot-core/matrix-rotation.h>
+#include <sot/core/device.hh>
+#include <sot/core/matrix-homogeneous.hh>
+#include <sot/core/matrix-rotation.hh>
 
 #include "OpenHRPCommon.hh"
 
@@ -73,9 +73,14 @@ namespace dynamicgraph {
       /// \brief Entity embedded into an OpenHRP plug-in to control HRP2
       ///
 
-      class StackOfTasks : public Entity
+      class StackOfTasks : public Device
       {
 	public:  /* --- GENERIC PLUGIN IMPLEMENTATION --- */
+
+	static const std::string CLASS_NAME;
+	virtual const std::string& getClassName() const {
+	  return CLASS_NAME;
+	}
 
 	/** @name GenericPlugin
 	 * Generic plugin implementation: implements methods inherited from
@@ -88,54 +93,11 @@ namespace dynamicgraph {
 	void control(RobotState* rs, RobotState* mc);
 	bool cleanup(RobotState* rs, RobotState* mc);
 	// @}
-	void setState( const ml::Vector& inState );
-	void setStateSize(const unsigned int& numberDofs);
-	void setRobotType(robotType whichRobot);
-
-	static const std::string CLASS_NAME;
-	virtual const std::string& getClassName() const {
-	  return CLASS_NAME;
-	}
 
       private: /* --- MEMBERS --- */
 	//! Specific fields of the
-	unsigned int iter_;
-	maal::boost::Vector robotStatePrec_;
-	maal::boost::Vector motorCommandPrec_;
 	static const double TIMESTEP_DEFAULT;
 	double timestep_;
-
-	/*! Used to handle different robots */
-	unsigned int numberDofs_;
-
-	enum ForceSignalSource
-	{
-	  FORCE_SIGNAL_RLEG,
-	  FORCE_SIGNAL_LLEG,
-	  FORCE_SIGNAL_RARM,
-	  FORCE_SIGNAL_LARM
-	};
-	bool withForceSignals[4];
-	
-	dynamicgraph::SignalPtr< ml::Vector,int > controlSIN;
-	dynamicgraph::SignalPtr< ml::Vector,int > attitudeSIN;
-	dynamicgraph::SignalPtr< ::sot::MatrixHomogeneous, int > positionSIN;
-	dynamicgraph::SignalPtr< ml::Vector,int > zmpSIN;
-      
-	dynamicgraph::Signal< ml::Vector,int > stateSOUT;
-	dynamicgraph::Signal< ml::Vector,int >* forcesSOUT[4];
-	dynamicgraph:: Signal< ::sot::MatrixRotation,int > attitudeSOUT;
-
-	dynamicgraph::Signal< ml::Vector,int> pseudoTorqueSOUT;
-	bool activatePseudoTorqueSignal;
-	//Signal<ml::Vector,int> velocitySOUT;
-	//bool activateVelocitySignal;
-	dynamicgraph::Signal<ml::Vector,int> previousStateSOUT;
-	dynamicgraph::Signal<ml::Vector,int> previousControlSOUT;
-	/*! \brief The current state of the robot from the command viewpoint. */
-	dynamicgraph::Signal<ml::Vector,int> motorcontrolSOUT;
-	/*! \brief The ZMP reference send by the previous controller. */
-	dynamicgraph::Signal<ml::Vector,int> ZMPPreviousControllerSOUT;
       }; // class StackOfTasks
     } // namespace openhrp
   } // namespace sot
