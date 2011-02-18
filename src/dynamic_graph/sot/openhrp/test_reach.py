@@ -22,6 +22,7 @@ from __main__ import robot, solver
 solver.sot.push(robot.name + '.task.right-ankle')
 solver.sot.push(robot.name + '.task.left-ankle')
 solver.sot.push(robot.name + '.task.right-wrist')
+solver.sot.push(robot.name + '.task.gaze')
 
 # Move right wrist
 reach(robot, 'right-wrist', 0.25, 0, 0.25)
