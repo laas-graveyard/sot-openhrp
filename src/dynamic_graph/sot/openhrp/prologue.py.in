@@ -27,4 +27,4 @@ robot = @HRP_ROBOT_SPEC@(name = 'robot', device = Device('device'))
 solver = Solver(robot)
 
 # push com task
-solver.push(robot.name + ".task.com")
+solver.push(robot.name + "_task_com")
