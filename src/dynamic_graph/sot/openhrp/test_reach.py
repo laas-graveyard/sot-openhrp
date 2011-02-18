@@ -19,10 +19,10 @@ from dynamic_graph.sot.dynamics.tools import *
 from __main__ import robot, solver
 
 #  Operational points tasks
-solver.sot.push(robot.name + '.task.right-ankle')
-solver.sot.push(robot.name + '.task.left-ankle')
-solver.sot.push(robot.name + '.task.right-wrist')
-solver.sot.push(robot.name + '.task.gaze')
+solver.sot.push(robot.name + '_task_right-ankle')
+solver.sot.push(robot.name + '_task_left-ankle')
+solver.sot.push(robot.name + '_task_right-wrist')
+solver.sot.push(robot.name + '_task_gaze')
 
 # Move right wrist
 reach(robot, 'right-wrist', 0.25, 0, 0.25)
