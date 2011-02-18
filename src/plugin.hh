@@ -26,17 +26,6 @@
 #include "stack-of-tasks.hh"
 
 #include "Plugin_impl.h"
-/*! Include for OpenHRP new dynamics library. */
-//#include "Body.h"
-//#include "Link.h"
-//#include "LinkTraverse.h"
-//#include "ModelLoaderUtil.h"
-
-#define ROBOT_STATE_VAR_POS(x) x->basePos
-#define ROBOT_STATE_VAR_ATT(x) x->baseAtt
-
-//#include "bodyinfo.h"
-//#include "SequencePlayer.h"
 
 namespace dynamicgraph {
   namespace sot {
@@ -46,7 +35,7 @@ namespace dynamicgraph {
       class Plugin : public ::plugin
       {
       public:
-	Plugin(int lnbDofs, robotType aRobotToControl);
+	Plugin();
 	virtual ~Plugin();
 	/** @name GenericPlugin
 	 * Generic plugin implementation: call StackOfStack methods

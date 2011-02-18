@@ -60,11 +60,6 @@ namespace dynamicgraph {
 	DblSequence3& basePos;
 	DblSequence9& baseAtt;
       };
-      enum robotType {
-	hrp2_10_small,     // Control new HRP-2 10 with new HRP-2 10 small model
-	hrp2_10_small_old, // Control new HRP-2 10 with old HRP-2 10 small model
-	hrp2_14_small      //! Control HRP-2 14 with its small model
-      };
 
       /* ------------------------------------------------------------------ */
       /* --- CLASS -------------------------------------------------------- */

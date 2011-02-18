@@ -31,11 +31,7 @@
 
 #define SOT_OPENHRP_OUTPUT_FILE "/tmp/sot.out"
 
-using dynamicgraph::sot::openhrp::robotType;
 using dynamicgraph::sot::openhrp::Plugin;
-using dynamicgraph::sot::openhrp::hrp2_14_small;
-using dynamicgraph::sot::openhrp::hrp2_10_small_old;
-using dynamicgraph::sot::openhrp::hrp2_10_small;
 
 namespace dynamicgraph {
   namespace sot {
@@ -53,33 +49,11 @@ namespace dynamicgraph {
 
 plugin* create_plugin(istringstream &strm)
 {
-  unsigned int lnbDofs = 46;
-  robotType aRobotToControl = hrp2_14_small;
-  string lRobotName;
-  strm >> lRobotName;
-
-  if (lRobotName == "HRP2JRL10SmallOld")
-    {
-      lnbDofs = 46;
-      aRobotToControl = hrp2_10_small_old;
-    }
-  else if (lRobotName == "HRP2JRL10Small")
-    {
-      lnbDofs = 48;
-      aRobotToControl = hrp2_10_small;
-    }
-  ofstream aof;
-  aof.open(SOT_OPENHRP_OUTPUT_FILE);
-  aof << "Robot name: " << lRobotName <<endl;
-  aof << "NbDofs:" << lnbDofs << endl;
-  aof << "aRobotToControl:" << aRobotToControl << endl;
-  aof.close();
-  return new dynamicgraph::sot::openhrp::Plugin(lnbDofs,aRobotToControl);
+  return new dynamicgraph::sot::openhrp::Plugin();
 }
 
 dynamicgraph::sot::openhrp::Plugin::
-Plugin(int nbDofs, robotType robotToControl) :
-  interpreter_(), entity_(new StackOfTasks("device"))
+Plugin() : interpreter_(), entity_(new StackOfTasks("device"))
 {
   ofstream aof;
   aof.open(SOT_OPENHRP_OUTPUT_FILE, std::ios_base::app);

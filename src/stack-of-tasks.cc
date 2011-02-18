@@ -82,13 +82,6 @@ control(RobotState* rs, RobotState* mc)
   for (unsigned int i=6; i<state_.size(); i++) {
     mc->angle[i-6] = state_(i);
   }
-#if 0
-  sotDEBUG(25) << "mc->angle = (";
-  for (unsigned int i=0; i<mc->angle.length(); i++) {
-    sotDEBUG(25) << mc->angle[i] << ",";
-  }
-  sotDEBUG(25) << ")" << std::endl;
-#endif
 }
 
 bool StackOfTasks::
