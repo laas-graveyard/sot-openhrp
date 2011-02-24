@@ -18,11 +18,6 @@
 include(../cmake/python.cmake)
 include(../cmake/idl.cmake)
 
-# Verbosity level
-IF (NOT (\"${CMAKE_VERBOSITY_LEVEL}\" STREQUAL \"\"))
-  ADD_DEFINITIONS(-DVP_DEBUG_MODE=${CMAKE_VERBOSITY_LEVEL} -DVP_DEBUG)
-ENDIF (NOT (\"${CMAKE_VERBOSITY_LEVEL}\" STREQUAL \"\"))
-
 ADD_DEFINITIONS(${JRL_MAL_CFLAGS})
 
 # -------------------------------------------------------------------
