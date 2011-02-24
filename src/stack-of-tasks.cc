@@ -81,6 +81,22 @@ control(RobotState* rs, RobotState* mc)
   for (unsigned int i=6; i<state_.size(); i++) {
     mc->angle[i-6] = state_(i);
   }
+  // Read zmp reference from input signal if plugged
+  int time = controlSIN.getTime();
+  zmpSIN.recompute(time + 1);
+  // Express ZMP in free flyer reference frame
+  Vector zmpGlobal((unsigned int)4);
+  for (unsigned int i=0; i<3; i++) {
+    zmpGlobal(i) = zmpSIN(time + 1)(i);
+  }
+  zmpGlobal(3) = 1.;
+  MatrixHomogeneous inversePose;
+  freeFlyerPose().inverse(inversePose);
+  Vector localZmp = inversePose * zmpGlobal;
+  sotDEBUG(25) << "zmp = " << localZmp << std::endl;
+  for (unsigned int i=0; i<mc->zmp.length(); i++) {
+    mc->zmp[i] = localZmp(i);
+  }
 }
 
 bool StackOfTasks::
