@@ -23,7 +23,9 @@ Device = PyEntityFactoryClass('Device')
 HRP2LAAS = Hrp2Laas
 HRP2JRL = Hrp2Jrl
 
-robot = @HRP_ROBOT_SPEC@(name = 'robot', device = Device('device'))
+robot = @HRP_ROBOT_SPEC@(name = 'robot', device = Device('robot_device'))
+_com = robot.dynamic.com.value
+robot.device.zmp.value = (_com[0], _com[1], 0.)
 solver = Solver(robot)
 
 # push com task

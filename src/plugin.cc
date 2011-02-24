@@ -53,7 +53,7 @@ plugin* create_plugin(istringstream &strm)
 }
 
 dynamicgraph::sot::openhrp::Plugin::
-Plugin() : interpreter_(), entity_(new StackOfTasks("device"))
+Plugin() : interpreter_(), entity_(new StackOfTasks("robot_device"))
 {
   ofstream aof;
   aof.open(SOT_OPENHRP_OUTPUT_FILE, std::ios_base::app);
