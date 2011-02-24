@@ -25,6 +25,7 @@
 #include <dynamic-graph/entity.h>
 #include <dynamic-graph/signal.h>
 #include <dynamic-graph/signal-ptr.h>
+#include <dynamic-graph/linear-algebra.h>
 #include <sot/core/device.hh>
 #include <sot/core/matrix-homogeneous.hh>
 #include <sot/core/matrix-rotation.hh>
@@ -93,6 +94,7 @@ namespace dynamicgraph {
 	//! Specific fields of the
 	static const double TIMESTEP_DEFAULT;
 	double timestep_;
+	Vector previousState_;
       }; // class StackOfTasks
     } // namespace openhrp
   } // namespace sot

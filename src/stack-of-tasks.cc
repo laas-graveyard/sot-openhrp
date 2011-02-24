@@ -40,9 +40,10 @@ const std::string StackOfTasks::CLASS_NAME = "Device";
 StackOfTasks::StackOfTasks(const std::string& inName)
   : dynamicgraph::sot::Device(inName),
 # ifdef SOT_CHECK_TIME
-   timeIndex_(0),
+    timeIndex_(0),
 #endif // #ifdef SOT_CHECK_TIME
-   timestep_(TIMESTEP_DEFAULT)
+    timestep_(TIMESTEP_DEFAULT),
+    previousState_()
 {
 }
 
@@ -62,10 +63,8 @@ bool StackOfTasks::setup(RobotState*, RobotState* mc)
   for (unsigned int i=6; i<state.size(); i++) {
     state(i) = mc->angle[i-6];
   }
-
+  previousState_ = state;
   sotDEBUG(25) << "state = " << state << std::endl;
-
-  sotDEBUG(25) << "state = "<< state << std::endl;
   stateSOUT.setConstant(state);
   return true;
 }
@@ -73,11 +72,11 @@ bool StackOfTasks::setup(RobotState*, RobotState* mc)
 void StackOfTasks::
 control(RobotState* rs, RobotState* mc)
 {
-  sotDEBUG(25) << "control-----------------" << std::endl;
-  sotDEBUG(25) << "state = " << state_ << std::endl;
   // Integrate control
   increment(timestep_);
   sotDEBUG(25) << "state = " << state_ << std::endl;
+  sotDEBUG(25) << "diff  = " << state_ - previousState_ << std::endl;
+  previousState_ = state_;
   // Write new state into motor command
   for (unsigned int i=6; i<state_.size(); i++) {
     mc->angle[i-6] = state_(i);
