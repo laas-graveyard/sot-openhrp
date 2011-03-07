@@ -19,7 +19,10 @@ include(../cmake/python.cmake)
 include(../cmake/idl.cmake)
 
 ADD_DEFINITIONS(${JRL_MAL_CFLAGS})
-
+LIST(APPEND LOGGING_WATCHED_VARIABLES
+  HRP_ROBOT_SPEC
+  OPENHRP3_HOME
+ )
 # -------------------------------------------------------------------
 # --- UTILS ---------------------------------------------------------
 # -------------------------------------------------------------------
@@ -35,12 +38,19 @@ MACRO(LIST2STRING _VAR_ARG _LIST_ARG)
   ENDFOREACH(_ITEM)
 ENDMACRO(LIST2STRING)
 
+IF (NOT DEFINED OPENHRP3_HOME)
+  SET (OPENHRP3_HOME "/opt/grx3.0")
+  MESSAGE(STATUS "OPENHRP3_HOME not defined. Set to /opt/grx3.0")
+ENDIF(NOT DEFINED OPENHRP3_HOME)
 
 # --- OpenHRP 3 -----------------------------------------------------------
-IF(OPENHRP_VERSION_3)
+#IF(OPENHRP_VERSION_3)
 
-  SET(HRP_ROBOT_SPEC HRP2JRL CACHE STRING
-    "Robot name, to resolve specific path in OpenHRP.")
+  SET(HRP_ROBOT_SPEC "" CACHE STRING
+    "Robot name, to resolve specific path in OpenHRP: either HRP2LAAS or HRP2JRL")
+  IF (NOT HRP_ROBOT_SPEC STREQUAL "HRP2LAAS" AND NOT HRP_ROBOT_SPEC STREQUAL "HRP2JRL")
+    MESSAGE(FATAL_ERROR "HRP_ROBOT_SPEC should be either HRP2LAAS or HRP2JRL")
+  ENDIF(NOT HRP_ROBOT_SPEC STREQUAL "HRP2LAAS" AND NOT HRP_ROBOT_SPEC STREQUAL "HRP2JRL")
 
   INCLUDE_DIRECTORIES(
     BEFORE ${CMAKE_CURRENT_BINARY_DIR}
@@ -155,4 +165,4 @@ IF(OPENHRP_VERSION_3)
     DESTINATION ${SOT_OPENHRP_PLUGIN_INSTALL_DIR}
     PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
 
-ENDIF(OPENHRP_VERSION_3)
+#ENDIF(OPENHRP_VERSION_3)
