@@ -200,6 +200,8 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
   void updateHRP210SmallOldtorque(sotMotorCommand *rs,
 				  maal::boost::Vector &Torque);
 
+  void updateTimeSOUT();
+
  public: /* --- SOT ENTITY --- */
 
   static const std::string CLASS_NAME;
@@ -259,6 +261,10 @@ public:  /* --- SPECIFIC PLUGIN IMPLEMENTATION --- */
   dg::Signal<ml::Vector,int> motorcontrolSOUT;
   /*! \brief The ZMP reference send by the previous controller. */
   dg::Signal<ml::Vector,int> ZMPPreviousControllerSOUT;
+
+  /*! \brief Time */
+  dg::Signal<ml::Vector,int> timeSOUT;
+
   bool activatePreviousControlSignal;
 
   /*! Peridic call that is called /before/ the MC computation

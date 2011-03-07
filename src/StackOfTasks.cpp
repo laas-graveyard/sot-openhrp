@@ -118,6 +118,7 @@ StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl)
   ,previousControlSOUT( "OpenHRPplugin("+HRPname+")::output(vector)::previouscontrol" )
   ,motorcontrolSOUT("OpenHRPplugin("+HRPname+")::output(vector)::motorcontrol")
   ,ZMPPreviousControllerSOUT("OpenHRPplugin("+HRPname+")::output(vector)::zmppreviouscontroller") 
+  ,timeSOUT("OpenHRPplugin("+HRPname+"::output(vector)::time")
   ,activatePreviousControlSignal(false)   
 {
   m_ReferenceState = REFSTATE_RS;
@@ -157,6 +158,7 @@ StackOfTasks( istringstream &strm, int lnbDofs, robotType aRobotToControl)
 		      << stateSOUT
 		      << motorcontrolSOUT
 		      << ZMPPreviousControllerSOUT
+		      << timeSOUT
 		      << *forcesSOUT[0]
 		      << *forcesSOUT[1]
 		      << *forcesSOUT[2]
@@ -194,7 +196,8 @@ StackOfTasks::
 ~StackOfTasks( void )
 {
   sotDEBUGIN(5);
-  if(! admissibleState( pluginState,sotCLEANED_UP )) ; // TRACE
+  if(! admissibleState( pluginState,sotCLEANED_UP )) 
+    {}; // TRACE
 
 # ifdef SOT_CHECK_TIME 
   ofstream of( "/tmp/dt.dat" );
@@ -230,6 +233,7 @@ setup( sotRobotState* rs, sotMotorCommand* mc )
   updateFromMC(rs,mlrs,6);
   stateSOUT.setConstant( mlrs );
   stateSOUT.setTime( iter );
+  updateTimeSOUT();
 
   ml::Vector mlforces(6);
   for( int i=0;i<4;++i )
@@ -534,6 +538,7 @@ sotControlLoop( sotRobotState* rs, sotMotorCommand* mc )
 
     stateSOUT.setConstant( mlrs );
     stateSOUT.setTime( iter );
+    updateTimeSOUT();
 
     ml::Vector ZMPPrevContr(3);
     for(unsigned int i=0;i<3;i++)
@@ -1168,4 +1173,12 @@ void StackOfTasks::updateHRP210SmallOldtorque(sotMotorCommand *rs,
     Torque(lindex++) = rs->angle[i];
   for(unsigned int i=30;i<42;i++)
     Torque(lindex++) = rs->angle[i];
+}
+
+void StackOfTasks::updateTimeSOUT()
+{
+  ml::Vector ltime(1);
+  ltime(0) = (double)iter;
+  timeSOUT.setConstant(ltime);
+  timeSOUT.setTime(iter);
 }
