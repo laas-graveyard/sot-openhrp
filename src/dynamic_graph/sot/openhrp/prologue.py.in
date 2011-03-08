@@ -14,19 +14,75 @@
 # received a copy of the GNU Lesser General Public License along with
 # dynamic-graph. If not, see <http://www.gnu.org/licenses/>.
 
+print("@PROJECT_NAME@ v@PROJECT_VERSION@")
+print("Compiled for robot @ROBOT@.")
+
 from dynamic_graph.sot.dynamics.hrp2 import Hrp2Laas, Hrp2Jrl
 from dynamic_graph.entity import PyEntityFactoryClass
 from dynamic_graph.sot.dynamics.solver import Solver
 
+# Create the OpenHRP enabled device.
+# This entity behaves exactly like robotsimu except:
+# 1. it does not provide the increment method
+# 2. it forwards the robot control to the OpenHRP
+#    controller.
 Device = PyEntityFactoryClass('Device')
 
-HRP2LAAS = Hrp2Laas
-HRP2JRL = Hrp2Jrl
+# This maps the GRX (OpenHRP) robot names to the sot-dynamic robot
+# names.
+GrxToSot = {
+    'HRP2LAAS': Hrp2Laas,
+    'HRP2JRL': Hrp2Jrl
+    }
 
-robot = @ROBOT@(name = 'robot', device = Device('robot_device'))
+# Create the robot using the OpenHRP-enabled device.
+if not '@ROBOT@' in GrxToSot:
+    raise RuntimeError("Failed to initialize the robot during prologue.")
+robot = GrxToSot['@ROBOT@'](name = 'robot', device = Device('robot_device'))
+
+# Initialize the zmp signal to the current com.
 _com = robot.dynamic.com.value
 robot.device.zmp.value = (_com[0], _com[1], 0.)
+
+# Create a solver.
 solver = Solver(robot)
 
-# push com task
+# Make sure com and feet desired position matches the current
+# positions.
+robot.features['left-ankle'].reference.value = \
+    robot.dynamic.signal('left-ankle').value
+robot.features['left-ankle']._feature.signal('selec').value = '111111'
+
+robot.features['right-ankle'].reference.value = \
+    robot.dynamic.signal('right-ankle').value
+robot.features['right-ankle']._feature.signal('selec').value = '111111'
+robot.tasks['left-ankle'].controlGain.value = 1.
+robot.tasks['right-ankle'].controlGain.value = 1.
+
+robot.featureComDes.errorIN.value = robot.dynamic.com.value
+robot.comTask.controlGain.value = 1.
+
+
+# Push com and feet tasks.
+#
+# The robot is currently in half-sitting, so this script freezes com
+# and feet position so that the robot will remain stable while the
+# user program is starting.
 solver.push(robot.name + "_task_com")
+solver.push(robot.name + "_task_left-ankle")
+solver.push(robot.name + "_task_right-ankle")
+
+print("Prologue ran successfully.")
+
+# Make sure only robot and solver are visible from the outside.
+__all__ = ["robot", "solver"]
+
+
+####################################
+#        --- IMPORTANT ---         #
+#                                  #
+# THIS FILE MUST NEVER BE CHANGED. #
+# TO RUN YOUR EXPERIMENT, PLEASE   #
+# WRITE A SEPARATE PYTHON MODULE   #
+# AND LAUNCH IT USING dg-remote!   #
+####################################
