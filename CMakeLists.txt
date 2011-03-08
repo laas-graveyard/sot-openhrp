@@ -32,34 +32,53 @@ SET(CMAKE_MODULE_PATH ${CMAKE_SOURCE_DIR}/CMakeModules)
 # Disable -Werror on Unix for now.
 SET(CXX_DISABLE_WERROR True)
 
-SET(PKG_CONFIG_ADDITIONAL_VARIABLES
-  ${PKG_CONFIG_ADDITIONAL_VARIABLES}
-  plugindirname
-  plugindir
-  )
-
 SETUP_PROJECT()
-string(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 
-OPTION(INSTALL_IN_OPENHRP "Install plugin in OpenHRP" ON)
+# Remove pedantic flag as Corba stubs won't compile with it.
+STRING(REPLACE "-pedantic" "" CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS})
 
+# Search for Boost.
 SET(BOOST_COMPONENTS thread)
 SEARCH_FOR_BOOST()
-ADD_DEFINITIONS(-DHAVE_LIBBOOST_THREAD)
+
+# Define additional options.
+FIND_PATH(GRX_PREFIX
+  # Make sure bin/DynamicsSimulator exists (to validate that it is
+  # _really_ the prefix of an OpenHRP setup).
+  bin/DynamicsSimulator
+  HINTS /opt/grx3.0
+  DOC "GRX software prefix (i.e. '/opt/grxX.Y')"
+  NO_DEFAULT_PATH)
+
+SET(ROBOT "" CACHE STRING "GRX robot name (HRP2JRL or HRP2LAAS)")
+SET(ROBOT_PATH "${GRX_PREFIX}/${ROBOT}")
+
+# Validate options.
+IF(ROBOT STREQUAL "")
+  MESSAGE(FATAL_ERROR
+    "The ROBOT mandatory configuration variable is not set.")
+ENDIF()
+IF(NOT IS_DIRECTORY ${ROBOT_PATH})
+  MESSAGE(FATAL_ERROR
+    "The directory '${ROBOT_PATH}' does not exist."
+    "Please check the ROBOT configuration variable.")
+ENDIF()
+
+# Log OpenHRP home and which robot will be used.
+LIST(APPEND LOGGING_WATCHED_VARIABLES GRX_PREFIX ROBOT ROBOT_PATH)
 
 # Search for dependencies.
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.1")
-ADD_REQUIRED_DEPENDENCY("dynamic-graph-corba >= 1.99")
-ADD_REQUIRED_DEPENDENCY("sot-core >= 1.99")
-ADD_REQUIRED_DEPENDENCY("sot-dynamic >= 1.99")
 
-# Search for OpenHRP.
-INCLUDE(${CMAKE_MODULE_PATH}/UseOmniORB4.cmake)
-FIND_PACKAGE(OpenHRP REQUIRED)
+ADD_REQUIRED_DEPENDENCY("dynamic-graph")
+ADD_REQUIRED_DEPENDENCY("dynamic-graph-corba")
+ADD_REQUIRED_DEPENDENCY("dynamic-graph-python")
+ADD_REQUIRED_DEPENDENCY("sot-core")
+
+# This is required by the Python prologue.
+ADD_REQUIRED_DEPENDENCY("sot-dynamic")
 
 ADD_SUBDIRECTORY(src)
-ADD_SUBDIRECTORY(include)
-#ADD_SUBDIRECTORY(tests)
 
 SETUP_PROJECT_FINALIZE()
 SETUP_PROJECT_CPACK()

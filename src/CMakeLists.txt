@@ -1,4 +1,5 @@
-# Copyright 2010, François Bleibel, Olivier Stasse, JRL, CNRS/AIST
+# Copyright 2010, 2011, François Bleibel, Thomas Moulard Olivier
+# Stasse, JRL, CNRS/AIST
 #
 # This file is part of sot-openhrp.
 # sot-openhrp is free software: you can redistribute it and/or
@@ -13,156 +14,99 @@
 # received a copy of the GNU Lesser General Public License along with
 # sot-openhrp. If not, see <http://www.gnu.org/licenses/>.
 
-# Add jrl-mal compilation flags and link to library
-# libMatrixAbstractLayer.so
 include(../cmake/python.cmake)
 include(../cmake/idl.cmake)
 
-ADD_DEFINITIONS(${JRL_MAL_CFLAGS})
-LIST(APPEND LOGGING_WATCHED_VARIABLES
-  HRP_ROBOT_SPEC
-  OPENHRP3_HOME
- )
-# -------------------------------------------------------------------
-# --- UTILS ---------------------------------------------------------
-# -------------------------------------------------------------------
-MACRO(LIST2STRING _VAR_ARG _LIST_ARG)
-  SET(${_VAR_ARG})
-  SET(_FIRST_STEP 1)
-  FOREACH(_ITEM ${ARGV})
-    IF(_FIRST_STEP)
-      SET(_FIRST_STEP 0)
-    ELSE(_FIRST_STEP)
-      SET (${_VAR_ARG} "${${_VAR_ARG}} ${_ITEM}")
-    ENDIF(_FIRST_STEP)
-  ENDFOREACH(_ITEM)
-ENDMACRO(LIST2STRING)
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
 
-IF (NOT DEFINED OPENHRP3_HOME)
-  SET (OPENHRP3_HOME "/opt/grx3.0")
-  MESSAGE(STATUS "OPENHRP3_HOME not defined. Set to /opt/grx3.0")
-ENDIF(NOT DEFINED OPENHRP3_HOME)
+# Add OpenHRP and robot headers to include directory.
+INCLUDE_DIRECTORIES(
+  ${GRX_PREFIX}/OpenHRP/Controller/corba
+  ${GRX_PREFIX}/include
+  ${ROBOT_PATH}
+  )
 
-# --- OpenHRP 3 -----------------------------------------------------------
-#IF(OPENHRP_VERSION_3)
+# Create and install python module
+GENERATE_IDL_FILE(OpenHRPCommon ${GRX_PREFIX}/OpenHRP/Common/corba)
+GENERATE_IDL_FILE(HRPcontroller ${GRX_PREFIX}/include/idl)
+GENERATE_IDL_FILE(ViewSimulator ${GRX_PREFIX}/include/idl)
 
-  SET(HRP_ROBOT_SPEC "" CACHE STRING
-    "Robot name, to resolve specific path in OpenHRP: either HRP2LAAS or HRP2JRL")
-  IF (NOT HRP_ROBOT_SPEC STREQUAL "HRP2LAAS" AND NOT HRP_ROBOT_SPEC STREQUAL "HRP2JRL")
-    MESSAGE(FATAL_ERROR "HRP_ROBOT_SPEC should be either HRP2LAAS or HRP2JRL")
-  ENDIF(NOT HRP_ROBOT_SPEC STREQUAL "HRP2LAAS" AND NOT HRP_ROBOT_SPEC STREQUAL "HRP2JRL")
+# OpenHRP generates stubs headers with '.h' suffix but they are
+# generated with '.hh' suffix. Provide an alternative version to
+# please OpenHRP headers.
+ADD_CUSTOM_COMMAND(
+  OUTPUT OpenHRPCommon.h
+  COMMAND cp
+  ARGS OpenHRPCommon.hh OpenHRPCommon.h
+  MAIN_DEPENDENCY OpenHRPCommon.hh
+  )
+ADD_CUSTOM_COMMAND(
+  OUTPUT HRPcontroller.h
+  COMMAND cp
+  ARGS HRPcontroller.hh HRPcontroller.h
+  MAIN_DEPENDENCY HRPcontroller.hh
+  )
 
-  INCLUDE_DIRECTORIES(
-    BEFORE ${CMAKE_CURRENT_BINARY_DIR}
-    )
-  # Create and install python module
-  GENERATE_IDL_FILE(OpenHRPCommon ${OPENHRP_HOME}/OpenHRP/Common/corba)
-  GENERATE_IDL_FILE(HRPcontroller ${OPENHRP_HOME}/include/idl)
-  GENERATE_IDL_FILE(ViewSimulator ${OPENHRP_HOME}/include/idl)
+# Declare the shared library containing the OpenHRP specific entity.
+ADD_LIBRARY(openhrp
+  SHARED
+  stack-of-tasks.cc
+  stack-of-tasks.hh
+  OpenHRPCommon.hh
+  OpenHRPCommonSK.cc
+  HRPcontroller.hh
+  HRPcontrollerSK.cc
+  ViewSimulator.hh
+  ViewSimulatorSK.cc
+  )
 
-  SET(LIBRARY_NAME openhrp)
-  ADD_LIBRARY(${LIBRARY_NAME}
-    SHARED
-    stack-of-tasks.cc
-    stack-of-tasks.hh
-    OpenHRPCommon.hh
-    OpenHRPCommonSK.cc
-    HRPcontroller.h
-    HRPcontrollerSK.cc
-    ViewSimulator.hh
-    ViewSimulatorSK.cc
-    )
-  ADD_CUSTOM_COMMAND(
-    OUTPUT HRPcontroller.h
-    COMMAND cp
-    ARGS HRPcontroller.hh HRPcontroller.h
-    MAIN_DEPENDENCY HRPcontroller.hh
-    )
+SET_TARGET_PROPERTIES(
+  openhrp PROPERTIES SOVERSION ${PROJECT_VERSION})
 
-  SET_SOURCE_FILES_PROPERTIES(
-    OpenHRPCommon.hh
-    OpenHRPCommonSK.cc
-    HRPcontroller.hh
-    HRPcontroller.h
-    HRPcontrollerSK.c
-    ViewSimulator.hh
-    ViewSimulatorSK.cc
-    GENERATED=ON
-    )
-  SET_TARGET_PROPERTIES(${LIBRARY_NAME} PROPERTIES SOVERSION ${PROJECT_VERSION})
-  INSTALL(TARGETS ${LIBRARY_NAME}
-    DESTINATION lib
-    )
-  INCLUDE_DIRECTORIES(AFTER
-    ${OPENHRP_HOME}/OpenHRP/Controller/corba
-    ${OPENHRP_HOME}/include
-    ${OPENHRP_HOME}/${HRP_ROBOT_SPEC}
-    )
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} "dynamic-graph-corba")
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} "omniORB4")
-  PKG_CONFIG_USE_DEPENDENCY(${LIBRARY_NAME} "sot-core")
+INSTALL(TARGETS openhrp DESTINATION lib)
 
-  DYNAMIC_GRAPH_PYTHON_MODULE("sot/openhrp" ${LIBRARY_NAME} wrap)
+# Declare library dependencies.
+PKG_CONFIG_USE_DEPENDENCY(openhrp "omniORB4")
+PKG_CONFIG_USE_DEPENDENCY(openhrp "dynamic-graph")
+PKG_CONFIG_USE_DEPENDENCY(openhrp "sot-core")
 
-  CONFIG_FILES(dynamic_graph/sot/openhrp/prologue.py)
-  INSTALL(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/dynamic_graph/sot/openhrp/prologue.py
-    ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/openhrp/test_reach.py
-    DESTINATION
-    ${PYTHON_SITELIB}/dynamic_graph/sot/openhrp
-    )
+# Generate Python module.
+DYNAMIC_GRAPH_PYTHON_MODULE("sot/openhrp" openhrp wrap)
 
-  # Corba client
-  INSTALL(FILES
-    openhrp-shell
-    DESTINATION bin
-    PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE
-    GROUP_READ GROUP_EXECUTE
-    WORLD_READ WORLD_EXECUTE
-    )
-  SET(SOT_OPENHRP_PLUGIN_INSTALL_DIR "lib")
-  IF(INSTALL_IN_OPENHRP)
-    SET(SOT_OPENHRP_PLUGIN_INSTALL_DIR
-      "${OPENHRP_HOME}/${HRP_ROBOT_SPEC}/bin")
-  ENDIF(INSTALL_IN_OPENHRP)
+# Configure prologue to embed robot model directory.
+CONFIG_FILES(dynamic_graph/sot/openhrp/prologue.py)
 
-  # Create "stubs" directory before IDL generation
-  file(MAKE_DIRECTORY ${${PROJECT_NAME}_BINARY_DIR}/stubs)
+# Install Python files.
+INSTALL(FILES
+  ${CMAKE_CURRENT_BINARY_DIR}/dynamic_graph/sot/openhrp/prologue.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/openhrp/test_reach.py
+  DESTINATION
+  ${PYTHON_SITELIB}/dynamic_graph/sot/openhrp
+  )
 
-  # --- IDL GENERATION ---------------------------------------------------------------------
-  INCLUDE(${CMAKE_MODULE_PATH}/AddPluginForOpenHRP.cmake)
+# Install the sample openhrp shell
+INSTALL(FILES
+  openhrp-shell
+  DESTINATION bin
+  PERMISSIONS OWNER_WRITE OWNER_READ OWNER_EXECUTE
+  GROUP_READ GROUP_EXECUTE
+  WORLD_READ WORLD_EXECUTE
+  )
 
-  SET(COMMON_IDL_OPENHRP HRPcontroller.idl)
-  SET(PLUGIN_NAMESPACE "OpenHRP::")
-  SET(DOUBLE_SEQUENCE "dsequence")
 
-  SET(PLUGINBASENAME StackOfTasks)
-  SET(PLUGINNAME ${CMAKE_CURRENT_SOURCE_DIR}/${PLUGINBASENAME})
-  SET(PLUGINNAME_SRC ${CMAKE_CURRENT_SOURCE_DIR}/plugin.cc)
-  SET(PLUGINNAME_IDL "none")
-  SET(PLUGINNAME_PATH ${${PROJECT_NAME}_BINARY_DIR}/stubs)
-  SET(PLUGINLINKS
-    ${BOOST_THREAD_LIB_NAME}
-    -pthread)
-  SET(PLUGINDEPS)
-  SET(PLUGINCOMPILE ${${PROJECT_NAME}_CXX_FLAGS}
-    ${OPENHRP_CXX_FLAGS}
-    -I${OPENHRP_HOME}/OpenHRP/Controller/IOserver/robot/${HRP_ROBOT_SPEC}
-    ${OMNIORB4_CFLAGS}
-    ${JRL_MAL_CFLAGS}
-    ${SOT_CORE_CFLAGS}
-)
+# Compile the OpenHRP plug-in.
+ADD_LIBRARY(StackOfTasks SHARED plugin.cc)
 
-  LIST2STRING(PLUGIN_CFLAGS ${PLUGINCOMPILE})
-  LIST2STRING(PLUGIN_LDFLAGS ${PLUGINLINKS})
+# Remove 'lib' prefix in library filename.
+SET_TARGET_PROPERTIES(StackOfTasks PROPERTIES PREFIX "")
 
-  ADD_OPENHRP_PLUGIN(${PLUGINNAME} ${PLUGINNAME_SRC} ${PLUGINNAME_IDL}
-    ${PLUGINNAME_PATH} ${PLUGIN_CFLAGS}
-    ${PLUGIN_LDFLAGS} ${LIBRARY_NAME})
-  # This will create StackOfTasks.so in ${${PROJECT_NAME}_BINARY_DIR}/lib
+# Declare plug-in dependencies.
+TARGET_LINK_LIBRARIES(StackOfTasks openhrp)
 
-  INSTALL(FILES ${${PROJECT_NAME}_BINARY_DIR}/lib/${PLUGINBASENAME}.so
-    DESTINATION ${SOT_OPENHRP_PLUGIN_INSTALL_DIR}
-    PERMISSIONS OWNER_READ GROUP_READ WORLD_READ)
+PKG_CONFIG_USE_DEPENDENCY(openhrp "dynamic-graph-python")
+PKG_CONFIG_USE_DEPENDENCY(openhrp "dynamic-graph-corba")
 
-#ENDIF(OPENHRP_VERSION_3)
+INSTALL(TARGETS StackOfTasks DESTINATION "${ROBOT_PATH}/bin")
+
+
+LIST(APPEND LOGGING_WATCHED_TARGETS openhrp StackOfTasks)
