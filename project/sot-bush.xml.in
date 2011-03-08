@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<grxui>
+  	<processmanagerconfig>
+		<process autostart="false" com="@GRX_PREFIX@/@ROBOT@/bin/HRP2Controller$(BIN_SFX)" dir="@GRX_PREFIX@/@ROBOT@/bin/" hasshutdown="true" id="@ROBOT@ControllerFactory" waitcount="2000"/>
+	</processmanagerconfig>
+
+    <mode name="Simulation">
+        <item class="com.generalrobotix.ui.item.GrxWorldStateItem" name="untitled" select="true">
+            <property name="method" value="RUNGE_KUTTA"/>
+            <property name="totalTime" value="30.0 "/>
+            <property name="useDisk" value="true"/>
+            <property name="integrate" value="true"/>
+            <property name="timeStep" value="0.0010 "/>
+            <property name="viewsimulate" value="false"/>
+            <property name="logTimeStep" value="0.0010 "/>
+            <property name="gravity" value="9.8 "/>
+            <property name="viewsimulationTimeStep" value="0.033 "/>
+        </item>
+        <item class="com.generalrobotix.ui.item.GrxModelItem" name="@ROBOT@" select="true" url="@GRX_PREFIX@/@ROBOT@/model/@ROBOT@main.wrl">
+            <property name="LLEG_JOINT1.angle" value="0.0"/>
+            <property name="LLEG_JOINT4.angle" value="-0.4189"/>
+            <property name="LLEG_JOINT0.angle" value="0.0"/>
+            <property name="LLEG_JOINT3.angle" value="0.8727"/>
+            <property name="LLEG_JOINT5.angle" value="0.0"/>
+            <property name="LLEG_JOINT2.angle" value="-0.4538"/>
+            <property name="LLEG_BUSH_PITCH.angle" value="0.0"/>
+            <property name="WAIST.rotation" value="0.0 1.0 0.0 0.0 "/>
+            <property name="setupDirectory" value="@GRX_PREFIX@/@ROBOT@/bin"/>
+            <property name="imageProcessTime" value="0.033"/>
+            <property name="WAIST.angle" value="0.0"/>
+            <property name="imageProcessor" value=""/>
+            <property name="RLEG_BUSH_PITCH.angle" value="0.0"/>
+            <property name="HEAD_JOINT1.angle" value="0.0"/>
+            <property name="RARM_JOINT1.angle" value="-0.1745"/>
+            <property name="HEAD_JOINT0.angle" value="0.0"/>
+            <property name="RARM_JOINT3.angle" value="-0.5236"/>
+            <property name="RARM_JOINT0.angle" value="0.2618"/>
+            <property name="RARM_JOINT6.angle" value="0.0"/>
+            <property name="RARM_JOINT2.angle" value="0.0"/>
+            <property name="RHAND_JOINT4.angle" value="0.0 "/>
+            <property name="RHAND_JOINT1.angle" value="0.0 "/>
+            <property name="RARM_JOINT5.angle" value="0.0"/>
+            <property name="RLEG_BUSH_Z.angle" value="0.0"/>
+            <property name="RHAND_JOINT3.angle" value="0.0 "/>
+            <property name="RHAND_JOINT0.angle" value="0.0 "/>
+            <property name="CHEST_JOINT1.angle" value="0.0"/>
+            <property name="RARM_JOINT4.angle" value="0.0"/>
+            <property name="RHAND_JOINT2.angle" value="0.0 "/>
+            <property name="CHEST_JOINT0.angle" value="0.0"/>
+            <property name="LLEG_BUSH_ROLL.angle" value="0.0"/>
+            <property name="WAIST.translation" value="0.0 0.0 0.6487 "/>
+            <property name="RLEG_JOINT2.angle" value="-0.4538"/>
+            <property name="RLEG_JOINT4.angle" value="-0.4189"/>
+            <property name="RLEG_JOINT1.angle" value="0.0"/>
+            <property name="RLEG_JOINT0.angle" value="0.0"/>
+            <property name="RLEG_JOINT3.angle" value="0.8727"/>
+            <property name="LARM_JOINT1.angle" value="0.1745"/>
+            <property name="RLEG_JOINT5.angle" value="0.0"/>
+            <property name="LARM_JOINT0.angle" value="0.2618"/>
+            <property name="LARM_JOINT3.angle" value="-0.5236"/>
+            <property name="LARM_JOINT2.angle" value="0.0"/>
+            <property name="LARM_JOINT5.angle" value="0.0"/>
+            <property name="LARM_JOINT4.angle" value="0.0"/>
+            <property name="LARM_JOINT6.angle" value="0.0"/>
+            <property name="controller" value="@ROBOT@ControllerFactory"/>
+            <property name="LLEG_BUSH_Z.angle" value="0.0"/>
+            <property name="isRobot" value="true"/>
+            <property name="controlTime" value="0.0010"/>
+            <property name="setupCommand" value="HRP2Controller$(BIN_SFX)"/>
+            <property name="LHAND_JOINT2.angle" value="0.0 "/>
+            <property name="LHAND_JOINT1.angle" value="0.0 "/>
+            <property name="LHAND_JOINT4.angle" value="0.0 "/>
+            <property name="RLEG_BUSH_ROLL.angle" value="0.0"/>
+            <property name="LHAND_JOINT0.angle" value="0.0 "/>
+            <property name="LHAND_JOINT3.angle" value="0.0 "/>
+        </item>
+        <item class="com.generalrobotix.ui.item.GrxModelItem" name="floor" select="true" url="$(OPENHRPHOME)/etc/longfloor.wrl">
+            <property name="isRobot" value="false"/>
+            <property name="WAIST.rotation" value="0.0 1.0 0.0 0.0 "/>
+            <property name="WAIST.translation" value="0.0 0.0 -0.1 "/>
+        </item>
+        <item class="com.generalrobotix.ui.item.GrxCollisionPairItem" name="CP#floor#@ROBOT@" select="true">
+            <property name="springConstant" value="100000 100000 100000 800 800 800"/>
+            <property name="slidingFriction" value="0.5"/>
+            <property name="jointName2" value=""/>
+            <property name="jointName1" value=""/>
+            <property name="sprintDamperModel" value="false"/>
+            <property name="damperConstant" value="100000 100000 100000 800 800 800"/>
+            <property name="objectName2" value="@ROBOT@"/>
+            <property name="objectName1" value="floor"/>
+            <property name="staticFriction" value="0.5"/>
+        </item>
+        <item class="com.generalrobotix.ui.item.GrxGraphItem" name="GraphList1" select="true">
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_1.legend" value="@ROBOT@.gsensor.acceleration.1"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_1.object" value="@ROBOT@"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_0.numSibling" value="3"/>
+            <property name="Graph0.Graph0_@ROBOT@_rfsensor_force_2.index" value="2"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_0.node" value="gyrometer"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_2.legend" value="@ROBOT@.gsensor.acceleration.2"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_0.node" value="gsensor"/>
+            <property name="Graph0.Graph0_@ROBOT@_rfsensor_force_2.node" value="rfsensor"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_2.numSibling" value="3"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_2.object" value="@ROBOT@"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_2.node" value="gyrometer"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_2.node" value="gsensor"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_1.color" value="yellow"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_0.color" value="green"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_2.color" value="pink"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_1.index" value="1"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_0.index" value="0"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_1.numSibling" value="3"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_2.index" value="2"/>
+            <property name="Graph2.dataItems" value="Graph2_@ROBOT@_gyrometer_angularVelocity_0,Graph2_@ROBOT@_gyrometer_angularVelocity_1,Graph2_@ROBOT@_gyrometer_angularVelocity_2"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_1.attr" value="angularVelocity"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_1.attr" value="acceleration"/>
+            <property name="Graph0.dataItems" value="Graph0_@ROBOT@_lfsensor_force_2,Graph0_@ROBOT@_rfsensor_force_2"/>
+            <property name="Graph0.Graph0_@ROBOT@_lfsensor_force_2.object" value="@ROBOT@"/>
+            <property name="Graph0.Graph0_@ROBOT@_rfsensor_force_2.object" value="@ROBOT@"/>
+            <property name="Graph0.Graph0_@ROBOT@_lfsensor_force_2.attr" value="force"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_1.numSibling" value="3"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_1.node" value="gyrometer"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_1.node" value="gsensor"/>
+            <property name="Graph0.Graph0_@ROBOT@_lfsensor_force_2.index" value="2"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_0.numSibling" value="3"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_0.legend" value="@ROBOT@.gyrometer.angularVelocity.0"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_0.color" value="green"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_2.color" value="pink"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_0.object" value="@ROBOT@"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_1.color" value="yellow"/>
+            <property name="Graph3.dataItems" value=""/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_1.legend" value="@ROBOT@.gyrometer.angularVelocity.1"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_0.index" value="0"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_0.attr" value="angularVelocity"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_2.index" value="2"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_2.numSibling" value="3"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_1.object" value="@ROBOT@"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_1.index" value="1"/>
+            <property name="Graph0.Graph0_@ROBOT@_lfsensor_force_2.node" value="lfsensor"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_2.attr" value="angularVelocity"/>
+            <property name="Graph0.Graph0_@ROBOT@_rfsensor_force_2.attr" value="force"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_0.attr" value="acceleration"/>
+            <property name="Graph1.dataItems" value="Graph1_@ROBOT@_gsensor_acceleration_0,Graph1_@ROBOT@_gsensor_acceleration_1,Graph1_@ROBOT@_gsensor_acceleration_2"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_2.attr" value="acceleration"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_2.legend" value="@ROBOT@.gyrometer.angularVelocity.2"/>
+            <property name="Graph2.Graph2_@ROBOT@_gyrometer_angularVelocity_2.object" value="@ROBOT@"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_0.legend" value="@ROBOT@.gsensor.acceleration.0"/>
+            <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_0.object" value="@ROBOT@"/>
+        </item>
+        <item class="com.generalrobotix.ui.item.GrxPythonScriptItem" name="sot-stabilizer-disabled" select="false" url="@GRX_PREFIX@/@ROBOT@/script/sot-stabilizer-disabled.py"/>
+        <item class="com.generalrobotix.ui.item.GrxPythonScriptItem" name="sot-stabilizer-enabled" select="true" url="@GRX_PREFIX@/@ROBOT@/script/sot-stabilizer-enabled.py"/>
+        <view class="com.generalrobotix.ui.view.GrxLoggerView" name="Logger View" select="false">
+            <property name="showFrameRateSlider" value="true"/>
+        </view>
+        <view class="com.generalrobotix.ui.view.Grx3DView" name="3DView" select="false">
+            <property name="corbaServer" value="true"/>
+            <property name="view.eye" value="2.0 2.0 0.8"/>
+            <property name="view.upward" value="0.0 0.0 1.0"/>
+            <property name="view.lookat" value="0.0 0.0 0.8"/>
+        </view>
+
+        <windowconfig>
+            <window fullScreen="false" height="1086" root="true" width="1207" x="0" y="24">
+                <layout position="Center" splitratio="0.601">
+                    <layout position="Center" splitratio="0.314">
+                        <layout position="Center" splitratio="0.313">
+                            <layout position="Center" splitratio="0.0">
+                                <tab name="Jython Prompt" select="true"/>
+                                <tab name="NameService Monitor"/>
+                                <tab name="Process Manager"/>
+                            </layout>
+                            <layout position="West" splitratio="0.0">
+                                <tab name="Item View" select="true"/>
+                            </layout>
+                        </layout>
+                        <layout position="South" splitratio="0.0">
+                            <tab name="3DView"/>
+                            <tab name="OpenHRP"/>
+                            <tab name="Text Editor" select="true"/>
+                        </layout>
+                    </layout>
+                    <layout position="East" splitratio="0.0">
+                        <tab name="Graph" select="true"/>
+                        <tab name="Robot State"/>
+                        <tab name="Property"/>
+                    </layout>
+                </layout>
+            </window>
+        </windowconfig>
+    </mode>
+</grxui>

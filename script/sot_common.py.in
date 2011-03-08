@@ -1,0 +1,142 @@
+# -*- coding: utf-8 -*-
+# Copyright 2011, Florent Lamiraux, Thomas Moulard, JRL, CNRS/AIST
+#
+# This file is part of sot-openhrp.
+# sot-openhrp is free software: you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public License
+# as published by the Free Software Foundation, either version 3 of
+# the License, or (at your option) any later version.
+#
+# sot-openhrp is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Lesser Public License for more details.  You should have
+# received a copy of the GNU Lesser General Public License along with
+# sot-openhrp. If not, see <http://www.gnu.org/licenses/>.
+
+import hrp
+import time
+import hstsetup
+
+class Experiment(object):
+    Name = '@ROBOT@'
+    isInteractive = False
+    enableStabilizer = True
+
+    DOF        = 0
+    Manager    = None
+    Robot      = None
+    SeqPlay    = None
+    Logger     = None
+    KalmanF    = None
+    Stabilizer = None
+    Provider   = None
+    SoT        = None
+
+
+    def __init__(self, enableStabilizer=True, isInteractive=False):
+        """
+        Load and create all plug-ins.
+        """
+        self.enableStabilizer = enableStabilizer
+        self.isInteractive = isInteractive
+        self.systemInit()
+
+    def initPlugin(self, _p, _n):
+        """
+        Initialize one plug-in.
+        """
+        self.Manager.load(_p)
+        return self.Manager.create(_p, _n, '')
+
+    def systemInit(self):
+        """
+        Start CORBA and initialize all plug-ins.
+        """
+        hrp.initCORBA()
+        self.initPlugins()
+
+    def initPlugins(self):
+        """
+        Initialize all plug-ins.
+        """
+        self.Manager = hrp.findPluginManager("motionsys")
+        self.Logger  = hrp.LoggerPluginHelper.narrow(
+            self.initPlugin('logplugin', 'log'))
+        self.Provider = hrp.stateProviderHelper.narrow(
+            self.initPlugin('provider', 'provider'))
+        self.Robot = hrp.IoControlPluginHelper.narrow(
+            self.initPlugin('humanoid', self.Name))
+        self.SeqPlay = hrp.SequencePlayerHelper.narrow(
+            self.initPlugin('seqplay', 'seq'))
+
+        self.KalmanF = self.initPlugin('kfplugin', 'kf')
+        if self.enableStabilizer:
+            self.Stabilizer = self.initPlugin('hstabilizer', 'st')
+
+        self.SoT = self.initPlugin("StackOfTasks", "sot")
+
+        self.Robot.sendMsg(":gain normal")
+        
+        self.Robot.start()
+        self.SeqPlay.start()
+        self.Provider.start()
+
+        self.DOF = len(self.getActualState().angle)
+
+        # Setup the stabilizer.
+        if self.Stabilizer:
+            hstsetup.stsetup(self.Stabilizer)
+
+        # Log additional data from kf.
+        self.Logger.add("kf")
+
+    def getActualState(self):
+        stateH = hrp.RobotStateHolder()
+        self.Provider.getActualState(stateH)
+        return stateH.value
+
+    def putRobotDown(self, msg=""):
+        f = self.getActualState().force
+        while f[0][2] < 50.0 and f[1][2] < 50.0:
+            waitInputConfirm(msg + "Put the robot down.")
+            f = self.getActualState().force
+
+    def putRobotUp(self, msg=""):
+        f = self.getActualState().force
+        while 30.0 < f[0][2] or 30.0 < f[1][2]:
+            waitInputConfirm(msg + "Make sure the Robot in the Air.")
+            f = self.getActualState().force
+
+
+    def run(self):
+        """
+        Start the experiment.
+        """
+        # Start setplay.
+        self.SeqPlay.start()
+
+        # Start kalman filter and stabilizer.
+        self.KalmanF.start()
+        if self.Stabilizer:
+            self.Stabilizer.start()
+
+        # Start logger.
+        self.Logger.start()
+
+        # Go to half-sitting in three seconds.
+        self.SeqPlay.goHalfSitting(3.)
+        # Wait for seqplay movement to finish.
+        self.SeqPlay.waitInterpolation()
+
+        self.SoT.start()
+        print("Experiment is starting.")
+        waitInputConfirm("Press [ok] to terminate the experiment.")
+
+        self.Logger.stop()
+        if self.Stabilizer:
+            self.Stabilizer.stop()
+
+        logFilename = "/tmp/hrp_sot_"+time.strftime('%Y%m%d%H%M')
+        self.Logger.save(logFilename)
+        print("Experiment is finished (logging file is: " + logFilename + ").")
