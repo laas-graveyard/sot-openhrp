@@ -72,12 +72,15 @@ class Log(object):
     Directory where to find log files
     """
 
-    def __init__(self, dir = None, robot = None):
+    def __init__(self, filename = None, robot = None):
         """
         Construct instance with a robot to get geometry of feet
         """
-        if dir:
-            self.directory = dir
+        if filename:
+            self.filename = filename
+        else:
+            self.filename = self.directory + '/sim-astate.log'
+
         if robot:
             self.leftAnkle = robot.dynamic.getAnklePositionInFootFrame()
             self.rightAnkle = R3(self.leftAnkle)
@@ -85,7 +88,7 @@ class Log(object):
         self.read()
 
     def read(self):
-        filename = self.directory + '/sim-astate.log'
+        filename = self.filename
         with open(filename, 'r') as f:
             astateReader = csv.reader(f, delimiter=' ')
             for row, i in zip(astateReader, range(10000)):
@@ -146,6 +149,10 @@ class Log(object):
         pl.show()
 
 if __name__ == '__main__':
-    l = Log()
-    l.plot()
+    import sys
 
+    filename = None
+    if len(sys.argv) > 1:
+        filename = sys.argv[1]
+    l = Log(filename = filename)
+    l.plot()
