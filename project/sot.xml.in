@@ -16,7 +16,7 @@
             <property name="gravity" value="9.8 "/>
             <property name="viewsimulationTimeStep" value="0.033 "/>
         </item>
-        <item class="com.generalrobotix.ui.item.GrxModelItem" name="@ROBOT@" select="true" url="@GRX_PREFIX@/@ROBOT@/model/@ROBOT@Bush_main.wrl">
+        <item class="com.generalrobotix.ui.item.GrxModelItem" name="@ROBOT@" select="true" url="@GRX_PREFIX@/@ROBOT@/model/@ROBOT@main.wrl">
             <property name="LLEG_JOINT1.angle" value="0.0"/>
             <property name="LLEG_JOINT4.angle" value="-0.4189"/>
             <property name="LLEG_JOINT0.angle" value="0.0"/>
@@ -158,7 +158,7 @@
             <property name="view.upward" value="0.0 0.0 1.0"/>
             <property name="view.lookat" value="0.0 0.0 0.8"/>
         </view>
-    
+
         <windowconfig>
             <window fullScreen="false" height="923" root="true" width="1207" x="5" y="41">
                 <layout position="Center" splitratio="0.601">

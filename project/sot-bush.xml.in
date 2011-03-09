@@ -16,7 +16,7 @@
             <property name="gravity" value="9.8 "/>
             <property name="viewsimulationTimeStep" value="0.033 "/>
         </item>
-        <item class="com.generalrobotix.ui.item.GrxModelItem" name="@ROBOT@" select="true" url="@GRX_PREFIX@/@ROBOT@/model/@ROBOT@main.wrl">
+        <item class="com.generalrobotix.ui.item.GrxModelItem" name="@ROBOT@" select="true" url="@GRX_PREFIX@/@ROBOT@/model/@ROBOT@Bush_main.wrl">
             <property name="LLEG_JOINT1.angle" value="0.0"/>
             <property name="LLEG_JOINT4.angle" value="-0.4189"/>
             <property name="LLEG_JOINT0.angle" value="0.0"/>
@@ -146,8 +146,9 @@
             <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_0.legend" value="@ROBOT@.gsensor.acceleration.0"/>
             <property name="Graph1.Graph1_@ROBOT@_gsensor_acceleration_0.object" value="@ROBOT@"/>
         </item>
-        <item class="com.generalrobotix.ui.item.GrxPythonScriptItem" name="sot-stabilizer-disabled" select="false" url="@GRX_PREFIX@/@ROBOT@/script/sot-stabilizer-disabled.py"/>
-        <item class="com.generalrobotix.ui.item.GrxPythonScriptItem" name="sot-stabilizer-enabled" select="true" url="@GRX_PREFIX@/@ROBOT@/script/sot-stabilizer-enabled.py"/>
+
+        <item class="com.generalrobotix.ui.item.GrxPythonScriptItem" name="sot-stabilizer-disabled" select="true" url="@GRX_PREFIX@/@ROBOT@/script/sot-stabilizer-disabled.py"/>
+        <item class="com.generalrobotix.ui.item.GrxPythonScriptItem" name="sot-stabilizer-enabled" select="false" url="@GRX_PREFIX@/@ROBOT@/script/sot-stabilizer-enabled.py"/>
         <view class="com.generalrobotix.ui.view.GrxLoggerView" name="Logger View" select="false">
             <property name="showFrameRateSlider" value="true"/>
         </view>
@@ -159,7 +160,7 @@
         </view>
 
         <windowconfig>
-            <window fullScreen="false" height="1086" root="true" width="1207" x="0" y="24">
+            <window fullScreen="false" height="923" root="true" width="1207" x="5" y="41">
                 <layout position="Center" splitratio="0.601">
                     <layout position="Center" splitratio="0.314">
                         <layout position="Center" splitratio="0.313">
@@ -173,9 +174,9 @@
                             </layout>
                         </layout>
                         <layout position="South" splitratio="0.0">
-                            <tab name="3DView"/>
+                            <tab name="3DView" select="true"/>
                             <tab name="OpenHRP"/>
-                            <tab name="Text Editor" select="true"/>
+                            <tab name="Text Editor"/>
                         </layout>
                     </layout>
                     <layout position="East" splitratio="0.0">
