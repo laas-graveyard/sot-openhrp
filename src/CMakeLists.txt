@@ -80,6 +80,7 @@ CONFIG_FILES(dynamic_graph/sot/openhrp/prologue.py)
 INSTALL(FILES
   ${CMAKE_CURRENT_BINARY_DIR}/dynamic_graph/sot/openhrp/prologue.py
   ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/openhrp/test_reach.py
+  ${CMAKE_CURRENT_SOURCE_DIR}/dynamic_graph/sot/openhrp/log.py
   DESTINATION
   ${PYTHON_SITELIB}/dynamic_graph/sot/openhrp
   )

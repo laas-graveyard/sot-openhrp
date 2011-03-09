@@ -19,45 +19,45 @@ class Log(object):
     """
     Torques: vectors of dimension 40
     """
-    force0 = []
-    """
-    Force at left ankle
-    """
-    moment0 = []
-    """
-    Moment at left Ankle
-    """
-    force1 = []
+    forceRa = []
     """
     Force at right ankle
     """
-    moment1 = []
+    momentRa = []
     """
     Moment at right Ankle
     """
-    force2 = []
+    forceLa = []
     """
-    Force at left wrist
+    Force at left ankle
     """
-    moment2 = []
+    momentLa = []
     """
-    Moment at left wrist
+    Moment at left Ankle
     """
-    force3 = []
+    forceRw = []
     """
     Force at right wrist
     """
-    moment3 = []
+    momentRw = []
     """
     Moment at right wrist
     """
-    zmp0 = []
+    forceLw = []
     """
-    Center of pressure of left foot expressed in foot frame
+    Force at left wrist
     """
-    zmp1 = []
+    momentLw = []
+    """
+    Moment at left wrist
+    """
+    zmpRf = []
     """
     Center of pressure of right foot expressed in foot frame
+    """
+    zmpLf = []
+    """
+    Center of pressure of left foot expressed in foot frame
     """
     leftAnkle = R3((0.0, 0.0, 0.105))
     """
@@ -103,49 +103,53 @@ class Log(object):
         for r in data:
             self.config.append(r[:40])
             self.torque.append(r[40:80])
-            self.force0.append(R3(tuple(r[80:83])))
-            self.moment0.append(R3(tuple(r[83:86])))
-            self.force1.append(R3(tuple(r[86:89])))
-            self.moment1.append(R3(tuple(r[89:92])))
-            self.force2.append(R3(tuple(r[92:95])))
-            self.moment2.append(R3(tuple(r[95:98])))
+            self.forceRa.append(R3(tuple(r[80:83])))
+            self.momentRa.append(R3(tuple(r[83:86])))
+            self.forceLa.append(R3(tuple(r[86:89])))
+            self.momentLa.append(R3(tuple(r[89:92])))
+            self.forceRw.append(R3(tuple(r[92:95])))
+            self.momentRw.append(R3(tuple(r[95:98])))
+            self.forceLw.append(R3(tuple(r[98:101])))
+            self.momentLw.append(R3(tuple(r[101:104])))
 
         # Compute centers of pressure
-        for R, Ma in zip(self.force0, self.moment0):
+        for R, Ma in zip(self.forceRa, self.momentRa):
             Mo = Ma + self.leftAnkle.crossprod(R)
             if R[2] > 10:
-                self.zmp0.append(R3((Mo[0]/R[2], -Mo[1]/R[2], 0.)))
+                self.zmpRf.append(R3((Mo[0]/R[2], -Mo[1]/R[2], 0.)))
             else:
-                self.zmp0.append(R3((0.,0.,0.,)))
+                self.zmpRf.append(R3((0.,0.,0.,)))
 
-        for R, Ma in zip(self.force1, self.moment1):
+        for R, Ma in zip(self.forceLa, self.momentLa):
             Mo = Ma + self.rightAnkle.crossprod(R)
             if R[2] > 10:
-                self.zmp1.append(R3((Mo[0]/R[2], -Mo[1]/R[2], 0.)))
+                self.zmpLf.append(R3((Mo[0]/R[2], -Mo[1]/R[2], 0.)))
             else:
-                self.zmp1.append(R3((0.,0.,0.,)))
+                self.zmpLf.append(R3((0.,0.,0.,)))
 
     def plot(self):
         fig1 = pl.figure()
-        ax11 = fig1.add_subplot(221)
-        ax12 = fig1.add_subplot(222)
-        ax21 = fig1.add_subplot(223)
-        ax22 = fig1.add_subplot(224)
-        zmp0 = []
-        zmp1 = []
+        ax1 = fig1.add_subplot(211)
+        ax2 = fig1.add_subplot(212)
+        zmpRf = []
+        zmpLf = []
         y0 = []
         y1 = []
-        for (F0, F1) in zip(self.force0,self.force1):
+        for (F0, F1) in zip(self.forceRa,self.forceLa):
             y0.append(F0[2])
             y1.append(F1[2])
         time = map(lambda x:.005*x, range(len(y0)))
-        ax11.plot(time, y0)
-        ax12.plot(time, y1)
-        for (z0, z1) in zip(self.zmp0, self.zmp1):
-            zmp0.append(z0[1])
-            zmp1.append(z1[1])
-        ax21.plot(time, zmp0)
-        ax22.plot(time, zmp1)
+        ax1.plot(time, y0)
+        ax1.plot(time, y1)
+        for (z0, z1) in zip(self.zmpRf, self.zmpLf):
+            zmpRf.append(z0[1])
+            zmpLf.append(z1[1])
+        ax2.plot(time, zmpRf)
+        ax2.plot(time, zmpLf)
+
+        ax1.legend(('force right ankle', 'force left ankle'))
+        ax2.legend(('zmp right foot', 'force left foot'))
+
         pl.show()
 
 if __name__ == '__main__':
