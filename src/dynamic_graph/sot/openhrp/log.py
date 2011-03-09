@@ -148,7 +148,7 @@ class Log(object):
         ax2.plot(time, zmpLf)
 
         ax1.legend(('force right ankle', 'force left ankle'))
-        ax2.legend(('zmp right foot', 'force left foot'))
+        ax2.legend(('zmp right foot', 'zmp left foot'))
 
         pl.show()
 
