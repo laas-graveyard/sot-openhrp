@@ -99,7 +99,8 @@ INSTALL(FILES
 ADD_LIBRARY(StackOfTasks SHARED plugin.cc)
 
 # Remove 'lib' prefix in library filename.
-SET_TARGET_PROPERTIES(StackOfTasks PROPERTIES PREFIX "")
+SET_TARGET_PROPERTIES(StackOfTasks PROPERTIES PREFIX ""
+  INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # Declare plug-in dependencies.
 TARGET_LINK_LIBRARIES(StackOfTasks openhrp)
