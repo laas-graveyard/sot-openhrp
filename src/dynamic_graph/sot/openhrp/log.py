@@ -59,6 +59,30 @@ class Log(object):
     """
     Center of pressure of left foot expressed in foot frame
     """
+    acceleration = []
+    """
+    Joint acceleration
+    """
+    velocity = []
+    """
+    Joint velocity
+    """
+    A = []
+    """
+    Vector AX0 AY0 AZ0 as logged in rstate.log
+    """
+    zmp = []
+    """
+    Center of pressure as logged in rstate.log
+    """
+    waistPos = []
+    """
+    Presumably position of the waist as logged in rstate.log
+    """
+    waistOrient = []
+    """
+    Presumably waist orientation as logged in rstate.log
+    """
     leftAnkle = R3((0.0, 0.0, 0.105))
     """
     Position of left ankle in foot frame: default value for HRP2
@@ -67,31 +91,37 @@ class Log(object):
     """
     Position of right ankle in foot frame: default value for HRP2
     """
-    directory = '/opt/grx3.0/HRP2LAAS/bin'
+    directory = '/tmp'
     """
     Directory where to find log files
     """
+    prefix = "sim"
+    """
+    Prefix of log filenames
+    """
 
-    def __init__(self, filename = None, robot = None):
+    def __init__(self, directory = None, prefix = None, robot = None):
         """
         Construct instance with a robot to get geometry of feet
         """
-        if filename:
-            self.filename = filename
-        else:
-            self.filename = self.directory + '/sim-astate.log'
+        if prefix:
+            self.prefix=prefix
+        if directory:
+            self.directory = directory
 
         if robot:
             self.leftAnkle = robot.dynamic.getAnklePositionInFootFrame()
             self.rightAnkle = R3(self.leftAnkle)
             self.rightAnkle[1] *= -1.
-        self.read()
+        self.read_astate()
+        self.read_rstate()
+        self.read_kf()
 
-    def read(self):
-        filename = self.filename
+    def read_astate(self):
+        filename = self.directory + "/" + self.prefix + "-astate.log"
         with open(filename, 'r') as f:
-            astateReader = csv.reader(f, delimiter=' ')
-            for row, i in zip(astateReader, range(10000)):
+            reader = csv.reader(f, delimiter=' ')
+            for row in reader:
                 while '' in row:
                     row.remove('')
                 try:
@@ -127,12 +157,41 @@ class Log(object):
             else:
                 self.zmpLf.append(R3((0.,0.,0.,)))
 
+    def read_rstate(self):
+        filename = self.directory + "/" + self.prefix + "-rstate.log"
+        with open(filename, 'r') as f:
+            reader = csv.reader(f, delimiter=' ')
+            for row in reader:
+                while '' in row:
+                    row.remove('')
+                try:
+                    r = map(float, row)
+                    data.append(r)
+                except:
+                    print row
+
+        for r in data:
+            self.acceleration.append(r[:40])
+            self.velocity.append(r[40:80])
+            self.A.append(r[80:83])
+            self.zmp.append(R3(tuple(r[83:86])))
+            self.waistPos.append(R3(tuple(r[86:89])))
+            self.waistOrient.append(tuple(r[89:92]))
+
+    def read_kf(self):
+        pass
+
     def plot(self):
         fig1 = pl.figure()
         ax1 = fig1.add_subplot(211)
         ax2 = fig1.add_subplot(212)
-        zmpRf = []
-        zmpLf = []
+        zmpRfx = []
+        zmpLfx = []
+        zmpRfy = []
+        zmpLfy = []
+        zmpx = []
+        zmpy = []
+        zmpz = []
         y0 = []
         y1 = []
         for (F0, F1) in zip(self.forceRa,self.forceLa):
@@ -141,22 +200,45 @@ class Log(object):
         time = map(lambda x:.005*x, range(len(y0)))
         ax1.plot(time, y0)
         ax1.plot(time, y1)
-        for (z0, z1) in zip(self.zmpRf, self.zmpLf):
-            zmpRf.append(z0[1])
-            zmpLf.append(z1[1])
-        ax2.plot(time, zmpRf)
-        ax2.plot(time, zmpLf)
+        for (zRight, zLeft, z) in zip(self.zmpRf, self.zmpLf, self.zmp):
+            zmpRfx.append(zRight[0])
+            zmpRfy.append(zRight[1])
+            zmpLfx.append(zLeft[0])
+            zmpLfy.append(zLeft[1])
+            zmpx.append(z[0])
+            zmpy.append(z[1])
+            zmpz.append(z[2])
+
+        ax2.plot(time, zmpRfx)
+        ax2.plot(time, zmpLfx)
+        ax2.plot(time, zmpRfy)
+        ax2.plot(time, zmpLfy)
+        ax2.plot(time, zmpx)
+        ax2.plot(time, zmpy)
+        ax2.plot(time, zmpz)
 
         ax1.legend(('force right ankle', 'force left ankle'))
-        ax2.legend(('zmp right foot', 'zmp left foot'))
+        ax2.legend(('x zmp right foot', 'x zmp left foot',
+                    'y zmp right foot', 'y zmp left foot',
+                    'zmp log x', 'zmp log y', 'zmp log z'))
 
         pl.show()
 
 if __name__ == '__main__':
+    #
+    # Usage: log.py prefix directory
+    #    read in directory files
+    #      ${prefix}-astate
+    #      ${prefix}-rstate
+    #      ${prefix}-kf
+    # and plot some of values
     import sys
 
-    filename = None
+    directory = None
+    prefix = None
     if len(sys.argv) > 1:
-        filename = sys.argv[1]
-    l = Log(filename = filename)
+        prefix = sys.argv[1]
+    if len(sys.argv) > 2:
+        directory = sys.argv[2]
+    l = Log(prefix = prefix, directory = directory)
     l.plot()
