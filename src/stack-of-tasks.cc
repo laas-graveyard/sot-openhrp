@@ -19,6 +19,9 @@
  * with sot-openhrp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#define VP_DEBUG
+#define VP_DEBUG_MODE 10
+
 #include <dynamic-graph/factory.h>
 #include <dynamic-graph/command-setter.h>
 
@@ -97,6 +100,21 @@ control(RobotState* rs, RobotState* mc)
   for (unsigned int i=0; i<mc->zmp.length(); i++) {
     mc->zmp[i] = localZmp(i);
   }
+  sotDEBUG(10) << "local zmp = (" <<
+    localZmp(0) << "," <<
+    localZmp(1) << "," <<
+    localZmp(2) << ")" << std::endl;
+
+  sotDEBUG(10) << "mc->zmp = (" <<
+    mc->zmp[0] << "," <<
+    mc->zmp[1] << "," <<
+    mc->zmp[2] << ")" << std::endl;
+
+  sotDEBUG(10) << "global zmp = (" <<
+    zmpGlobal(0) << "," <<
+    zmpGlobal(1) << "," <<
+    zmpGlobal(2) << ")" << std::endl;
+
 }
 
 bool StackOfTasks::
