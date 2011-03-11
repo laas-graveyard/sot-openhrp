@@ -146,14 +146,14 @@ class Log(object):
         for R, Ma in zip(self.forceRa, self.momentRa):
             Mo = Ma + self.leftAnkle.crossprod(R)
             if R[2] > 10:
-                self.zmpRf.append(R3((Mo[0]/R[2], -Mo[1]/R[2], 0.)))
+                self.zmpRf.append(R3((-Mo[1]/R[2], Mo[0]/R[2], 0.)))
             else:
                 self.zmpRf.append(R3((0.,0.,0.,)))
 
         for R, Ma in zip(self.forceLa, self.momentLa):
             Mo = Ma + self.rightAnkle.crossprod(R)
             if R[2] > 10:
-                self.zmpLf.append(R3((Mo[0]/R[2], -Mo[1]/R[2], 0.)))
+                self.zmpLf.append(R3((-Mo[1]/R[2], Mo[0]/R[2], 0.)))
             else:
                 self.zmpLf.append(R3((0.,0.,0.,)))
 
@@ -181,6 +181,24 @@ class Log(object):
     def read_kf(self):
         pass
 
+    def computeZmpDoubleSupport(self, ra, la):
+        """
+        Compute double support center of pressure
+          la: position of left anlke
+          ra: position of right ankle
+        """
+        self.zmpDoubleSupport = []
+        # Compute centers of pressure
+        for Rr, Mar, Rl, Mal in zip(self.forceRa, self.momentRa,
+                                    self.forceLa, self.momentLa):
+            Mo = Mar + ra.crossprod(Rr) + Mal + la.crossprod(Rl)
+            R = Rr+Rl
+            if R[2] > 10:
+                self.zmpDoubleSupport.append(R3((-Mo[1]/R[2], Mo[0]/R[2], 0.)))
+            else:
+                self.zmpLf.append(R3((0.,0.,0.,)))
+
+
     def plot(self):
         fig1 = pl.figure()
         ax1 = fig1.add_subplot(211)
@@ -191,36 +209,51 @@ class Log(object):
         zmpLfy = []
         zmpx = []
         zmpy = []
-        zmpz = []
-        y0 = []
-        y1 = []
+        Mrx = []
+        Mry = []
+        Mrz = []
+        Mlx = []
+        Mly = []
+        Mlz = []
+
+        Fnr = []
+        Fnl = []
+        # Compute zmp for double support
+        la = R3((0., 0.095, 0.105)) 
+        ra = R3((0., -0.095, 0.105))
+        self.computeZmpDoubleSupport(ra, la)
         for (F0, F1) in zip(self.forceRa,self.forceLa):
-            y0.append(F0[2])
-            y1.append(F1[2])
-        time = map(lambda x:.005*x, range(len(y0)))
-        ax1.plot(time, y0)
-        ax1.plot(time, y1)
-        for (zRight, zLeft, z) in zip(self.zmpRf, self.zmpLf, self.zmp):
+            Fnr.append(F0[2])
+            Fnl.append(F1[2])
+        for (zRight, zLeft, z) in zip(self.zmpRf, self.zmpLf,
+                                      self.zmpDoubleSupport):
             zmpRfx.append(zRight[0])
             zmpRfy.append(zRight[1])
             zmpLfx.append(zLeft[0])
             zmpLfy.append(zLeft[1])
             zmpx.append(z[0])
             zmpy.append(z[1])
-            zmpz.append(z[2])
+
+        for (Mr, Ml) in zip(self.momentRa, self.momentLa):
+            Mrx.append(Mr[0])
+            Mry.append(Mr[1])
+            Mrz.append(Mr[2])
+            Mlx.append(Ml[0])
+            Mly.append(Ml[1])
+            Mlz.append(Ml[2])
+
+        time = map(lambda x:.005*x, range(len(Fnr)))
+        ax1.plot(time, Fnr)
+        ax1.plot(time, Fnl)
 
         ax2.plot(time, zmpRfx)
         ax2.plot(time, zmpLfx)
         ax2.plot(time, zmpRfy)
         ax2.plot(time, zmpLfy)
-        ax2.plot(time, zmpx)
-        ax2.plot(time, zmpy)
-        ax2.plot(time, zmpz)
 
         ax1.legend(('force right ankle', 'force left ankle'))
         ax2.legend(('x zmp right foot', 'x zmp left foot',
-                    'y zmp right foot', 'y zmp left foot',
-                    'zmp log x', 'zmp log y', 'zmp log z'))
+                    'y zmp right foot', 'y zmp left foot'))
 
         pl.show()
 
