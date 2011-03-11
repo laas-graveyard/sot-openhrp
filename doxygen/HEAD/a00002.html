@@ -129,6 +129,8 @@ Collaboration diagram for sot::StackOfTasks:</div>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">The current state of the robot from the command viewpoint.  <a href="#ad522d9da277dae6c223df1a1c2e548cc"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::Signal&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="a00006.html">ml::Vector</a>, int &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#af6d2ef6a722ae2781b52a998305a46e6">ZMPPreviousControllerSOUT</a></td></tr>
 <tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">The ZMP reference send by the previous controller.  <a href="#af6d2ef6a722ae2781b52a998305a46e6"></a><br/></td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">dg::Signal&lt; <a class="elRef" doxygen="jrl-mal.doxytag:" href="a00006.html">ml::Vector</a>, int &gt;&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#a1fc1f7e50dcea35d2fd139405a06a8d5">timeSOUT</a></td></tr>
+<tr><td class="mdescLeft">&nbsp;</td><td class="mdescRight">Time.  <a href="#a1fc1f7e50dcea35d2fd139405a06a8d5"></a><br/></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">bool&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#a084b732895305ef08d172695449a0812">activatePreviousControlSignal</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="elRef" doxygen="sot-core.doxytag:" href="a00069.html">PeriodicCall</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#a496f29aa4229ddbcad6d33de8283bca8">periodicCallBefore</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top"><a class="elRef" doxygen="sot-core.doxytag:" href="a00069.html">PeriodicCall</a>&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#abfd3e8784cd61466b914576f80f72f5a">periodicCallAfter</a></td></tr>
@@ -144,6 +146,7 @@ Collaboration diagram for sot::StackOfTasks:</div>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#a033a5fa7253c5a8e30b090ac1625b6c3">updateHRP210SmallOldFromMC</a> (sotMotorCommand *mc, <a class="elRef" doxygen="jrl-mal.doxytag:" href="a00006.html">maal::boost::Vector</a> &amp;VectorCommand, unsigned int ref=0)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#a69844e0485155407535251286167ea3c">updateHRP210SmallOldMC</a> (sotMotorCommand *mc, <a class="elRef" doxygen="jrl-mal.doxytag:" href="a00006.html">maal::boost::Vector</a> &amp;VectorCommand, unsigned int ref=0)</td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#a8e696db9d3b5db3d3c8ea13e20811044">updateHRP210SmallOldtorque</a> (sotMotorCommand *rs, <a class="elRef" doxygen="jrl-mal.doxytag:" href="a00006.html">maal::boost::Vector</a> &amp;Torque)</td></tr>
+<tr><td class="memItemLeft" align="right" valign="top">void&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#af366306ecf8ee0807b572cd0801de615">updateTimeSOUT</a> ()</td></tr>
 <tr><td colspan="2"><h2>Protected Attributes</h2></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">dg::PluginLoader&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#af3777393e283266600cd6f58e6a1060b">pluginLoader</a></td></tr>
 <tr><td class="memItemLeft" align="right" valign="top">sotSequencePlayer_var&nbsp;</td><td class="memItemRight" valign="bottom"><a class="el" href="a00002.html#af6649686408338667a817218a8ad4a48">seqpluginPTR</a></td></tr>
@@ -390,7 +393,7 @@ Collaboration diagram for sot::StackOfTasks:</div>
 </div>
 <div class="memdoc">
 
-<p>References <a class="el" href="a00004_source.html#l00205">CLASS_NAME</a>.</p>
+<p>References <a class="el" href="a00004_source.html#l00207">CLASS_NAME</a>.</p>
 
 </div>
 </div>
@@ -883,6 +886,23 @@ Collaboration diagram for sot::StackOfTasks:</div>
 
 </div>
 </div>
+<a class="anchor" id="af366306ecf8ee0807b572cd0801de615"></a><!-- doxytag: member="sot::StackOfTasks::updateTimeSOUT" ref="af366306ecf8ee0807b572cd0801de615" args="()" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void sot::StackOfTasks::updateTimeSOUT </td>
+          <td>(</td>
+          <td class="paramname"></td>
+          <td>&nbsp;)&nbsp;</td>
+          <td><code> [protected]</code></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+</div>
+</div>
 <a class="anchor" id="a440eeb0c6fbf7ffbe1231fa453ba784f"></a><!-- doxytag: member="sot::StackOfTasks::updateTorque" ref="a440eeb0c6fbf7ffbe1231fa453ba784f" args="(sotRobotState *rs, maal::boost::Vector &amp;torque)" -->
 <div class="memitem">
 <div class="memproto">
@@ -974,7 +994,7 @@ Collaboration diagram for sot::StackOfTasks:</div>
 </div>
 <div class="memdoc">
 
-<p>Referenced by <a class="el" href="a00004_source.html#l00206">getClassName()</a>.</p>
+<p>Referenced by <a class="el" href="a00004_source.html#l00208">getClassName()</a>.</p>
 
 </div>
 </div>
@@ -1348,6 +1368,21 @@ Collaboration diagram for sot::StackOfTasks:</div>
       </table>
 </div>
 <div class="memdoc">
+
+</div>
+</div>
+<a class="anchor" id="a1fc1f7e50dcea35d2fd139405a06a8d5"></a><!-- doxytag: member="sot::StackOfTasks::timeSOUT" ref="a1fc1f7e50dcea35d2fd139405a06a8d5" args="" -->
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">dg::Signal&lt;<a class="elRef" doxygen="jrl-mal.doxytag:" href="a00006.html">ml::Vector</a>,int&gt; <a class="el" href="a00002.html#a1fc1f7e50dcea35d2fd139405a06a8d5">sot::StackOfTasks::timeSOUT</a></td>
+        </tr>
+      </table>
+</div>
+<div class="memdoc">
+
+<p>Time. </p>
 
 </div>
 </div>
