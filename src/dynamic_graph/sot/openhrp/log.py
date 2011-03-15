@@ -255,7 +255,7 @@ class Log(object):
 
 if __name__ == '__main__':
     #
-    # Usage: log.py prefix directory
+    # Usage: log.py directory prefix
     #    read in directory files
     #      ${prefix}-astate
     #      ${prefix}-rstate
@@ -266,8 +266,8 @@ if __name__ == '__main__':
     directory = None
     prefix = None
     if len(sys.argv) > 1:
-        prefix = sys.argv[1]
+        directory = sys.argv[1]
     if len(sys.argv) > 2:
-        directory = sys.argv[2]
+        prefix = sys.argv[2]
     l = Log(prefix = prefix, directory = directory)
     l.plot()
