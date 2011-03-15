@@ -242,6 +242,7 @@ class Log(object):
         ax1.plot(time, Fnr)
         ax1.plot(time, Fnl)
 
+        time = map(lambda x:.005*x, range(len(zmpRfx)))
         ax2.plot(time, zmpRfx)
         ax2.plot(time, zmpLfx)
         ax2.plot(time, zmpRfy)
