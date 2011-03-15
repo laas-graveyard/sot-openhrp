@@ -144,14 +144,14 @@ class Log(object):
 
         # Compute centers of pressure
         for R, Ma in zip(self.forceRa, self.momentRa):
-            Mo = Ma + self.leftAnkle.crossprod(R)
+            Mo = Ma
             if R[2] > 10:
                 self.zmpRf.append(R3((-Mo[1]/R[2], Mo[0]/R[2], 0.)))
             else:
                 self.zmpRf.append(R3((0.,0.,0.,)))
 
         for R, Ma in zip(self.forceLa, self.momentLa):
-            Mo = Ma + self.rightAnkle.crossprod(R)
+            Mo = Ma
             if R[2] > 10:
                 self.zmpLf.append(R3((-Mo[1]/R[2], Mo[0]/R[2], 0.)))
             else:
@@ -218,10 +218,6 @@ class Log(object):
 
         Fnr = []
         Fnl = []
-        # Compute zmp for double support
-        la = R3((0., 0.095, 0.105)) 
-        ra = R3((0., -0.095, 0.105))
-        self.computeZmpDoubleSupport(ra, la)
         for (F0, F1) in zip(self.forceRa,self.forceLa):
             Fnr.append(F0[2])
             Fnl.append(F1[2])
