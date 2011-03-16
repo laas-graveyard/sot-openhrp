@@ -221,14 +221,11 @@ class Log(object):
         for (F0, F1) in zip(self.forceRa,self.forceLa):
             Fnr.append(F0[2])
             Fnl.append(F1[2])
-        for (zRight, zLeft, z) in zip(self.zmpRf, self.zmpLf,
-                                      self.zmpDoubleSupport):
+        for (zRight, zLeft) in zip(self.zmpRf, self.zmpLf):
             zmpRfx.append(zRight[0])
             zmpRfy.append(zRight[1])
             zmpLfx.append(zLeft[0])
             zmpLfy.append(zLeft[1])
-            zmpx.append(z[0])
-            zmpy.append(z[1])
 
         for (Mr, Ml) in zip(self.momentRa, self.momentLa):
             Mrx.append(Mr[0])
