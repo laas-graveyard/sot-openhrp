@@ -106,6 +106,13 @@ control(RobotState* rs, RobotState* mc)
     mc->zmp[2] << ")" << std::endl;
 
   sotDEBUG(10) << "global zmp = (" << zmpGlobal << std::endl;
+
+  // Update position of freeflyer in global frame
+  for(int i=0;i<3;i++)
+    mc->basePos[i] = freeFlyerPose()(i,3);
+  for(unsigned int i=0;i<3;i++)
+    for(unsigned int j=0;j<3;j++)
+      mc->baseAtt[i*3+j] = freeFlyerPose()(i,j);
 }
 
 bool StackOfTasks::
