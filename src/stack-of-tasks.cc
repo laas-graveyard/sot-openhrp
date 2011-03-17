@@ -96,25 +96,16 @@ control(RobotState* rs, RobotState* mc)
   MatrixHomogeneous inversePose;
   freeFlyerPose().inverse(inversePose);
   Vector localZmp = inversePose * zmpGlobal;
-  sotDEBUG(25) << "zmp = " << localZmp << std::endl;
   for (unsigned int i=0; i<mc->zmp.length(); i++) {
     mc->zmp[i] = localZmp(i);
   }
-  sotDEBUG(10) << "local zmp = (" <<
-    localZmp(0) << "," <<
-    localZmp(1) << "," <<
-    localZmp(2) << ")" << std::endl;
-
+  sotDEBUG(25) << "local zmp = " << localZmp << std::endl;
   sotDEBUG(10) << "mc->zmp = (" <<
     mc->zmp[0] << "," <<
     mc->zmp[1] << "," <<
     mc->zmp[2] << ")" << std::endl;
 
-  sotDEBUG(10) << "global zmp = (" <<
-    zmpGlobal(0) << "," <<
-    zmpGlobal(1) << "," <<
-    zmpGlobal(2) << ")" << std::endl;
-
+  sotDEBUG(10) << "global zmp = (" << zmpGlobal << std::endl;
 }
 
 bool StackOfTasks::
