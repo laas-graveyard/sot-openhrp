@@ -91,6 +91,7 @@ namespace dynamicgraph {
 	// @}
 
       private: /* --- MEMBERS --- */
+        void setForces_(bool);
 	//! Specific fields of the
 	static const double TIMESTEP_DEFAULT;
 	double timestep_;

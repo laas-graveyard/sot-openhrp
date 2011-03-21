@@ -24,14 +24,16 @@
 
 #include <dynamic-graph/factory.h>
 #include <dynamic-graph/command-setter.h>
-
 #include <dynamic-graph/debug.h>
 #include <sot/core/debug.hh>
 #include <sot/core/exception-factory.hh>
+#include <dynamic-graph/all-commands.h>
 
 #include "stack-of-tasks.hh"
 
 #include "Plugin_impl.h"
+#include <dynamic-graph/all-commands.h>
+#include "sot/core/api.hh"
 
 using dynamicgraph::sot::openhrp::StackOfTasks;
 using dynamicgraph::sot::ExceptionFactory;
@@ -48,9 +50,29 @@ StackOfTasks::StackOfTasks(const std::string& inName)
     timestep_(TIMESTEP_DEFAULT),
     previousState_()
 {
+  std::string docstring;
+  docstring =
+    "\n"
+    "    set flag for contact forces\n"
+    "\n"
+    "      take one bool as input\n"
+    "\n";
+  // addCommand("setForces",
+  //            dynamicgraph::command::makeCommandVoid1((StackOfTasks&)*this,
+  //                                      &StackOfTasks::setForces_, docstring));
+  setForces_(true);
 }
 
-bool StackOfTasks::setup(RobotState*, RobotState* mc)
+void StackOfTasks::setForces_(bool flag){
+  //bool flag = (flag_str == "True" ? true : false);
+  for (unsigned i = 0; i < 4; i++)
+    {
+      withForceSignals[i] = flag;
+    }
+}
+
+
+bool StackOfTasks::setup(RobotState* rs, RobotState* mc)
 {
 #ifdef VP_DEBUG
   dynamicgraph::DebugTrace::openFile();
@@ -69,6 +91,19 @@ bool StackOfTasks::setup(RobotState*, RobotState* mc)
   previousState_ = state;
   sotDEBUG(25) << "state = " << state << std::endl;
   stateSOUT.setConstant(state);
+
+  ml::Vector mlforces(6);
+  for( int i=0;i<4;++i )
+  {
+    //    if( withForceSignals[i] == true )
+    if (true)
+    {
+      for( int j=0;j<6;++j )
+	mlforces(j) = rs->force[i][j];
+      forcesSOUT[i]->setConstant( mlforces );
+    }
+  }
+
   return true;
 }
 
@@ -96,7 +131,22 @@ control(RobotState* rs, RobotState* mc)
   MatrixHomogeneous inversePose;
   freeFlyerPose().inverse(inversePose);
   Vector localZmp = inversePose * zmpGlobal;
-  sotDEBUG(25) << "zmp = " << localZmp << std::endl;
+
+  ml::Vector mlforces(6);
+  for( int i=0;i<4;++i )
+  {
+    //if( withForceSignals[i] == true )
+    if (true)
+    {
+      for( int j=0;j<6;++j )
+	mlforces(j) = rs->force[i][j];
+      forcesSOUT[i]->setConstant( mlforces );
+      forcesSOUT[i]->setTime( time + 1);
+      //std::cout << mlforces << std::endl;
+    }
+  }
+
+  // sotDEBUG(25) << "zmp = " << localZmp << std::endl;
   for (unsigned int i=0; i<mc->zmp.length(); i++) {
     mc->zmp[i] = localZmp(i);
   }
