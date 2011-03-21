@@ -144,14 +144,14 @@ class Log(object):
 
         # Compute centers of pressure
         for R, Ma in zip(self.forceRa, self.momentRa):
-            Mo = Ma + self.leftAnkle.crossprod(R)
+            Mo = Ma
             if R[2] > 10:
                 self.zmpRf.append(R3((-Mo[1]/R[2], Mo[0]/R[2], 0.)))
             else:
                 self.zmpRf.append(R3((0.,0.,0.,)))
 
         for R, Ma in zip(self.forceLa, self.momentLa):
-            Mo = Ma + self.rightAnkle.crossprod(R)
+            Mo = Ma
             if R[2] > 10:
                 self.zmpLf.append(R3((-Mo[1]/R[2], Mo[0]/R[2], 0.)))
             else:
@@ -218,21 +218,14 @@ class Log(object):
 
         Fnr = []
         Fnl = []
-        # Compute zmp for double support
-        la = R3((0., 0.095, 0.105)) 
-        ra = R3((0., -0.095, 0.105))
-        self.computeZmpDoubleSupport(ra, la)
         for (F0, F1) in zip(self.forceRa,self.forceLa):
             Fnr.append(F0[2])
             Fnl.append(F1[2])
-        for (zRight, zLeft, z) in zip(self.zmpRf, self.zmpLf,
-                                      self.zmpDoubleSupport):
+        for (zRight, zLeft) in zip(self.zmpRf, self.zmpLf):
             zmpRfx.append(zRight[0])
             zmpRfy.append(zRight[1])
             zmpLfx.append(zLeft[0])
             zmpLfy.append(zLeft[1])
-            zmpx.append(z[0])
-            zmpy.append(z[1])
 
         for (Mr, Ml) in zip(self.momentRa, self.momentLa):
             Mrx.append(Mr[0])
@@ -246,6 +239,7 @@ class Log(object):
         ax1.plot(time, Fnr)
         ax1.plot(time, Fnl)
 
+        time = map(lambda x:.005*x, range(len(zmpRfx)))
         ax2.plot(time, zmpRfx)
         ax2.plot(time, zmpLfx)
         ax2.plot(time, zmpRfy)
@@ -259,7 +253,7 @@ class Log(object):
 
 if __name__ == '__main__':
     #
-    # Usage: log.py prefix directory
+    # Usage: log.py directory prefix
     #    read in directory files
     #      ${prefix}-astate
     #      ${prefix}-rstate
@@ -270,8 +264,8 @@ if __name__ == '__main__':
     directory = None
     prefix = None
     if len(sys.argv) > 1:
-        prefix = sys.argv[1]
+        directory = sys.argv[1]
     if len(sys.argv) > 2:
-        directory = sys.argv[2]
+        prefix = sys.argv[2]
     l = Log(prefix = prefix, directory = directory)
     l.plot()

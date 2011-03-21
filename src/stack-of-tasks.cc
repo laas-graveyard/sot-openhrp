@@ -150,21 +150,20 @@ control(RobotState* rs, RobotState* mc)
   for (unsigned int i=0; i<mc->zmp.length(); i++) {
     mc->zmp[i] = localZmp(i);
   }
-  sotDEBUG(10) << "local zmp = (" <<
-    localZmp(0) << "," <<
-    localZmp(1) << "," <<
-    localZmp(2) << ")" << std::endl;
-
+  sotDEBUG(25) << "local zmp = " << localZmp << std::endl;
   sotDEBUG(10) << "mc->zmp = (" <<
     mc->zmp[0] << "," <<
     mc->zmp[1] << "," <<
     mc->zmp[2] << ")" << std::endl;
 
-  sotDEBUG(10) << "global zmp = (" <<
-    zmpGlobal(0) << "," <<
-    zmpGlobal(1) << "," <<
-    zmpGlobal(2) << ")" << std::endl;
+  sotDEBUG(10) << "global zmp = (" << zmpGlobal << std::endl;
 
+  // Update position of freeflyer in global frame
+  for(int i=0;i<3;i++)
+    mc->basePos[i] = freeFlyerPose()(i,3);
+  for(unsigned int i=0;i<3;i++)
+    for(unsigned int j=0;j<3;j++)
+      mc->baseAtt[i*3+j] = freeFlyerPose()(i,j);
 }
 
 bool StackOfTasks::
