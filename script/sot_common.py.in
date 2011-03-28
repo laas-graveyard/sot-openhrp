@@ -60,6 +60,13 @@ class Experiment(object):
         """
         Initialize all plug-ins.
         """
+
+        # WARNING: order _matters_!
+        # -------------------------
+        # The plug-in creation order corresponds
+        # to the order the plug-ins will be executed in
+        # the control loop.
+
         self.Manager = hrp.findPluginManager("motionsys")
         self.Logger  = hrp.LoggerPluginHelper.narrow(
             self.initPlugin('logplugin', 'log'))
@@ -70,11 +77,11 @@ class Experiment(object):
         self.SeqPlay = hrp.SequencePlayerHelper.narrow(
             self.initPlugin('seqplay', 'seq'))
 
+        self.SoT = self.initPlugin("StackOfTasks", "sot")
+
         self.KalmanF = self.initPlugin('kfplugin', 'kf')
         if self.enableStabilizer:
             self.Stabilizer = self.initPlugin('hstabilizer', 'st')
-
-        self.SoT = self.initPlugin("StackOfTasks", "sot")
 
         self.Robot.sendMsg(":gain normal")
         
