@@ -47,7 +47,7 @@ namespace dynamicgraph {
   } // namespace sot
 } // namespace dynamicgraph
 
-plugin* create_plugin(istringstream &strm)
+plugin* create_plugin(istringstream &)
 {
   return new dynamicgraph::sot::openhrp::Plugin();
 }
