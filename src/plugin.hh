@@ -26,6 +26,7 @@
 #include "stack-of-tasks.hh"
 
 #include "Plugin_impl.h"
+#define SOT_CHECK_TIME
 
 namespace dynamicgraph {
   namespace sot {
@@ -51,6 +52,10 @@ namespace dynamicgraph {
 	dynamicgraph::corba::Interpreter interpreter_;
 	/// Pointer to Entity StackOfTasks
 	StackOfTasks* entity_;
+# ifdef SOT_CHECK_TIME 
+	unsigned int timeIndex;
+#endif // #ifdef SOT_CHECK_TIME 
+
       };
     } // namespace openhrp
   } // namespace sot
