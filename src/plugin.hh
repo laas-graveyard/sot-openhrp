@@ -52,7 +52,9 @@ namespace dynamicgraph {
 	dynamicgraph::corba::Interpreter interpreter_;
 	/// Pointer to Entity StackOfTasks
 	StackOfTasks* entity_;
-# ifdef SOT_CHECK_TIME 
+# ifdef SOT_CHECK_TIME
+	static const unsigned int TIME_ARRAY_SIZE = 100000;
+	double timeArray[TIME_ARRAY_SIZE];
 	unsigned int timeIndex;
 #endif // #ifdef SOT_CHECK_TIME 
 
