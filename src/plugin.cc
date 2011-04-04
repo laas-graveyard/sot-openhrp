@@ -85,6 +85,7 @@ Plugin::~Plugin()
   // Do not delete entity_
 # ifdef SOT_CHECK_TIME
   ofstream of( "/tmp/dt.dat" );
+  of << "# size = " << timeIndex << std::endl;
   for(unsigned int i=0; i<timeIndex; ++i) {
     of << i << "\t" << timeArray[i] << std::endl;
   }
@@ -114,6 +115,7 @@ Plugin::setup  (OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 		+ (t1.tv_usec-t0.tv_usec+0.) / 1000. );
   if( timeIndex<TIME_ARRAY_SIZE ) {
     timeArray[ timeIndex ] = dt;
+    ++timeIndex;
   }
 # endif // ifdef SOT_CHECK_TIME
   return entity_->setup(&robotState, &motorCommand);
@@ -141,6 +143,7 @@ Plugin::control(OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 		+ (t1.tv_usec-t0.tv_usec+0.) / 1000. );
   if(timeIndex<TIME_ARRAY_SIZE) {
     timeArray[ timeIndex ] = dt;
+    ++timeIndex;
   }
   sotDEBUG(25) << "dt = " << dt << endl;
 # endif // ifdef SOT_CHECK_TIME
@@ -169,6 +172,7 @@ Plugin::cleanup(OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 		+ (t1.tv_usec-t0.tv_usec+0.) / 1000. );
   if( timeIndex<TIME_ARRAY_SIZE ) {
     timeArray[ timeIndex ] = dt;
+    ++timeIndex;
   }
 # endif // ifdef SOT_CHECK_TIME
   return entity_->cleanup(&robotState, &motorCommand);
