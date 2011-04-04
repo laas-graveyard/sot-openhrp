@@ -143,8 +143,10 @@ class Experiment(object):
                 '#label'
                 ]])
         self.SoT.stop()
-        self.Manager.sendMsg(":destroy sot")
-        self.Manager.sendMsg(":unload StackOfTasks")
+
+        # /!\ NEVER destroy the StackOfTasks
+        # as long as the SoT doesn't ensure continous movement
+        # from its last command to half-sitting.
 
         self.Logger.stop()
         if self.Stabilizer:
