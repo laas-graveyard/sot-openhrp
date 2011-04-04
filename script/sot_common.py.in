@@ -62,7 +62,7 @@ class Experiment(object):
         """
 
         # WARNING: order _matters_!
-        # -------------------------
+        # --------------------
         # The plug-in creation order corresponds
         # to the order the plug-ins will be executed in
         # the control loop.
@@ -138,7 +138,13 @@ class Experiment(object):
 
         self.SoT.start()
         print("Experiment is starting.")
-        waitInputConfirm("Press [ok] to terminate the experiment.")
+	waitInputMenu([[
+                '------- Close to stop the SoT ----------',
+                '#label'
+                ]])
+        self.SoT.stop()
+        self.Manager.sendMsg(":destroy sot")
+        self.Manager.sendMsg(":unload StackOfTasks")
 
         self.Logger.stop()
         if self.Stabilizer:
