@@ -19,6 +19,7 @@
  * with sot-openhrp.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <strings.h>
 #include <Python.h>
 
 #include <dynamic-graph/exception-factory.h>
@@ -29,7 +30,8 @@
 #include "plugin.hh"
 #include "dynamic-graph/python/interpreter.hh"
 
-#define SOT_OPENHRP_OUTPUT_FILE "/tmp/sot.out"
+const std::string SOT_OPENHRP_OUTPUT_FILE ("/tmp/sot.out");
+const std::string DT_DAT_OUTPUT_FILE ("/tmp/dt.dat");
 
 using dynamicgraph::sot::openhrp::Plugin;
 
@@ -52,14 +54,25 @@ plugin* create_plugin(istringstream &)
   return new dynamicgraph::sot::openhrp::Plugin();
 }
 
-dynamicgraph::sot::openhrp::Plugin::
-Plugin() : interpreter_(), entity_(new StackOfTasks("robot_device"))
-# ifdef SOT_CHECK_TIME
-	 ,timeIndex(0)
-#endif // #ifdef SOT_CHECK_TIME
+dynamicgraph::sot::openhrp::
+Plugin::Plugin()
+  : interpreter_(),
+    entity_(new StackOfTasks("robot_device")),
+    timeArray_ (),
+    timeIndex_ (0),
+    t0_ (),
+    t1_ ()
 {
-  ofstream aof;
-  aof.open(SOT_OPENHRP_OUTPUT_FILE, std::ios_base::app);
+  typedef void (command_receiver::*method_t) (std::istringstream&);
+
+  // Set to zero C structures.
+  bzero(timeArray_, TIME_ARRAY_SIZE * sizeof (double));
+  bzero(&t0_, sizeof (timeval));
+  bzero(&t1_, sizeof (timeval));
+
+  register_method (":dumpLog", (method_t) &Plugin::dumpLog);
+
+  std::ofstream aof (SOT_OPENHRP_OUTPUT_FILE.c_str (), std::ios_base::app);
   runPython(aof, "import sys, os", interpreter_);
   runPython(aof, "pythonpath = ''", interpreter_);
   runPython(aof,
@@ -83,22 +96,51 @@ dynamicgraph::sot::openhrp::
 Plugin::~Plugin()
 {
   // Do not delete entity_
-# ifdef SOT_CHECK_TIME
-  ofstream of( "/tmp/dt.dat" );
-  of << "# size = " << timeIndex << std::endl;
-  for(unsigned int i=0; i<timeIndex; ++i) {
-    of << i << "\t" << timeArray[i] << std::endl;
-  }
-# endif  // #ifdef SOT_CHECK_TIME
+}
+
+void
+dynamicgraph::sot::openhrp::
+Plugin::dumpLog (std::istringstream&)
+{
+  // Write log data to file.
+  writeLog ();
+}
+
+void
+dynamicgraph::sot::openhrp::
+Plugin::writeLog ()
+{
+  std::ofstream of (DT_DAT_OUTPUT_FILE.c_str ());
+  of << "# size = " << timeIndex_ << std::endl;
+  for (unsigned i = 0; i < timeIndex_; ++i)
+    of << i << "\t" << timeArray_[i] << std::endl;
+}
+
+void
+dynamicgraph::sot::openhrp::
+Plugin::captureTime (timeval& t)
+{
+  gettimeofday (&t, NULL);
+}
+
+void
+dynamicgraph::sot::openhrp::
+Plugin::logTime (const timeval& t0, const timeval& t1)
+{
+  double dt =
+    (t1.tv_sec - t0.tv_sec) * 1000.
+    + (t1.tv_usec - t0.tv_usec + 0.) / 1000.;
+
+  if (timeIndex_ < TIME_ARRAY_SIZE)
+    timeArray_[timeIndex_++] = dt;
 }
 
 bool dynamicgraph::sot::openhrp::
 Plugin::setup  (OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 {
-# ifdef SOT_CHECK_TIME
-  struct timeval t0,t1;
-  gettimeofday(&t0,NULL);
-# endif // ifdef SOT_CHECK_TIME
+  // Log control loop start time.
+  captureTime (t0_);
+
   // Initialize client to seqplay.
   dynamicgraph::sot::openhrp::RobotState robotState(rs->angle, rs->force,
 						    rs->attitude, rs->torque,
@@ -109,25 +151,20 @@ Plugin::setup  (OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 						      mc->attitude, mc->torque,
 						      mc->zmp, mc->basePos,
 						      mc->baseAtt);
-# ifdef SOT_CHECK_TIME
-  gettimeofday(&t1,NULL);
-  double dt = ( (t1.tv_sec-t0.tv_sec) * 1000.
-		+ (t1.tv_usec-t0.tv_usec+0.) / 1000. );
-  if( timeIndex<TIME_ARRAY_SIZE ) {
-    timeArray[ timeIndex ] = dt;
-    ++timeIndex;
-  }
-# endif // ifdef SOT_CHECK_TIME
+
+  // Log control loop end time and compute time spent.
+  captureTime (t1_);
+  logTime (t0_, t1_);
+
   return entity_->setup(&robotState, &motorCommand);
 }
 
 void dynamicgraph::sot::openhrp::
 Plugin::control(OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 {
-# ifdef SOT_CHECK_TIME
-  struct timeval t0,t1;
-  gettimeofday(&t0,NULL);
-# endif // ifdef SOT_CHECK_TIME
+  // Log control loop start time.
+  captureTime (t0_);
+
   dynamicgraph::sot::openhrp::RobotState robotState(rs->angle, rs->force,
 						    rs->attitude, rs->torque,
 						    rs->zmp, rs->basePos,
@@ -137,26 +174,22 @@ Plugin::control(OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 						      mc->attitude, mc->torque,
 						      mc->zmp, mc->basePos,
 						      mc->baseAtt);
-# ifdef SOT_CHECK_TIME
-  gettimeofday(&t1,NULL);
-  double dt = ( (t1.tv_sec-t0.tv_sec) * 1000.
-		+ (t1.tv_usec-t0.tv_usec+0.) / 1000. );
-  if(timeIndex<TIME_ARRAY_SIZE) {
-    timeArray[ timeIndex ] = dt;
-    ++timeIndex;
-  }
-  sotDEBUG(25) << "dt = " << dt << endl;
-# endif // ifdef SOT_CHECK_TIME
+
+  // Log control loop end time and compute time spent.
+  captureTime (t1_);
+  logTime (t0_, t1_);
+
+  sotDEBUG(25) << "dt = " << dt << std::endl;
+
   return entity_->control(&robotState, &motorCommand);
 }
 
 bool dynamicgraph::sot::openhrp::
 Plugin::cleanup(OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 {
-# ifdef SOT_CHECK_TIME
-  struct timeval t0,t1;
-  gettimeofday(&t0,NULL);
-# endif // ifdef SOT_CHECK_TIME
+  // Log control loop start time.
+  captureTime (t0_);
+
   dynamicgraph::sot::openhrp::RobotState robotState(rs->angle, rs->force,
 						    rs->attitude, rs->torque,
 						    rs->zmp, rs->basePos,
@@ -166,14 +199,10 @@ Plugin::cleanup(OpenHRP::RobotState* rs, OpenHRP::RobotState* mc)
 						      mc->attitude, mc->torque,
 						      mc->zmp, mc->basePos,
 						      mc->baseAtt);
-# ifdef SOT_CHECK_TIME
-  gettimeofday(&t1,NULL);
-  double dt = ( (t1.tv_sec-t0.tv_sec) * 1000.
-		+ (t1.tv_usec-t0.tv_usec+0.) / 1000. );
-  if( timeIndex<TIME_ARRAY_SIZE ) {
-    timeArray[ timeIndex ] = dt;
-    ++timeIndex;
-  }
-# endif // ifdef SOT_CHECK_TIME
+
+  // Log control loop end time and compute time spent.
+  captureTime (t1_);
+  logTime (t0_, t1_);
+
   return entity_->cleanup(&robotState, &motorCommand);
 }

@@ -142,7 +142,13 @@ class Experiment(object):
                 '------- Close to stop the SoT ----------',
                 '#label'
                 ]])
+        print("Stopping the experiment.")
         self.SoT.stop()
+        self.SoT.sendMsg(":dumpLog")
+
+        # Make sure seqplay goes toward current position
+        # to avoid discontinuities.
+        self.SeqPlay.goActual()
 
         # /!\ NEVER destroy the StackOfTasks
         # as long as the SoT doesn't ensure continous movement

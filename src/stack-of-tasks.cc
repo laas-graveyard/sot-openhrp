@@ -44,9 +44,6 @@ const std::string StackOfTasks::CLASS_NAME = "Device";
 
 StackOfTasks::StackOfTasks(const std::string& inName)
   : dynamicgraph::sot::Device(inName),
-# ifdef SOT_CHECK_TIME
-    timeIndex_(0),
-#endif // #ifdef SOT_CHECK_TIME
     timestep_(TIMESTEP_DEFAULT),
     previousState_()
 {

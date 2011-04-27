@@ -20,13 +20,13 @@
  */
 
 #ifndef DYNAMIC_GRAPH_SOT_OPENHRP_PLUGIN_HH
-#define DYNAMIC_GRAPH_SOT_OPENHRP_PLUGIN_HH
+# define DYNAMIC_GRAPH_SOT_OPENHRP_PLUGIN_HH
+# include <sys/time.h>
 
-#include <dynamic-graph/corba/interpreter.hh>
-#include "stack-of-tasks.hh"
+# include <dynamic-graph/corba/interpreter.hh>
+# include "stack-of-tasks.hh"
 
-#include "Plugin_impl.h"
-#define SOT_CHECK_TIME
+# include "Plugin_impl.h"
 
 namespace dynamicgraph {
   namespace sot {
@@ -38,26 +38,52 @@ namespace dynamicgraph {
       public:
 	Plugin();
 	virtual ~Plugin();
-	/** @name GenericPlugin
-	 * Generic plugin implementation: call StackOfStack methods
-	 */
-	// @{
+	/// \name Inherited control methods.
+	/// \{
+
+	/// \brief Called when plug-in is started.
 	virtual bool setup  (OpenHRP::RobotState* rs, OpenHRP::RobotState* mc);
+
+	/// \brief Called at each control loop.
 	virtual void control(OpenHRP::RobotState* rs, OpenHRP::RobotState* mc);
+
+	/// \brief Called when plug-in is stopped.
 	virtual bool cleanup(OpenHRP::RobotState* rs, OpenHRP::RobotState* mc);
-	// @}
+
+	/// \}
 	
       private:
+	void dumpLog (std::istringstream&);
+
+	/// \brief Capture the current time in the argument.
+	/// \param t store current time
+	void captureTime (timeval& t);
+
+	/// \brief Log time spent between t0 and t1 in the next
+	/// free case of timeArray.
+	///
+	/// \param t0 begin time
+	/// \param t1 end time
+	void logTime (const timeval& t0, const timeval& t1);
+
+	/// \brief Write logged times in a file.
+	void writeLog ();
+
+
+	/// \brief Size of the array logging time spent in control loop.
+	static const unsigned int TIME_ARRAY_SIZE = 100000;
+
 	/// Embedded python interpreter accessible via Corba
 	dynamicgraph::corba::Interpreter interpreter_;
 	/// Pointer to Entity StackOfTasks
 	StackOfTasks* entity_;
-# ifdef SOT_CHECK_TIME
-	static const unsigned int TIME_ARRAY_SIZE = 100000;
-	double timeArray[TIME_ARRAY_SIZE];
-	unsigned int timeIndex;
-#endif // #ifdef SOT_CHECK_TIME 
 
+	/// \brief Log time spend during control loops.
+	double timeArray_[TIME_ARRAY_SIZE];
+	/// \brief First unfilled item in timeArray.
+	unsigned int timeIndex_;
+	timeval t0_;
+	timeval t1_;
       };
     } // namespace openhrp
   } // namespace sot
