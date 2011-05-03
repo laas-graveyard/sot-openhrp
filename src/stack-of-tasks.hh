@@ -44,12 +44,22 @@ namespace dynamicgraph
       public:
 	typedef _CORBA_Unbounded_Sequence< DblSequence6 > Force;
 	typedef _CORBA_Unbounded_Sequence< DblSequence9 > Attitude;
-	RobotState(DblSequence& inAngle, Force& inForce, Attitude& inAttitude,
-		   DblSequence& inTorque, DblSequence3& inZmp,
-		   DblSequence3& inBasePos, DblSequence9& inBaseAtt) :
-	  angle(inAngle), force(inForce), attitude(inAttitude),torque(inTorque),
-	  zmp(inZmp), basePos(inBasePos), baseAtt(inBaseAtt)
+	RobotState (DblSequence& inAngle,
+		    Force& inForce,
+		    Attitude& inAttitude,
+		   DblSequence& inTorque,
+		    DblSequence3& inZmp,
+		    DblSequence3& inBasePos,
+		    DblSequence9& inBaseAtt)
+	  : angle (inAngle),
+	    force (inForce),
+	    attitude (inAttitude),
+	    torque (inTorque),
+	    zmp(inZmp),
+	    basePos(inBasePos),
+	    baseAtt(inBaseAtt)
 	{}
+
 	DblSequence& angle;
 	Force& force;
 	Attitude& attitude;
