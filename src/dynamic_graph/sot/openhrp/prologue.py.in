@@ -17,6 +17,7 @@
 print("@PROJECT_NAME@ v@PROJECT_VERSION@")
 print("Compiled for robot @ROBOT@.")
 
+from dynamic_graph import plug
 from dynamic_graph.sot.dynamics.hrp2 import Hrp2Laas, Hrp2Jrl
 from dynamic_graph.entity import PyEntityFactoryClass
 from dynamic_graph.sot.dynamics.solver import Solver
@@ -47,19 +48,18 @@ robot.device.zmp.value = (_com[0], _com[1], 0.)
 # Create a solver.
 solver = Solver(robot)
 
-# Make sure com and feet desired position matches the current
+# Make sure com and feet desired positions match the current
 # positions.
-robot.features['left-ankle'].reference.value = \
-    robot.dynamic.signal('left-ankle').value
-robot.features['left-ankle']._feature.signal('selec').value = '111111'
-
-robot.features['right-ankle'].reference.value = \
-    robot.dynamic.signal('right-ankle').value
-robot.features['right-ankle']._feature.signal('selec').value = '111111'
-robot.tasks['left-ankle'].controlGain.value = 1.
-robot.tasks['right-ankle'].controlGain.value = 1.
+s = ['left-ankle', 'right-ankle']
+for i in s:
+    robot.dynamic.signal(i).recompute(robot.dynamic.signal(i).time + 1)
+    robot.features[i].reference.value = \
+        robot.dynamic.signal(i).value
+    robot.features[i]._feature.selec.value = '111111'
+    robot.tasks[i].controlGain.value = 180.
 
 robot.featureComDes.errorIN.value = robot.dynamic.com.value
+robot.featureComDes.selec.value = '111'
 robot.comTask.controlGain.value = 1.
 
 
@@ -68,9 +68,9 @@ robot.comTask.controlGain.value = 1.
 # The robot is currently in half-sitting, so this script freezes com
 # and feet position so that the robot will remain stable while the
 # user program is starting.
-solver.push(robot.name + "_task_com")
-solver.push(robot.name + "_task_left-ankle")
-solver.push(robot.name + "_task_right-ankle")
+solver.push(robot.comTask.name)
+for i in s:
+    solver.push(robot.tasks[i].name)
 
 print("Prologue ran successfully.")
 

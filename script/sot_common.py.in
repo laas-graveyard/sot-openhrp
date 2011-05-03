@@ -30,7 +30,6 @@ class Experiment(object):
     Logger     = None
     KalmanF    = None
     Stabilizer = None
-    Provider   = None
     SoT        = None
 
 
@@ -67,96 +66,76 @@ class Experiment(object):
         # to the order the plug-ins will be executed in
         # the control loop.
 
+        print ("Create plug-ins.")
         self.Manager = hrp.findPluginManager("motionsys")
-        self.Logger  = hrp.LoggerPluginHelper.narrow(
-            self.initPlugin('logplugin', 'log'))
-        self.Provider = hrp.stateProviderHelper.narrow(
-            self.initPlugin('provider', 'provider'))
-        self.Robot = hrp.IoControlPluginHelper.narrow(
-            self.initPlugin('humanoid', self.Name))
+        self.KalmanF = self.initPlugin('kfplugin', 'kf')
         self.SeqPlay = hrp.SequencePlayerHelper.narrow(
             self.initPlugin('seqplay', 'seq'))
-
         self.SoT = self.initPlugin("StackOfTasks", "sot")
-
-        self.KalmanF = self.initPlugin('kfplugin', 'kf')
         if self.enableStabilizer:
             self.Stabilizer = self.initPlugin('hstabilizer', 'st')
+        self.Logger  = hrp.LoggerPluginHelper.narrow(
+            self.initPlugin('logplugin', 'log'))
 
-        self.Robot.sendMsg(":gain normal")
-        
-        self.Robot.start()
+        # Start plug-ins.
+        print ("Start plug-ins.")
+        print ("\t * kalman filter")
+        self.KalmanF.start()
+        print ("\t * sequence player")
         self.SeqPlay.start()
-        self.Provider.start()
 
-        self.DOF = len(self.getActualState().angle)
+        # Setup logger.
+        self.Logger.add("kf")
+        if self.enableStabilizer:
+            self.Logger.add("st")
+        self.Logger.sendMsg(":max-length 80")
+        print ("\t * logger")
+        self.Logger.start()
 
         # Setup the stabilizer.
         if self.Stabilizer:
             hstsetup.stsetup(self.Stabilizer)
-
-        # Log additional data from kf.
-        self.Logger.add("kf")
-
-    def getActualState(self):
-        stateH = hrp.RobotStateHolder()
-        self.Provider.getActualState(stateH)
-        return stateH.value
-
-    def putRobotDown(self, msg=""):
-        f = self.getActualState().force
-        while f[0][2] < 50.0 and f[1][2] < 50.0:
-            waitInputConfirm(msg + "Put the robot down.")
-            f = self.getActualState().force
-
-    def putRobotUp(self, msg=""):
-        f = self.getActualState().force
-        while 30.0 < f[0][2] or 30.0 < f[1][2]:
-            waitInputConfirm(msg + "Make sure the Robot in the Air.")
-            f = self.getActualState().force
-
+            print ("\t * stabilizer")
+            self.Stabilizer.start()
 
     def run(self):
         """
         Start the experiment.
         """
-        # Start setplay.
-        self.SeqPlay.start()
 
-        # Start kalman filter and stabilizer.
-        self.KalmanF.start()
-        if self.Stabilizer:
-            self.Stabilizer.start()
-
-        # Start logger.
-        self.Logger.start()
+        print ("Go to half-sitting.")
 
         # Go to half-sitting in three seconds.
         self.SeqPlay.goHalfSitting(3.)
         # Wait for seqplay movement to finish.
         self.SeqPlay.waitInterpolation()
 
-        self.SoT.start()
+        # Start the dynamic-graph.
         print("Experiment is starting.")
+        self.SoT.sendMsg(":initialize")
+        self.SoT.start()
+
+        # Wait until the menu is closed.
 	waitInputMenu([[
                 '------- Close to stop the SoT ----------',
                 '#label'
                 ]])
+
+        # Cleanup and destroy.
         print("Stopping the experiment.")
-        self.SoT.stop()
-        self.SoT.sendMsg(":dumpLog")
+        #self.SoT.stop()
+        self.SoT.sendMsg(":finalize")
 
         # Make sure seqplay goes toward current position
         # to avoid discontinuities.
         self.SeqPlay.goActual()
+        self.SeqPlay.waitInterpolation()
 
         # /!\ NEVER destroy the StackOfTasks
         # as long as the SoT doesn't ensure continous movement
         # from its last command to half-sitting.
 
         self.Logger.stop()
-        if self.Stabilizer:
-            self.Stabilizer.stop()
 
         logFilename = "/tmp/hrp_sot_"+time.strftime('%Y%m%d%H%M')
         self.Logger.save(logFilename)
