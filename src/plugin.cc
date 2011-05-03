@@ -157,11 +157,13 @@ namespace dynamicgraph
 				 mc->zmp, mc->basePos,
 				 mc->baseAtt);
 
+	bool res = entity_->setup (&robotState, &motorCommand);
+
 	// Log control loop end time and compute time spent.
 	captureTime (t1_);
 	logTime (t0_, t1_);
 
-	return entity_->setup (&robotState, &motorCommand);
+	return res;
       }
 
       void
@@ -180,11 +182,11 @@ namespace dynamicgraph
 				 mc->zmp, mc->basePos,
 				 mc->baseAtt);
 
+	entity_->control (&robotState, &motorCommand);
+
 	// Log control loop end time and compute time spent.
 	captureTime (t1_);
 	logTime (t0_, t1_);
-
-	return entity_->control (&robotState, &motorCommand);
       }
 
       bool
@@ -203,11 +205,13 @@ namespace dynamicgraph
 				mc->zmp, mc->basePos,
 				mc->baseAtt);
 
+	bool res = entity_->cleanup (&robotState, &motorCommand);
+
 	// Log control loop end time and compute time spent.
 	captureTime (t1_);
 	logTime (t0_, t1_);
 
-	return entity_->cleanup (&robotState, &motorCommand);
+	return res;
       }
 
     } // namespace openhrp
