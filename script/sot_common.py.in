@@ -18,6 +18,25 @@ import hrp
 import time
 import hstsetup
 
+# CAUTION: the half-sitting contained in dynamic-graph
+# does *not* match the one in OpenHRP, this dictionnary
+# contains the real starting positions!
+initialPositions = {
+    'HRP2LAAS':
+        "0 0 -26 50 -24 0 "
+    + "0 0 -26 50 -24 0 "
+    + "0 0 "
+    + "0 0 "
+    + "15 -10 0 -30 0 0 5.7 "
+    + "15  10 0 -30 0 0 5.7 "
+    + "999.0 999.0 999.0 999.0 999.0 "
+    + "999.0 999.0 999.0 999.0 999.0 ",
+
+    'HRP2JRL': [
+        # FIXME:
+        ]
+        }
+
 class Experiment(object):
     Name = '@ROBOT@'
     isInteractive = False
@@ -105,8 +124,11 @@ class Experiment(object):
 
         print ("Go to half-sitting.")
 
-        # Go to half-sitting in three seconds.
-        self.SeqPlay.goHalfSitting(3.)
+        # Go to half-sitting in 2.5 seconds.
+        angles = ""
+        self.SeqPlay.sendMsg(
+            ":joint-angles " + initialPositions[self.Name] + " 2.5")
+
         # Wait for seqplay movement to finish.
         self.SeqPlay.waitInterpolation()
 

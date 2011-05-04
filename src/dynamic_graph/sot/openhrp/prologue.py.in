@@ -60,7 +60,7 @@ for i in s:
 
 robot.featureComDes.errorIN.value = robot.dynamic.com.value
 robot.featureComDes.selec.value = '111'
-robot.comTask.controlGain.value = 1.
+robot.comTask.controlGain.value = 180.
 
 
 # Push com and feet tasks.
