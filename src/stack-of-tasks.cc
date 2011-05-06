@@ -14,9 +14,6 @@
 // received a copy of the GNU Lesser General Public License along with
 // sot-openhrp. If not, see <http://www.gnu.org/licenses/>.
 
-#define VP_DEBUG
-#define VP_DEBUG_MODE 10
-
 #include <dynamic-graph/factory.h>
 #include <dynamic-graph/command-setter.h>
 #include <dynamic-graph/debug.h>
