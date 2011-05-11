@@ -159,6 +159,6 @@ class Experiment(object):
 
         self.Logger.stop()
 
-        logFilename = "/tmp/hrp_sot_"+time.strftime('%Y%m%d%H%M')
+        logFilename = "/tmp/hrp_sot"
         self.Logger.save(logFilename)
         print("Experiment is finished (logging file is: " + logFilename + ").")
