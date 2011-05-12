@@ -5,5 +5,5 @@ Abstract: Doxygen documentation of sot-openhrp.
 Section: Programming
 
 Format: HTML
-Index: /usr/share/doc/sot-openhrp/html/index.html
-Files: /usr/share/doc/sot-openhrp/html/*.html
+Index: /opt/openrobots/share/doc/sot-openhrp/html/index.html
+Files: /opt/openrobots/share/doc/sot-openhrp/html/*.html

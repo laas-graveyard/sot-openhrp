@@ -6,11 +6,13 @@ Build-Depends: debhelper (>= 7.0.50~), cmake (>= 2.6),
 	       pkg-config (>= 0.22),
 	       libboost-dev (>= 1.33.1),
 	       libboost-thread-dev (>= 1.33.1),
-	       libjrl-mal-dev (>= 1.9.0.99),
-	       libdynamic-graph-dev (>= 1.0.0.99),
-	       libsot-core-dev (>= 1.0.0.99),
-	       libjrl-walkgen-dev (>= 1.0.0.99),
-	       libhrp2-10-optimized1.0.0.99 (>= 1.0.0.99),
+	       libjrl-mal-dev (>= 1.9.1),
+	       libdynamic-graph-dev (>= 1.1.1),
+	       libsot-core-dev (>= 1.1.1),
+       	       libsot-dynamic-dev (>= 1.1.1),	
+	       libsot-pattern-generator (>= 1.1.1),
+	       libjrl-walkgen-dev (>= 1.1.1),
+	       libhrp2-10-optimized1.1.1 (>= 1.1.1),
 	       openhrp3.0.5 (>= 3.0.5),
 	       jrl-hrpsys3.0.1 (>= 3.0.1),
 	       libomniorb4-dev (>= 4.1.2)
@@ -23,7 +25,7 @@ Section: libs
 Package: libsot-openhrp-dev
 Section: libdevel
 Architecture: i386
-Depends: libboost-dev (>= 1.33.1), libboost-thread-dev (>= 1.33.1), libjrl-mal-dev (>= 1.9.0.99), libdynamic-graph-dev (>= 1.0.0.99), libsot-core-dev (>= 1.0.0.99), libjrl-walkgen-dev (>= 1.0.0.99), jrl-hrpsys3.0.1 (>= 3.0.1), openhrp3.0.5 (>= 3.0.5), libsot-openhrp1.0.0.99 (= ${binary:Version}), ${misc:Depends}
+Depends: libboost-dev (>= 1.33.1), libboost-thread-dev (>= 1.33.1), libjrl-mal-dev (>= 1.9.1), libdynamic-graph-dev (>= 1.1.1), libsot-core-dev (>= 1.1.1), libjrl-walkgen-dev (>= 1.1.1), jrl-hrpsys3.0.1 (>= 3.0.1), openhrp3.0.5 (>= 3.0.5), libsot-openhrp1.1.1 (= ${binary:Version}), ${misc:Depends}
 Suggests: libsot-openhrp-doc
 Description: the hierarchichal task solver
  The stack of tasks provides a hierarchical task solver as a dynamic
@@ -32,7 +34,7 @@ Description: the hierarchichal task solver
  This package contains development files (headers and pkg-config file).
 
 
-Package: libsot-openhrp1.0.0.99
+Package: libsot-openhrp1.1.1
 Architecture: any
 Depends: ${shlibs:Depends}, ${misc:Depends}
 Description: the hierarchichal task solver plug-in
@@ -53,3 +55,14 @@ Description: documentation for the hierarchichal task solver
  graph plug-in. It allows the realization of complex robotics tasks.
  .
  This package contains the Doxygen documentation.
+
+Package: libsot-openhrp-dbg
+Architecture: any
+Section: debug
+Priority: extra
+Depends:  libsot-core (= 1.1.1)
+Description: debugging symbols for libsot-openhrp
+ The stack of tasks provides a hierarchical task solver as a dynamic
+ graph plug-in. It allows the realization of complex robotics tasks.
+  .
+ This package contains the debugging symbols for libsot-openhrp.

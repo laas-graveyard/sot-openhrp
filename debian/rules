@@ -8,9 +8,25 @@
 
 # Uncomment this to turn on verbose mode.
 # export DH_VERBOSE=1
+export PKG_CONFIG_PATH=/opt/openrobots/lib/pkgconfig:$PKG_CONFIG_PATH
+CFLAGS = -O3 -DNDEBUG
+CXXFLAGS = -O3 -DNDEBUG
+
+.PHONY: override_dh_strip
+override_dh_strip:
+        dh_strip --dbg-package=libsot-core-dbg
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DOPENHRP3_HOME=/opt/OpenHRP-3.0.5
+	dh_auto_configure -- -DCMAKE_BUILD_TYPE=RELEASE -DGENERATE_DOC=ON -DCMAKE_INSTALL_PREFIX=/opt/openrobots -DOPENHRP3_HOME=/opt/OpenHRP-3.0.5
+
+# FIXME: this is only necessary because some binaries are linked against
+# plug-ins.
+# Teach dh_shlibdeps where the plug-in are located.
+override_dh_shlibdeps:
+	export LD_LIBRARY_PATH=\
+/opt/openrobots/lib:\
+/opt/openrobots/lib/plugin:$(LD_LIBRARY_PATH) \
+&& dh_shlibdeps --
 
 %:
 	dh  $@
