@@ -10,11 +10,9 @@ Build-Depends: debhelper (>= 7.0.50~), cmake (>= 2.6),
 	       libdynamic-graph-dev (>= 1.1.1),
 	       libsot-core-dev (>= 1.1.1),
        	       libsot-dynamic-dev (>= 1.1.1),	
-	       libsot-pattern-generator (>= 1.1.1),
+	       libsot-pattern-generator-dev (>= 1.1.1),
 	       libjrl-walkgen-dev (>= 1.1.1),
-	       libhrp2-10-optimized1.1.1 (>= 1.1.1),
-	       openhrp3.0.5 (>= 3.0.5),
-	       jrl-hrpsys3.0.1 (>= 3.0.1),
+	       libhrp2-10-optimized-dev (>= 1.1.1),
 	       libomniorb4-dev (>= 4.1.2)
 Standards-Version: 3.8.4
 #Vcs-Git:
@@ -25,7 +23,7 @@ Section: libs
 Package: libsot-openhrp-dev
 Section: libdevel
 Architecture: i386
-Depends: libboost-dev (>= 1.33.1), libboost-thread-dev (>= 1.33.1), libjrl-mal-dev (>= 1.9.1), libdynamic-graph-dev (>= 1.1.1), libsot-core-dev (>= 1.1.1), libjrl-walkgen-dev (>= 1.1.1), jrl-hrpsys3.0.1 (>= 3.0.1), openhrp3.0.5 (>= 3.0.5), libsot-openhrp1.1.1 (= ${binary:Version}), ${misc:Depends}
+Depends: libboost-dev (>= 1.33.1), libboost-thread-dev (>= 1.33.1), libjrl-mal-dev (>= 1.9.1), libdynamic-graph-dev (>= 1.1.1), libsot-core-dev (>= 1.1.1), libjrl-walkgen-dev (>= 1.1.1), libsot-openhrp-dev (= ${binary:Version}), ${misc:Depends}
 Suggests: libsot-openhrp-doc
 Description: the hierarchichal task solver
  The stack of tasks provides a hierarchical task solver as a dynamic
