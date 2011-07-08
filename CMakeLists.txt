@@ -70,13 +70,13 @@ LIST(APPEND LOGGING_WATCHED_VARIABLES GRX_PREFIX ROBOT ROBOT_PATH)
 # Search for dependencies.
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.1")
 
-ADD_REQUIRED_DEPENDENCY("dynamic-graph")
-ADD_REQUIRED_DEPENDENCY("dynamic-graph-corba")
-ADD_REQUIRED_DEPENDENCY("dynamic-graph-python")
-ADD_REQUIRED_DEPENDENCY("sot-core")
+ADD_REQUIRED_DEPENDENCY("dynamic-graph >= 2.5")
+ADD_REQUIRED_DEPENDENCY("dynamic-graph-corba >= 2.5")
+ADD_REQUIRED_DEPENDENCY("dynamic-graph-python >= 2.5")
+ADD_REQUIRED_DEPENDENCY("sot-core >= 2.5")
 
 # This is required by the Python prologue.
-ADD_REQUIRED_DEPENDENCY("sot-dynamic")
+ADD_REQUIRED_DEPENDENCY("sot-dynamic >= 2.5")
 
 ADD_SUBDIRECTORY(src)
 
