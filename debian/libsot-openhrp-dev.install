@@ -1,1 +1,5 @@
+opt/openrobots/bin
+opt/openrobots/lib
 opt/openrobots/lib/pkgconfig/*
+opt/grx3.0/HRP2JRL/bin/*
+opt/grx3.0/HRP2LAAS/bin/*
