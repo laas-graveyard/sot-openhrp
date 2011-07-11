@@ -56,6 +56,7 @@ ADD_REQUIRED_DEPENDENCY("sot-core >= 1.0")
 
 # Search for closed-source packages.
 ADD_REQUIRED_DEPENDENCY("hrp2-10 >= 1.0.0")
+ADD_REQUIRED_DEPENDENCY("hrp2-14 >= 1.0.0")
 
 # Search for OpenHRP.
 INCLUDE(${CMAKE_MODULE_PATH}/UseOmniORB4.cmake)
