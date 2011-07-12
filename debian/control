@@ -37,7 +37,7 @@ Description: the hierarchichal task solver
 
 Package: libsot-openhrp1.1.1
 Architecture: any
-Depends: libboost-dev (>= 1.33.1), libboost-thread-dev (>= 1.33.1), libdynamic-graph-dev (>= 1.1.1), libdg-middleware1.2.1 (>= 1.2.1), libsot-core1.1.1 (>= 1.1.1), libsot-dynamic1.1.1 (>= 1.1.1), libsot-pattern-generator1.1.1 (>= 1.1.1), libjrl-walkgen3.1.4 (>= 1.1.1), libhrp2-10-optimized (>= 1.0.1), hrpsys-hrp2jrl (>= 20110201), hrpsys-hrp2laas (>= 20110201), libsot-openhrp ${shlibs:Depends}, ${misc:Depends}
+Depends: libboost-dev (>= 1.33.1), libboost-thread-dev (>= 1.33.1), libdynamic-graph-dev (>= 1.1.1), libdg-middleware1.2.1 (>= 1.2.1), libsot-core1.1.1 (>= 1.1.1), libsot-dynamic1.1.1 (>= 1.1.1), libsot-pattern-generator1.1.1 (>= 1.1.1), libjrl-walkgen3.1.4 (>= 1.1.1), libhrp2-10-optimized (>= 1.0.1), hrpsys-hrp2jrl (>= 20110201), hrpsys-hrp2laas (>= 20110201), ${shlibs:Depends}, ${misc:Depends}
 Description: the hierarchichal task solver plug-in
  The stack of tasks provides a hierarchical task solver as a dynamic
  graph plug-in. It allows the realization of complex robotics tasks.
