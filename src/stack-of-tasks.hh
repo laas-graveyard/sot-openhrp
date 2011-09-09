@@ -136,6 +136,9 @@ namespace dynamicgraph
 
 	/// \}
 
+      protected:
+	void updateRobotState (RobotState* rs);
+
       private:
 	/// \brief Default integration step (i.e. 5ms for HRP-2).
 	static const double TIMESTEP_DEFAULT;
@@ -143,6 +146,14 @@ namespace dynamicgraph
 	double timestep_;
 	/// \brief Previous robot configuration.
 	Vector previousState_;
+
+	/// \brief Robot state provided by OpenHRP.
+	///
+	/// This corresponds to the real encoders values and take into
+	/// account the stabilization step. Therefore, this usually
+	/// does *not* match the state control input signal.
+	///
+	dynamicgraph::Signal<ml::Vector, int> robotState_;
       };
 
     } // end of namespace openhrp.

@@ -36,8 +36,10 @@ const std::string StackOfTasks::CLASS_NAME = "Device";
 StackOfTasks::StackOfTasks (const std::string& entityName)
   : dynamicgraph::sot::Device (entityName),
     timestep_ (TIMESTEP_DEFAULT),
-    previousState_ ()
+    previousState_ (),
+    robotState_ ("StackOfTasks(" + entityName + ")::output(vector)::robotState")
 {
+  signalRegistration (robotState_);
   for (unsigned i = 0; i < 4; ++i)
     withForceSignals[i] = true;
 }
@@ -73,6 +75,7 @@ StackOfTasks::setup (RobotState* rs, RobotState* mc)
       forcesSOUT[i]->setConstant (mlforces);
     }
 
+  updateRobotState (rs);
   return true;
 }
 
@@ -127,6 +130,19 @@ StackOfTasks::control (RobotState* rs, RobotState* mc)
   for(unsigned i = 0;i < 3; ++i)
     for(unsigned j = 0; j < 3; ++j)
       mc->baseAtt[i * 3 + j] = freeFlyerPose () (i, j);
+
+  updateRobotState (rs);
+}
+
+void
+StackOfTasks::updateRobotState (RobotState* rs)
+{
+  ml::Vector robotState (rs->angle.length () + 6);
+  for (unsigned i = 0; i < 6; ++i)
+    robotState (i) = 0.;
+  for (unsigned i = 0; i < rs->angle.length (); ++i)
+    robotState (i + 6) = rs->angle[i];
+  robotState_.setConstant(robotState);
 }
 
 bool
