@@ -156,8 +156,11 @@ namespace dynamicgraph
 				 mc->attitude, mc->torque,
 				 mc->zmp, mc->basePos,
 				 mc->baseAtt);
-
-	bool res = entity_->setup (&robotState, &motorCommand);
+	bool res=false;
+	try
+	  {
+	    res = entity_->setup (&robotState, &motorCommand);
+	  } catch SOT_RETHROW;
 
 	// Log control loop end time and compute time spent.
 	captureTime (t1_);
@@ -181,8 +184,10 @@ namespace dynamicgraph
 				 mc->attitude, mc->torque,
 				 mc->zmp, mc->basePos,
 				 mc->baseAtt);
-
-	entity_->control (&robotState, &motorCommand);
+	try 
+	  {
+	    entity_->control (&robotState, &motorCommand);
+	  } catch SOT_RETHROW;
 
 	// Log control loop end time and compute time spent.
 	captureTime (t1_);
@@ -204,8 +209,11 @@ namespace dynamicgraph
 				mc->attitude, mc->torque,
 				mc->zmp, mc->basePos,
 				mc->baseAtt);
-
-	bool res = entity_->cleanup (&robotState, &motorCommand);
+	bool res = false;
+	try
+	  {
+	    res = entity_->cleanup (&robotState, &motorCommand);
+	  } catch SOT_RETHROW;
 
 	// Log control loop end time and compute time spent.
 	captureTime (t1_);
