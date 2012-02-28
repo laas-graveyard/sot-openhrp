@@ -18,7 +18,7 @@
 # define DYNAMIC_GRAPH_SOT_OPENHRP_PLUGIN_HH
 # include <sys/time.h>
 
-# include <dynamic-graph/corba/interpreter.hh>
+# include <dynamic_graph_bridge/ros_interpreter.hh>
 # include "stack-of-tasks.hh"
 
 # include "Plugin_impl.h"
@@ -120,8 +120,8 @@ namespace dynamicgraph
 	/// \brief Size of the array logging time spent in control loop.
 	static const unsigned int TIME_ARRAY_SIZE = 100000;
 
-	/// Embedded python interpreter accessible via Corba
-	dynamicgraph::corba::Interpreter interpreter_;
+	/// Embedded python interpreter accessible via ROS.
+	dynamicgraph::Interpreter interpreter_;
 	/// Pointer to Entity StackOfTasks
 	StackOfTasks* entity_;
 

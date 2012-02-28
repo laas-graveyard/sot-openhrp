@@ -19,6 +19,7 @@ INCLUDE(cmake/base.cmake)
 INCLUDE(cmake/boost.cmake)
 INCLUDE(cmake/lapack.cmake)
 INCLUDE(cmake/cpack.cmake)
+INCLUDE(cmake/ros.cmake)
 
 SET(PROJECT_NAME sot-openhrp)
 SET(PROJECT_DESCRIPTION "OpenHRP plugin implementing the Stack of Tasks.")
@@ -70,13 +71,14 @@ LIST(APPEND LOGGING_WATCHED_VARIABLES GRX_PREFIX ROBOT ROBOT_PATH)
 # Search for dependencies.
 ADD_REQUIRED_DEPENDENCY("omniORB4 >= 4.1.1")
 
-ADD_REQUIRED_DEPENDENCY("dynamic-graph >= 2.5")
-ADD_REQUIRED_DEPENDENCY("dynamic-graph-corba >= 2.5")
-ADD_REQUIRED_DEPENDENCY("dynamic-graph-python >= 2.5")
-ADD_REQUIRED_DEPENDENCY("sot-core >= 2.5")
+ADD_REQUIRED_DEPENDENCY("dynamic-graph")
+ADD_REQUIRED_DEPENDENCY("dynamic-graph-python")
+ADD_REQUIRED_DEPENDENCY("sot-core")
 
 # This is required by the Python prologue.
-ADD_REQUIRED_DEPENDENCY("sot-dynamic >= 2.5")
+ADD_REQUIRED_DEPENDENCY("sot-dynamic")
+
+ADD_ROSPACK_DEPENDENCY(dynamic_graph_bridge)
 
 ADD_SUBDIRECTORY(src)
 
