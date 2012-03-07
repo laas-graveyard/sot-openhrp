@@ -53,6 +53,8 @@ StackOfTasks::setup (RobotState* rs, RobotState* mc)
   dynamicgraph::sot::DebugTrace::openFile();
 #endif
 
+  updateRobotState (rs);
+
   // Read state from motor command
   int t = stateSOUT.getTime () + 1;
   maal::boost::Vector state = stateSOUT.access (t);
@@ -61,12 +63,9 @@ StackOfTasks::setup (RobotState* rs, RobotState* mc)
   sotDEBUG (25) << "state.size () = " << state.size () << std::endl;
   sotDEBUG (25) << "mc->angle.length () = " << mc->angle.length () << std::endl;
 
-  for (unsigned int i = 6; i < state.size (); ++i)
-    state (i) = mc->angle[i - 6];
-
   previousState_ = state;
   sotDEBUG (25) << "state = " << state << std::endl;
-  stateSOUT.setConstant (state);
+  stateSOUT.setConstant (state_);
 
   for (int i = 0; i < 4; ++i)
     {
@@ -75,13 +74,13 @@ StackOfTasks::setup (RobotState* rs, RobotState* mc)
       forcesSOUT[i]->setConstant (mlforces);
     }
 
-  updateRobotState (rs);
   return true;
 }
 
 void
 StackOfTasks::control (RobotState* rs, RobotState* mc)
 {
+  updateRobotState (rs);
   // Integrate control
   increment (timestep_);
   sotDEBUG (25) << "state = " << state_ << std::endl;
@@ -129,8 +128,6 @@ StackOfTasks::control (RobotState* rs, RobotState* mc)
   for(unsigned i = 0;i < 3; ++i)
     for(unsigned j = 0; j < 3; ++j)
       mc->baseAtt[i * 3 + j] = freeFlyerPose () (i, j);
-
-  updateRobotState (rs);
 }
 
 void
@@ -142,6 +139,10 @@ StackOfTasks::updateRobotState (RobotState* rs)
   for (unsigned i = 0; i < rs->angle.length (); ++i)
     mlRobotState (i + 6) = rs->angle[i];
   robotState_.setConstant(mlRobotState);
+  // Update state_
+  for (std::vector<double>::size_type i=6; i<state_.size (); i++) {
+    state_ (i) = rs->angle [i-6];
+  }
 }
 
 bool

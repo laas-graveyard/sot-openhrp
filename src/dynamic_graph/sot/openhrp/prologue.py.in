@@ -71,6 +71,7 @@ robot.comTask.controlGain.value = 180.
 solver.push(robot.comTask)
 for i in s:
     solver.push(robot.tasks[i])
+solver.push(robot.postureTask)
 
 print("Prologue ran successfully.")
 
