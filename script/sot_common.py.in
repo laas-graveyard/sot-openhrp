@@ -56,6 +56,8 @@ class Experiment(object):
     KalmanF    = None
     Stabilizer = None
     SoT        = None
+    openhrp_bridge = None
+
 
 
     def __init__(self, enableStabilizer=True, isInteractive=False):
@@ -99,6 +101,7 @@ class Experiment(object):
         self.SoT = self.initPlugin("StackOfTasks", "sot")
         if self.enableStabilizer:
             self.Stabilizer = self.initPlugin('hstabilizer', 'st')
+        self.openhrp_bridge = self.initPlugin("openhrp_bridge", "openhrp_bridge")
         self.Logger  = hrp.LoggerPluginHelper.narrow(
             self.initPlugin('logplugin', 'log'))
 
@@ -122,6 +125,8 @@ class Experiment(object):
             hstsetup.stsetup(self.Stabilizer)
             print ("\t * stabilizer")
             self.Stabilizer.start()
+
+        self.openhrp_bridge.start()
 
     def run(self):
         """
