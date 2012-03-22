@@ -61,16 +61,14 @@ for i in s:
 robot.featureComDes.errorIN.value = robot.dynamic.com.value
 robot.featureComDes.selec.value = '111'
 robot.comTask.controlGain.value = 180.
-
+robot.balanceTask.controlGain.value = 180.
 
 # Push com and feet tasks.
 #
 # The robot is currently in half-sitting, so this script freezes com
 # and feet position so that the robot will remain stable while the
 # user program is starting.
-solver.push(robot.comTask)
-for i in s:
-    solver.push(robot.tasks[i])
+solver.push(robot.balanceTask)
 solver.push(robot.postureTask)
 
 print("Prologue ran successfully.")
