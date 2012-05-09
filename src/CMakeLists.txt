@@ -25,6 +25,7 @@ INCLUDE_DIRECTORIES(
   ${GRX_PREFIX}/include
   ${ROBOT_PATH}
   )
+LINK_DIRECTORIES(${ROBOT_PATH}/lib)
 
 # Create and install python module
 GENERATE_IDL_FILE(OpenHRPCommon ${GRX_PREFIX}/OpenHRP/Common/corba)
@@ -98,12 +99,13 @@ INSTALL(FILES
 # Compile the OpenHRP plug-in.
 ADD_LIBRARY(StackOfTasks SHARED plugin.cc)
 
-# Remove 'lib' prefix in library filename.
-SET_TARGET_PROPERTIES(StackOfTasks PROPERTIES PREFIX ""
-  INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+# Remove 'lib' prefix in library filename, install rpath.
+SET_TARGET_PROPERTIES(StackOfTasks PROPERTIES
+  PREFIX "" BUILD_WITH_INSTALL_RPATH True)
 
 # Declare plug-in dependencies.
 TARGET_LINK_LIBRARIES(StackOfTasks openhrp)
+TARGET_LINK_LIBRARIES(StackOfTasks plugin)
 
 PKG_CONFIG_USE_DEPENDENCY(openhrp "dynamic-graph-python")
 PKG_CONFIG_USE_DEPENDENCY(openhrp "dynamic-graph-corba")
