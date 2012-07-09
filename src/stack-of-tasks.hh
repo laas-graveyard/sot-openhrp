@@ -108,6 +108,14 @@ namespace dynamicgraph
 	  return CLASS_NAME;
 	}
 
+	enum ForceSignalSource
+	  {
+	    FORCE_SIGNAL_RLEG,
+	    FORCE_SIGNAL_LLEG,
+	    FORCE_SIGNAL_RARM,
+	    FORCE_SIGNAL_LARM
+	  };
+
 	/// \}
 
 	/// \brief Default constructor
@@ -154,6 +162,13 @@ namespace dynamicgraph
 	/// does *not* match the state control input signal.
 	///
 	dynamicgraph::Signal<ml::Vector, int> robotState_;
+
+	/// Forces measured by force sensors
+	dynamicgraph::Signal<ml::Vector,int>* forcesSOUT_ [4];
+
+	/// Temporary container
+	ml::Vector mlforces_;
+
       };
 
     } // end of namespace openhrp.
