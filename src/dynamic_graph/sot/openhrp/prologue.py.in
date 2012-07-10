@@ -43,7 +43,7 @@ robot = GrxToSot['@ROBOT@'](name = 'robot', device = Device('robot_device'))
 
 # Initialize the zmp signal to the current com.
 _com = robot.dynamic.com.value
-robot.device.zmp.value = (_com[0], _com[1], 0.)
+robot.zmpRef.value = (_com[0], _com[1], 0.)
 
 # Create a solver.
 solver = Solver(robot)
