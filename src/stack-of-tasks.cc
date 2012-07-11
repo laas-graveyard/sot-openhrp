@@ -93,15 +93,6 @@ StackOfTasks::control (RobotState* rs, RobotState* mc)
 
   // Read zmp reference from input signal if plugged
   int time = controlSIN.getTime ();
-  zmpSIN.recompute (time + 1);
-  // Express ZMP in free flyer reference frame
-  Vector zmpGlobal (4);
-  for (unsigned int i = 0; i < 3; ++i)
-    zmpGlobal(i) = zmpSIN(time + 1)(i);
-  zmpGlobal(3) = 1.;
-  MatrixHomogeneous inversePose;
-  freeFlyerPose().inverse(inversePose);
-  Vector localZmp = inversePose * zmpGlobal;
 
   for (int i = 0; i < 4; ++i)
   {
@@ -110,17 +101,6 @@ StackOfTasks::control (RobotState* rs, RobotState* mc)
     forcesSOUT[i]->setConstant (mlforces);
     forcesSOUT[i]->setTime (time + 1);
   }
-
-  for (unsigned int i = 0; i < mc->zmp.length (); ++i)
-    mc->zmp[i] = localZmp(i);
-
-  sotDEBUG (25) << "local zmp = " << localZmp << std::endl;
-  sotDEBUG (10) << "mc->zmp = (" <<
-    mc->zmp[0] << "," <<
-    mc->zmp[1] << "," <<
-    mc->zmp[2] << ")" << std::endl;
-
-  sotDEBUG (10) << "global zmp = (" << zmpGlobal << std::endl;
 
   // Update position of freeflyer in global frame
   for (int i = 0;i < 3; ++i)
