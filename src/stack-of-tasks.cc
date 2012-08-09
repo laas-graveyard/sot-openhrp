@@ -37,20 +37,11 @@ StackOfTasks::StackOfTasks (const std::string& entityName)
   : dynamicgraph::sot::Device (entityName),
     timestep_ (TIMESTEP_DEFAULT),
     previousState_ (),
-    robotState_ ("StackOfTasks("+entityName+")::output(vector)::robotState"),
-    mlforces_ (6)
+    robotState_ ("StackOfTasks(" + entityName + ")::output(vector)::robotState")
 {
-  forcesSOUT_ [0] =
-    new Signal<ml::Vector, int>("OpenHRP::output(vector6)::forceRLEG");
-  forcesSOUT_ [1] =
-    new Signal<ml::Vector, int>("OpenHRP::output(vector6)::forceLLEG");
-  forcesSOUT_ [2] =
-    new Signal<ml::Vector, int>("OpenHRP::output(vector6)::forceRARM");
-  forcesSOUT_ [3] =
-    new Signal<ml::Vector, int>("OpenHRP::output(vector6)::forceLARM");
-
   signalRegistration (robotState_);
-  for (unsigned int i=0; i<4; ++i) signalRegistration (*(forcesSOUT_ [i]));
+  for (unsigned i = 0; i < 4; ++i)
+    withForceSignals[i] = true;
 }
 
 bool
@@ -76,11 +67,12 @@ StackOfTasks::setup (RobotState* rs, RobotState* mc)
   sotDEBUG (25) << "state = " << state << std::endl;
   stateSOUT.setConstant (state);
 
+  ml::Vector mlforces (6);
   for (int i = 0; i < 4; ++i)
     {
       for (int j = 0; j < 6; ++j)
-	mlforces_ (j) = rs->force [i][j];
-      forcesSOUT_ [i]->setConstant (mlforces_);
+	mlforces(j) = rs->force[i][j];
+      forcesSOUT[i]->setConstant (mlforces);
     }
 
   updateRobotState (rs);
@@ -112,12 +104,13 @@ StackOfTasks::control (RobotState* rs, RobotState* mc)
   freeFlyerPose().inverse(inversePose);
   Vector localZmp = inversePose * zmpGlobal;
 
+  ml::Vector mlforces (6);
   for (int i = 0; i < 4; ++i)
   {
     for( int j=0;j<6;++j )
-      mlforces_ (j) = rs->force [i][j];
-    forcesSOUT_ [i]->setConstant (mlforces_);
-    forcesSOUT_ [i]->setTime (time + 1);
+      mlforces(j) = rs->force[i][j];
+    forcesSOUT[i]->setConstant (mlforces);
+    forcesSOUT[i]->setTime (time + 1);
   }
 
   for (unsigned int i = 0; i < mc->zmp.length (); ++i)
@@ -160,7 +153,4 @@ StackOfTasks::cleanup (RobotState*, RobotState*)
 
 StackOfTasks::~StackOfTasks()
 {
-  for( unsigned int i=0; i<4; ++i ) {
-    delete forcesSOUT_ [i];
-  }
 }
