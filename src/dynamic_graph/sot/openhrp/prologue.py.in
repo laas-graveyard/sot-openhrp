@@ -59,15 +59,16 @@ for i in s:
     robot.tasks[i].controlGain.value = 180.
 
 robot.comRef.value = robot.dynamic.com.value
-robot.tasks ['balance'].controlGain.value = 180.
 
 # Push com and feet tasks.
 #
 # The robot is currently in half-sitting, so this script freezes com
 # and feet position so that the robot will remain stable while the
 # user program is starting.
-solver.push(robot.tasks ['balance'])
-solver.push(robot.tasks ['posture'])
+solver.push (robot.tasks ['com'])
+for i in s:
+    solver.push (robot.tasks [i])
+solver.push (robot.tasks ['posture'])
 
 print("Prologue ran successfully.")
 
