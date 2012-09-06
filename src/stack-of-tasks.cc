@@ -38,7 +38,8 @@ StackOfTasks::StackOfTasks (const std::string& entityName)
     timestep_ (TIMESTEP_DEFAULT),
     previousState_ (),
     robotState_ ("StackOfTasks("+entityName+")::output(vector)::robotState"),
-    mlforces (6)
+    mlforces (6),
+    pose ()
 {
   signalRegistration (robotState_);
   for (unsigned i = 0; i < 4; ++i)
@@ -130,6 +131,15 @@ StackOfTasks::control (RobotState* rs, RobotState* mc)
     for(unsigned j = 0; j < 3; ++j)
       mc->baseAtt[i * 3 + j] = freeFlyerPose () (i, j);
 
+  // Read imu data
+  if (rs->attitude[0].length () == 9) {
+    for (unsigned int i = 0; i < 3; ++i)
+      for (unsigned int j = 0; j < 3; ++j)
+	pose (i, j) = rs->attitude[0][i * 3 + j];
+    attitudeSOUT.setConstant (pose);
+    attitudeSOUT.setTime (time + 1);
+  }
+  
   updateRobotState (rs);
 }
 

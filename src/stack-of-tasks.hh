@@ -158,7 +158,7 @@ namespace dynamicgraph
 	/// Intermediate variables to avoid allocation during control
 	ml::Vector mlforces;
 	ml::Vector mlRobotState;
-
+	MatrixRotation pose;
       };
 
     } // end of namespace openhrp.
