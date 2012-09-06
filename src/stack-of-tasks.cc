@@ -37,7 +37,8 @@ StackOfTasks::StackOfTasks (const std::string& entityName)
   : dynamicgraph::sot::Device (entityName),
     timestep_ (TIMESTEP_DEFAULT),
     previousState_ (),
-    robotState_ ("StackOfTasks(" + entityName + ")::output(vector)::robotState")
+    robotState_ ("StackOfTasks("+entityName+")::output(vector)::robotState"),
+    mlforces (6)
 {
   signalRegistration (robotState_);
   for (unsigned i = 0; i < 4; ++i)
@@ -67,7 +68,6 @@ StackOfTasks::setup (RobotState* rs, RobotState* mc)
   sotDEBUG (25) << "state = " << state << std::endl;
   stateSOUT.setConstant (state);
 
-  ml::Vector mlforces (6);
   for (int i = 0; i < 4; ++i)
     {
       for (int j = 0; j < 6; ++j)
@@ -104,7 +104,6 @@ StackOfTasks::control (RobotState* rs, RobotState* mc)
   freeFlyerPose().inverse(inversePose);
   Vector localZmp = inversePose * zmpGlobal;
 
-  ml::Vector mlforces (6);
   for (int i = 0; i < 4; ++i)
   {
     for( int j=0;j<6;++j )
@@ -137,12 +136,12 @@ StackOfTasks::control (RobotState* rs, RobotState* mc)
 void
 StackOfTasks::updateRobotState (RobotState* rs)
 {
-  ml::Vector robotState (rs->angle.length () + 6);
+  mlRobotState.resize (rs->angle.length () + 6);
   for (unsigned i = 0; i < 6; ++i)
-    robotState (i) = 0.;
+    mlRobotState (i) = 0.;
   for (unsigned i = 0; i < rs->angle.length (); ++i)
-    robotState (i + 6) = rs->angle[i];
-  robotState_.setConstant(robotState);
+    mlRobotState (i + 6) = rs->angle[i];
+  robotState_.setConstant(mlRobotState);
 }
 
 bool

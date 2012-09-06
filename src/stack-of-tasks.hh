@@ -154,6 +154,11 @@ namespace dynamicgraph
 	/// does *not* match the state control input signal.
 	///
 	dynamicgraph::Signal<ml::Vector, int> robotState_;
+
+	/// Intermediate variables to avoid allocation during control
+	ml::Vector mlforces;
+	ml::Vector mlRobotState;
+
       };
 
     } // end of namespace openhrp.
