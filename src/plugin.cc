@@ -40,15 +40,24 @@ namespace dynamicgraph
   {
     namespace openhrp
     {
-      static void
-      runPython (std::ostream& file,
-		 const std::string& command,
-		 ::dynamicgraph::Interpreter& interpreter)
+      static void runPython(std::ostream& file,
+			    const std::string& command,
+			    dynamicgraph::Interpreter& interpreter)
       {
 	file << ">>> " << command << std::endl;
-	std::string value = interpreter.runCommand (command);
-	if (value != "None")
-	  file << value;
+	std::string lerr(""),lout(""),lres("");
+	interpreter.runCommand(command,lres,lout,lerr);
+	if (lres != "None")
+	  {
+	    if (lres=="<NULL>")
+	      {
+		file << lout << std::endl;
+		file << "------" << std::endl;
+		file << lerr << std::endl;
+	      }
+	    else
+	      file << lres << std::endl;
+	  }
       }
 
       Plugin::Plugin()
